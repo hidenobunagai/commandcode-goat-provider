@@ -30,6 +30,7 @@ opencode.jsonc
 .gemini/**
 .kiro/**
 .qoder/**
+.commandcode/**
 package-lock.json
 bun.lock
 jest.config.js
