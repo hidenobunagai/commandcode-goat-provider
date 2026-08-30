@@ -534,9 +534,30 @@ const userMessageWithToolResult = (callId: string, text: string) => ({
   content: [new vscode.LanguageModelToolResultPart(callId, [new vscode.LanguageModelTextPart(text)])],
 });
 
-test("converts a Claude conversation to Anthropic blocks", () => {
+test("converts an image to an Anthropic base64 block", () => {
   const result = convertMessagesToAnthropic([
-    userMessage("Inspect this image"),
+    {
+      role: vscode.LanguageModelChatMessageRole.User,
+      content: [
+        new vscode.LanguageModelTextPart("Inspect this image"),
+        { mimeType: "image/png", data: new Uint8Array([1, 2, 3]) },
+      ],
+    },
+  ]);
+
+  expect(result.messages[0].content).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        type: "image",
+        source: expect.objectContaining({ media_type: "image/png", data: "AQID" }),
+      }),
+    ]),
+  );
+});
+
+test("converts a Claude conversation to Anthropic tool blocks", () => {
+  const result = convertMessagesToAnthropic([
+    userMessage("Inspect this file"),
     assistantMessageWithTool("read_file", { path: "README.md" }, "call-1"),
     userMessageWithToolResult("call-1", "file contents"),
   ]);
