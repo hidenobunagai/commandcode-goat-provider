@@ -1,57 +1,39 @@
 import * as vscode from "vscode";
 import { EXTENSION_VERSION } from "./constants";
 import { debugLog, disposeOutputChannel, getOutputChannel } from "./output-channel";
-import { OcGoChatModelProvider } from "./provider";
-import { registerOcGoTools } from "./tools";
-import { OcGoUsageStatusBar } from "./usage-bar";
+import { CommandCodeChatModelProvider } from "./provider";
 
-let _provider: OcGoChatModelProvider | null = null;
+let _provider: CommandCodeChatModelProvider | null = null;
 
 export function activate(context: vscode.ExtensionContext) {
-  const ua = `opencode-go-provider/${EXTENSION_VERSION} VSCode/${vscode.version}`;
+  const ua = `commandcode-goat-provider/${EXTENSION_VERSION} VSCode/${vscode.version}`;
   const channel = getOutputChannel();
   context.subscriptions.push(channel);
-  const debugEnabled = context.globalState.get<boolean>("opencode-go.debug", false);
-  process.env.OPENCODE_GO_DEBUG = debugEnabled ? "1" : "0";
+  const debugEnabled = context.globalState.get<boolean>("commandcode-goat.debug", false);
+  process.env.COMMANDCODE_GOAT_DEBUG = debugEnabled ? "1" : "0";
   debugLog(
     "activate",
     `Extension activated. Debug logging ${debugEnabled ? "enabled" : "disabled"}.`,
   );
 
-  const provider = new OcGoChatModelProvider(context.secrets, ua);
+  const provider = new CommandCodeChatModelProvider(context.secrets, ua);
   _provider = provider;
-
-  const usageBar = new OcGoUsageStatusBar(context.secrets, ua);
-  context.subscriptions.push(usageBar);
 
   context.subscriptions.push(
     context.secrets.onDidChange((e) => {
-      if (e.key === "opencode-go.apiKey") {
+      if (e.key === "commandcode-goat.apiKey") {
         _provider?.fireModelInfoChanged();
-        void usageBar.refresh();
       }
     }),
   );
 
-  context.subscriptions.push(
-    provider.onDidCompleteResponse(() => {
-      void usageBar.refresh();
-    }),
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("opencode-go.showUsage", () => usageBar.showUsage()),
-  );
-
-  void usageBar.refresh();
-
   try {
-    const registration = vscode.lm.registerLanguageModelChatProvider("opencode-go", provider);
+    const registration = vscode.lm.registerLanguageModelChatProvider("commandcode-goat", provider);
     context.subscriptions.push(registration);
-    debugLog("activate/registerProvider", "Registered language model provider: opencode-go");
+    debugLog("activate/registerProvider", "Registered language model provider: commandcode-goat");
 
     if (typeof vscode.lm.selectChatModels === "function") {
-      void vscode.lm.selectChatModels({ vendor: "opencode-go" }).then(
+      void vscode.lm.selectChatModels({ vendor: "commandcode-goat" }).then(
         (models) => {
           debugLog("activate/selectChatModels", {
             count: models.length,
@@ -68,64 +50,56 @@ export function activate(context: vscode.ExtensionContext) {
   } catch (error) {
     debugLog("activate/registerProviderError", error);
     vscode.window.showErrorMessage(
-      "OpenCode Go provider registration failed. Open 'OpenCode Go: Open Debug Log' for details.",
+      "Command Code GOAT provider registration failed. Open 'Command Code GOAT: Open Debug Log' for details.",
     );
     throw error;
   }
+
   context.subscriptions.push(
-    vscode.commands.registerCommand("opencode-go.manage", async () => {
-      const existing = await context.secrets.get("opencode-go.apiKey");
+    vscode.commands.registerCommand("commandcode-goat.manage", async () => {
+      const existing = await context.secrets.get("commandcode-goat.apiKey");
       const apiKey = await vscode.window.showInputBox({
-        title: "OpenCode Go API Key",
-        prompt: existing ? "Update your OpenCode Go API key" : "Enter your OpenCode Go API key",
+        title: "Command Code GOAT API Key",
+        prompt: existing ? "Update your Command Code GOAT API key" : "Enter your Command Code GOAT API key",
         ignoreFocusOut: true,
         password: true,
         value: existing ?? "",
-        placeHolder: "Enter your OpenCode Go API key...",
+        placeHolder: "Enter your Command Code GOAT API key...",
       });
       if (apiKey === undefined) {
         return;
       }
       if (!apiKey.trim()) {
-        await context.secrets.delete("opencode-go.apiKey");
-        vscode.window.showInformationMessage("OpenCode Go API key cleared.");
+        await context.secrets.delete("commandcode-goat.apiKey");
+        vscode.window.showInformationMessage("Command Code GOAT API key cleared.");
         _provider?.fireModelInfoChanged();
         return;
       }
-      await context.secrets.store("opencode-go.apiKey", apiKey.trim());
-      vscode.window.showInformationMessage("OpenCode Go API key saved.");
+      await context.secrets.store("commandcode-goat.apiKey", apiKey.trim());
+      vscode.window.showInformationMessage("Command Code GOAT API key saved.");
       _provider?.fireModelInfoChanged();
     }),
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("opencode-go.toggleDebugLogging", async () => {
-      const current = context.globalState.get<boolean>("opencode-go.debug", false);
+    vscode.commands.registerCommand("commandcode-goat.toggleDebugLogging", async () => {
+      const current = context.globalState.get<boolean>("commandcode-goat.debug", false);
       const next = !current;
-      await context.globalState.update("opencode-go.debug", next);
-      process.env.OPENCODE_GO_DEBUG = next ? "1" : "0";
+      await context.globalState.update("commandcode-goat.debug", next);
+      process.env.COMMANDCODE_GOAT_DEBUG = next ? "1" : "0";
       debugLog("toggleDebug", `Debug logging ${next ? "enabled" : "disabled"}.`);
       vscode.window.showInformationMessage(
-        `OpenCode Go debug logging ${next ? "enabled" : "disabled"}.`,
+        `Command Code GOAT debug logging ${next ? "enabled" : "disabled"}.`,
       );
     }),
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("opencode-go.openDebugLog", () => {
+    vscode.commands.registerCommand("commandcode-goat.openDebugLog", () => {
       const output = getOutputChannel();
       output.show(true);
     }),
   );
-
-  try {
-    context.subscriptions.push(registerOcGoTools(context.secrets, ua));
-  } catch (error) {
-    debugLog("registerOcGoTools", error);
-    vscode.window.showWarningMessage(
-      "OpenCode Go image analysis tool could not be registered. API key management and chat remain available.",
-    );
-  }
 }
 
 export function deactivate() {

@@ -12,27 +12,26 @@ import {
   Progress,
   ProvideLanguageModelChatResponseOptions,
 } from "vscode";
+import { fetchModels } from "./api";
 import {
-  BASE_URL,
   DEFAULT_MAX_OUTPUT_TOKENS,
-  THINKING_MODELS,
+  FALLBACK_MODELS,
   getContextWindowSafetyMargin,
+  inferModelInfo,
+  REASONING_EFFORT_ORDER,
+  THINKING_MODELS,
 } from "./constants";
-import { OcGoVisionClient } from "./vision";
-import { extractImageData, getTextPartValue } from "./message-parts";
+import { getTextPartValue } from "./message-parts";
 import { debugLog } from "./output-channel";
 import { handleAnthropicRequest } from "./streaming/anthropic";
 import { processOpenAIStream, type OpenAIModelInfo } from "./streaming/openai";
 import { estimateMessagesTokens, estimateTokens } from "./tokenizer";
 import {
-  FALLBACK_MODELS,
-  OcGoModelInfo,
-  REASONING_EFFORT_ORDER,
+  CommandCodeModelInfo,
   ReasoningEffort,
-  inferModelInfo,
 } from "./types";
 
-export class OcGoChatModelProvider implements LanguageModelChatProvider {
+export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
   private readonly _onDidChangeLanguageModelChatInformation = new EventEmitter<void>();
   readonly onDidChangeLanguageModelChatInformation: Event<void> =
     this._onDidChangeLanguageModelChatInformation.event;
@@ -41,16 +40,14 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
   /** Fires after every chat response completes (success or error). */
   readonly onDidCompleteResponse: Event<void> = this._onDidCompleteResponse.event;
 
-  private readonly _visionClient: OcGoVisionClient;
-  private readonly _modelMap = new Map<string, OcGoModelInfo>();
-  private _models: OcGoModelInfo[] = FALLBACK_MODELS;
+  private readonly _modelMap = new Map<string, CommandCodeModelInfo>();
+  private _models: CommandCodeModelInfo[] = FALLBACK_MODELS;
   private _modelsFetched = false;
 
   constructor(
     private readonly secrets: vscode.SecretStorage,
     private readonly userAgent: string,
   ) {
-    this._visionClient = new OcGoVisionClient(secrets, userAgent);
     for (const m of FALLBACK_MODELS) {
       this._modelMap.set(m.id, m);
     }
@@ -64,31 +61,9 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
   }
 
   private async fetchModels(): Promise<void> {
-    const apiKey = await this.ensureApiKey({}, true);
-    if (!apiKey) {
-      debugLog("fetchModels", "No API key available, skipping dynamic model fetch.");
-      return;
-    }
-
     try {
-      const response = await fetch(`${BASE_URL}/models`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "User-Agent": this.userAgent,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status} ${response.statusText}`);
-      }
-
-      const body = (await response.json()) as { data: Array<{ id: string }> };
-      if (!body.data || !Array.isArray(body.data)) {
-        throw new Error("Invalid response format");
-      }
-
-      const fetchedModels: OcGoModelInfo[] = body.data.map((item) => inferModelInfo(item.id));
+      const apiModels = await fetchModels(this.userAgent);
+      const fetchedModels: CommandCodeModelInfo[] = apiModels.map((item) => inferModelInfo(item));
       this._models = fetchedModels;
       this._modelMap.clear();
       for (const m of fetchedModels) {
@@ -141,113 +116,28 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
     }
 
     const configuredApiKey = modelConfigurationState.apiKey ?? providerConfigurationState.apiKey;
-    const storedApiKey = await this.secrets.get("opencode-go.apiKey");
+    const storedApiKey = await this.secrets.get("commandcode-goat.apiKey");
     if (!configuredApiKey) {
       if (storedApiKey !== undefined) {
-        await this.secrets.delete("opencode-go.apiKey");
+        await this.secrets.delete("commandcode-goat.apiKey");
       }
       return undefined;
     }
 
     if (storedApiKey !== configuredApiKey) {
-      await this.secrets.store("opencode-go.apiKey", configuredApiKey);
+      await this.secrets.store("commandcode-goat.apiKey", configuredApiKey);
     }
 
     return configuredApiKey;
   }
 
-  private getModelInfo(modelId: string): OcGoModelInfo | undefined {
+  private getModelInfo(modelId: string): CommandCodeModelInfo | undefined {
     return this._modelMap.get(modelId);
   }
 
   private resolveApiModelId(modelId: string): string {
     const colonIndex = modelId.indexOf(":");
     return colonIndex > 0 ? modelId.slice(0, colonIndex) : modelId;
-  }
-
-  private modelSupportsVision(modelId: string): boolean {
-    return this.getModelInfo(modelId)?.supportsVision ?? false;
-  }
-
-  private getVisionFallbackModelId(): string | undefined {
-    const omni = this._modelMap.get("mimo-v2-omni");
-    if (omni && omni.supportsVision) return omni.id;
-    for (const m of this._modelMap.values()) {
-      if (m.supportsVision) return m.id;
-    }
-    return undefined;
-  }
-
-  private hasImageInput(messages: readonly LanguageModelChatMessage[]): boolean {
-    for (const msg of messages) {
-      for (const part of msg.content) {
-        const p = part as unknown as Record<string, unknown>;
-        if (typeof p.mimeType === "string" && p.mimeType.startsWith("image/")) return true;
-      }
-    }
-    return false;
-  }
-
-  private async processImagesForNonVisionModel(
-    messages: readonly LanguageModelChatMessage[],
-    token: CancellationToken,
-    apiKey: string,
-  ): Promise<LanguageModelChatMessage[]> {
-    const processedMessages: LanguageModelChatMessage[] = [];
-
-    for (const msg of messages) {
-      const textParts: string[] = [];
-      const images: Array<{ mimeType: string; data: Uint8Array }> = [];
-      for (const part of msg.content) {
-        const textValue = getTextPartValue(part as never);
-        if (textValue !== undefined) {
-          textParts.push(textValue);
-          continue;
-        }
-        const image = extractImageData(part as never);
-        if (image) {
-          images.push(image);
-        }
-      }
-
-      if (images.length === 0) {
-        processedMessages.push(msg);
-        continue;
-      }
-
-      const userPrompt = textParts.join(" ");
-      const abortController = new AbortController();
-      const cancellationSubscription = token.onCancellationRequested(() => abortController.abort());
-
-      const descriptions = await Promise.all(
-        images.map(async (img) => {
-          if (token.isCancellationRequested) throw new vscode.CancellationError();
-          const base64Data = Buffer.from(img.data).toString("base64");
-          const imageDataUrl = `data:${img.mimeType};base64,${base64Data}`;
-          const analysisPrompt = userPrompt || "Describe this image in detail.";
-          return this._visionClient.analyzeImage(
-            imageDataUrl,
-            analysisPrompt,
-            abortController.signal,
-            apiKey,
-          );
-        }),
-      ).finally(() => cancellationSubscription.dispose());
-
-      const newContent: vscode.LanguageModelTextPart[] = textParts.map(
-        (t) => new vscode.LanguageModelTextPart(t),
-      );
-      if (descriptions.length > 0) {
-        newContent.push(
-          new vscode.LanguageModelTextPart(
-            `\n\n[Image Analysis]:\n${descriptions.join("\n\n---\n\n")}`,
-          ),
-        );
-      }
-      processedMessages.push(vscode.LanguageModelChatMessage.User(newContent));
-    }
-
-    return processedMessages;
   }
 
   async provideLanguageModelChatInformation(
@@ -280,19 +170,9 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
     models: Array<{ id: string; name: string }>,
   ): LanguageModelChatInformation[] {
     return models.map((model) => {
-      const info: OcGoModelInfo = this._modelMap.get(model.id) ?? {
-        id: model.id,
-        name: model.name,
-        displayName: model.name,
-        contextWindow: 262144,
-        maxOutput: 65536,
-        supportsTools: true,
-        supportsVision: false,
-        supportsThinking: false,
-        isUserSelectable: true,
-      };
+      const info: CommandCodeModelInfo = this._modelMap.get(model.id) ?? inferModelInfo(model.id);
 
-      const tooltipParts: string[] = [`OpenCode Go — ${info.name}`];
+      const tooltipParts: string[] = [`Command Code GOAT — ${info.name}`];
       if (info.supportsThinking) {
         tooltipParts.push("Thinking Effort: configurable");
       }
@@ -311,11 +191,11 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
       return {
         id: info.id,
         name: info.displayName,
-        detail: "OpenCode Go",
+        detail: "Command Code GOAT",
         tooltip: tooltipParts.join(" · "),
-        family: "opencode-go",
+        family: "commandcode-goat",
         version: "1.0.0",
-        isUserSelectable: true,
+        isUserSelectable: info.isUserSelectable !== false,
         maxInputTokens: Math.max(
           1,
           info.contextWindow - Math.min(info.maxOutput, DEFAULT_MAX_OUTPUT_TOKENS),
@@ -394,7 +274,7 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
       if (!apiKey) {
         progress.report(
           new vscode.LanguageModelTextPart(
-            'OpenCode Go API key is not configured. Add or configure OpenCode Go from the chat model picker, run "OpenCode Go: Manage OpenCode Go API Key" from the Command Palette, or retry this request and enter the key when prompted.',
+            'Command Code GOAT API key is not configured. Add or configure Command Code GOAT from the chat model picker, run "Command Code GOAT: Manage API Key" from the Command Palette, or retry this request and enter the key when prompted.',
           ),
         );
         return;
@@ -417,11 +297,6 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
         model.maxOutputTokens,
       );
 
-      // Thinking models (e.g. DeepSeek V4) consume part of the max_tokens budget
-      // for internal reasoning. Enforce a minimum output budget so the model has
-      // enough room to reason AND produce a visible response.
-      // 16K floor avoids the common failure where reasoning exhausts the budget
-      // before any text or tool calls are emitted.
       const MIN_THINKING_MODEL_OUTPUT_TOKENS = 16384;
       const resolvedModelId = this.resolveApiModelId(model.id);
       const isThinkingModel = THINKING_MODELS.has(resolvedModelId);
@@ -432,44 +307,16 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
           )
         : requestedMaxTokens;
 
-      const hasImages = this.hasImageInput(messages);
-      let effectiveMessages = messages;
-      let effectiveModelId = this.resolveApiModelId(model.id);
-      let effectiveModelInfo = this.getModelInfo(effectiveModelId);
+      const effectiveMessages = messages;
+      const effectiveModelId = this.resolveApiModelId(model.id);
+      const effectiveModelInfo = this.getModelInfo(effectiveModelId);
       const variantModelInfo = this.getModelInfo(model.id);
 
-      if (hasImages && !this.modelSupportsVision(model.id)) {
-        const visionFallback = this.getVisionFallbackModelId();
-        if (visionFallback && visionFallback !== model.id) {
-          effectiveModelId = this.resolveApiModelId(visionFallback);
-          effectiveModelInfo = this._modelMap.get(visionFallback);
-          const selectedModelInfo = this.getModelInfo(model.id);
-          // Silent like retries: operational notices written into the chat
-          // would persist in the conversation history and confuse the model
-          // on later turns.
-          debugLog(
-            "provideLanguageModelChatResponse",
-            `Switching to ${effectiveModelInfo?.displayName ?? visionFallback} for image analysis (${selectedModelInfo?.displayName ?? model.id} does not support vision).`,
-          );
-        } else {
-          try {
-            effectiveMessages = await this.processImagesForNonVisionModel(messages, token, apiKey);
-          } catch (err) {
-            if (err instanceof vscode.CancellationError || token.isCancellationRequested) {
-              throw err;
-            }
-            const message = err instanceof Error ? err.message : String(err);
-            progress.report(
-              new vscode.LanguageModelTextPart(
-                `Image analysis failed: ${message}. The selected model (${effectiveModelInfo?.displayName ?? model.id}) does not support vision and no vision fallback model is available. Please switch to a vision-capable model and try again.`,
-              ),
-            );
-            return;
-          }
-        }
+      if (!effectiveModelInfo || effectiveModelInfo.isUserSelectable === false || !effectiveModelInfo.apiFormat) {
+        throw new Error(`Model ${model.id} is not supported or not selectable.`);
       }
 
-      const apiFormat = effectiveModelInfo?.apiFormat ?? "openai";
+      const apiFormat = effectiveModelInfo.apiFormat;
       const modelConfig = (options as unknown as Record<string, unknown>).modelConfiguration as
         Record<string, unknown> | undefined;
       const rawReasoningEffort =
@@ -478,9 +325,8 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
           : undefined;
       let reasoningEffort: string | undefined =
         rawReasoningEffort === "default" ? undefined : rawReasoningEffort;
-      // Validate per-model supported efforts; drop invalid selections (e.g. stale "max" for muse)
-      // and handle legacy alias max<->xhigh.
-      if (reasoningEffort && effectiveModelInfo?.supportedReasoningEfforts) {
+
+      if (reasoningEffort && effectiveModelInfo.supportedReasoningEfforts) {
         const supported = effectiveModelInfo.supportedReasoningEfforts as string[];
         if (!supported.includes(reasoningEffort)) {
           if (reasoningEffort === "max" && supported.includes("xhigh")) {
@@ -495,7 +341,7 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
             reasoningEffort = undefined;
           }
         }
-      } else if (reasoningEffort && effectiveModelInfo && !effectiveModelInfo.supportsThinking) {
+      } else if (reasoningEffort && !effectiveModelInfo.supportsThinking) {
         debugLog(
           "provideLanguageModelChatResponse",
           `Dropping reasoningEffort "${reasoningEffort}" for non-thinking model ${effectiveModelId}`,
@@ -509,6 +355,10 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
             ? ((options.modelOptions as Record<string, unknown>).temperature as number)
             : undefined;
       const topPVal = variantModelInfo?.fixedTopP;
+
+      const enableZdr = vscode.workspace
+        .getConfiguration("commandcode-goat")
+        .get<boolean>("enableZdr", false);
 
       if (apiFormat === "anthropic") {
         await handleAnthropicRequest({
@@ -524,6 +374,7 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
           progress,
           token,
           abortController,
+          enableZdr,
         });
         return;
       }
@@ -548,6 +399,7 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
         token,
         abortController,
         reasoningEffort,
+        enableZdr,
       );
     } catch (err) {
       if (token.isCancellationRequested) {
@@ -593,19 +445,23 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
       return configuredApiKey;
     }
 
-    let apiKey = (await this.secrets.get("opencode-go.apiKey"))?.trim();
+    let apiKey = (await this.secrets.get("commandcode-goat.apiKey"))?.trim();
     if (!apiKey && !silent) {
       const entered = await vscode.window.showInputBox({
-        title: "OpenCode Go API Key",
-        prompt: "Enter your OpenCode Go API key",
+        title: "Command Code GOAT API Key",
+        prompt: "Enter your Command Code GOAT API key",
         ignoreFocusOut: true,
         password: true,
       });
       if (entered && entered.trim()) {
         apiKey = entered.trim();
-        await this.secrets.store("opencode-go.apiKey", apiKey);
+        await this.secrets.store("commandcode-goat.apiKey", apiKey);
       }
     }
     return apiKey;
   }
 }
+
+// Alias for backward compatibility
+export type OcGoChatModelProvider = CommandCodeChatModelProvider;
+export const OcGoChatModelProvider = CommandCodeChatModelProvider;

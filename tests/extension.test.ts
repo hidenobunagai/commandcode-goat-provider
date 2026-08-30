@@ -1,5 +1,4 @@
 const registeredCommands = new Map<string, (...args: unknown[]) => unknown>();
-import { registerOcGoTools } from "../src/tools";
 
 const mockCreateOutputChannel = jest.fn(() => ({
   appendLine: jest.fn(),
@@ -16,30 +15,12 @@ const mockRegisterCommand = jest.fn(
   },
 );
 const mockRegisterLanguageModelChatProvider = jest.fn(() => ({ dispose: jest.fn() }));
-const mockCreateStatusBarItem = jest.fn(() => ({
-  text: "",
-  tooltip: "",
-  command: "",
-  name: "",
-  backgroundColor: undefined,
-  show: jest.fn(),
-  hide: jest.fn(),
-  dispose: jest.fn(),
-}));
 
 jest.mock("../src/provider", () => ({
-  OcGoChatModelProvider: jest.fn().mockImplementation(() => ({
+  CommandCodeChatModelProvider: jest.fn().mockImplementation(() => ({
     fireModelInfoChanged: jest.fn(),
     onDidCompleteResponse: jest.fn(() => ({ dispose: jest.fn() })),
   })),
-}));
-
-jest.mock("../src/usage", () => ({
-  fetchOpenCodeGoUsage: jest.fn(async () => ({ line: null, usage: null })),
-}));
-
-jest.mock("../src/tools", () => ({
-  registerOcGoTools: jest.fn(() => ({ dispose: jest.fn() })),
 }));
 
 jest.mock("vscode", () => ({
@@ -50,11 +31,6 @@ jest.mock("vscode", () => ({
     showWarningMessage: mockShowWarningMessage,
     showErrorMessage: mockShowErrorMessage,
     showInputBox: jest.fn(),
-    createStatusBarItem: mockCreateStatusBarItem,
-  },
-  StatusBarAlignment: { Right: 1 },
-  ThemeColor: class {
-    constructor(public id: string) {}
   },
   commands: {
     registerCommand: mockRegisterCommand,
@@ -79,7 +55,7 @@ describe("activate", () => {
     };
     const globalState = {
       get: jest.fn((key: string, fallback?: unknown) =>
-        key === "opencode-go.debug" ? false : fallback,
+        key === "commandcode-goat.debug" ? false : fallback,
       ),
       update: jest.fn(async () => undefined),
     };
@@ -92,43 +68,13 @@ describe("activate", () => {
     const { activate } = await import("../src/extension");
     activate(context as never);
 
-    expect(mockRegisterLanguageModelChatProvider).toHaveBeenCalled();
-    expect(registeredCommands.has("opencode-go.manage")).toBe(true);
-    expect(registeredCommands.has("opencode-go.toggleDebugLogging")).toBe(true);
-    expect(registeredCommands.has("opencode-go.openDebugLog")).toBe(true);
-    expect(registeredCommands.has("opencode-go.showUsage")).toBe(true);
-    expect(registeredCommands.has("opencode-go.refreshModels")).toBe(false);
-    expect(mockCreateStatusBarItem).toHaveBeenCalled();
+    expect(mockRegisterLanguageModelChatProvider).toHaveBeenCalledWith(
+      "commandcode-goat",
+      expect.anything(),
+    );
+    expect(registeredCommands.has("commandcode-goat.manage")).toBe(true);
+    expect(registeredCommands.has("commandcode-goat.toggleDebugLogging")).toBe(true);
+    expect(registeredCommands.has("commandcode-goat.openDebugLog")).toBe(true);
     expect(mockShowErrorMessage).not.toHaveBeenCalled();
-  });
-
-  it("still registers management commands when tool registration fails", async () => {
-    (registerOcGoTools as jest.Mock).mockImplementationOnce(() => {
-      throw new Error("tool registration failed");
-    });
-
-    const secrets = {
-      get: jest.fn(async () => undefined),
-      store: jest.fn(),
-      delete: jest.fn(),
-      onDidChange: jest.fn(() => ({ dispose: jest.fn() })),
-    };
-    const globalState = {
-      get: jest.fn((key: string, fallback?: unknown) =>
-        key === "opencode-go.debug" ? false : fallback,
-      ),
-      update: jest.fn(async () => undefined),
-    };
-    const context = {
-      secrets,
-      globalState,
-      subscriptions: [] as Array<{ dispose(): void }>,
-    };
-
-    const { activate } = await import("../src/extension");
-
-    expect(() => activate(context as never)).not.toThrow();
-    expect(mockRegisterLanguageModelChatProvider).toHaveBeenCalled();
-    expect(registeredCommands.has("opencode-go.manage")).toBe(true);
   });
 });
