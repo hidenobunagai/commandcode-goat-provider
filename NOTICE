@@ -1,0 +1,6 @@
+This project adapts portions of OpenCode Go Provider for VS Code Copilot Chat:
+https://github.com/hidenobunagai/opencode-go-provider
+
+The adapted source is distributed under the MIT License. The original copyright
+notice is retained in LICENSE. Command Code GOAT integration is an independent,
+unofficial community project and is not affiliated with Command Code, Inc.

@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Compiled output
+out/
+dist/
+
+# Test coverage
+coverage/
+
+# VS Code
+.vscode-test/
+*.vsix
+
+# Misc
+.DS_Store
+*.log
+.env.keys
+.env.local
+.env.*.local
+
+# Local state
+.headroom/
+.serena/
+AGENTS.md
+.env
+# Added by code-review-graph
+.code-review-graph/
+.github/code-review-graph.instruction.md
+.vscode/mcp.json
+.claude/
+.codebuddy/
+.cursor/
+.gemini/
+.kiro/
+.qoder/
+CLAUDE.md
+CODEBUDDY.md
+GEMINI.md
+QODER.md
+.windsurfrules
+.cursorrules
+opencode.jsonc
+commandcode.jsonc
+.mcp.json
