@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.1.1] - 2026-08-30
+
+### Fixed
+
+- Sync model catalog from DSH (`commandcode.ai/docs` via `pnpm generate:knowledge`): replace regex-guessed vision/thinking/efforts with explicit `VISION_SET`/`EFFORTS_MAP`/`PROTOCOL_MAP`. Fixes MiniMax duplicate display name (now `MiniMax M3 (Free)`), corrects thinking levels per docs (Claude/Gemini/GPT with proper efforts, Kimi-K3/MiniMax/Step without thinking, GLM escaping bug fixed).
+- Regenerate `docs/models.md` from authoritative catalog.
+
 ## [0.1.0] - 2026-08-30
 
 ### Added
