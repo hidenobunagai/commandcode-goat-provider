@@ -19,7 +19,9 @@ describe("convertMessages", () => {
     const messages = [
       {
         role: vscode.LanguageModelChatMessageRole.User,
-        content: [new vscode.LanguageModelTextPart("こんにちは、プロジェクトの構成を教えてください。")],
+        content: [
+          new vscode.LanguageModelTextPart("こんにちは、プロジェクトの構成を教えてください。"),
+        ],
       },
     ];
     const result = convertMessages(messages as any);
@@ -183,7 +185,7 @@ describe("convertTools", () => {
     expect(result).toEqual({});
   });
 
-  it("converts VS Code tools to OpenCode Go format", () => {
+  it("converts VS Code tools to Command Code format", () => {
     const result = convertTools({
       tools: [
         {

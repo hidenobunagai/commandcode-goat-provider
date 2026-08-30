@@ -5,13 +5,19 @@ const userMessage = (text: string) => ({
   role: vscode.LanguageModelChatMessageRole.User,
   content: [new vscode.LanguageModelTextPart(text)],
 });
-const assistantMessageWithTool = (name: string, input: Record<string, unknown>, callId: string) => ({
+const assistantMessageWithTool = (
+  name: string,
+  input: Record<string, unknown>,
+  callId: string,
+) => ({
   role: vscode.LanguageModelChatMessageRole.Assistant,
   content: [new vscode.LanguageModelToolCallPart(callId, name, input)],
 });
 const userMessageWithToolResult = (callId: string, text: string) => ({
   role: vscode.LanguageModelChatMessageRole.User,
-  content: [new vscode.LanguageModelToolResultPart(callId, [new vscode.LanguageModelTextPart(text)])],
+  content: [
+    new vscode.LanguageModelToolResultPart(callId, [new vscode.LanguageModelTextPart(text)]),
+  ],
 });
 
 describe("convertMessagesToAnthropic", () => {
@@ -69,10 +75,14 @@ describe("convertMessagesToAnthropic", () => {
 
     expect(result.messages).toHaveLength(3);
     expect(result.messages[1].content).toEqual(
-      expect.arrayContaining([expect.objectContaining({ type: "tool_use", id: "call-1", name: "read_file" })]),
+      expect.arrayContaining([
+        expect.objectContaining({ type: "tool_use", id: "call-1", name: "read_file" }),
+      ]),
     );
     expect(result.messages[2].content).toEqual(
-      expect.arrayContaining([expect.objectContaining({ type: "tool_result", tool_use_id: "call-1" })]),
+      expect.arrayContaining([
+        expect.objectContaining({ type: "tool_result", tool_use_id: "call-1" }),
+      ]),
     );
   });
 });

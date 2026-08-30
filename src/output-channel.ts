@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-const OUTPUT_CHANNEL_NAME = "OpenCode Go";
+const OUTPUT_CHANNEL_NAME = "Command Code GOAT";
 
 /** Module-private output channel. Lazily created on first access. */
 let _channel: vscode.OutputChannel | undefined;
@@ -21,17 +21,17 @@ export function disposeOutputChannel(): void {
 }
 
 export function debugEnabled(): boolean {
-  return process.env.OPENCODE_GO_DEBUG === "1";
+  return process.env.COMMANDCODE_GOAT_DEBUG === "1";
 }
 
 function appendChannelLine(prefix: string, label: string, value: unknown, ensureChannel = false) {
   const message = typeof value === "string" ? value : JSON.stringify(value, null, 2);
   const channel = ensureChannel ? getOutputChannel() : _channel;
   if (channel) {
-    channel.appendLine(`[OpenCode Go ${prefix}] ${label}: ${message}`);
+    channel.appendLine(`[Command Code GOAT ${prefix}] ${label}: ${message}`);
     return;
   }
-  console.log(`[OpenCode Go ${prefix}] ${label}:`, value);
+  console.log(`[Command Code GOAT ${prefix}] ${label}:`, value);
 }
 
 export function debugLog(label: string, value: unknown): void {

@@ -1,8 +1,4 @@
-import {
-  inferModelInfo,
-  REASONING_EFFORT_ORDER,
-  FALLBACK_MODELS,
-} from "../src/types";
+import { inferModelInfo, REASONING_EFFORT_ORDER, FALLBACK_MODELS } from "../src/types";
 
 test("maps a known Claude model to Anthropic and preserves API metadata", () => {
   const info = inferModelInfo({

@@ -362,4 +362,3 @@ export async function* streamChatCompletion(
     );
   }
 }
-

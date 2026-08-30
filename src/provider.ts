@@ -26,10 +26,7 @@ import { debugLog } from "./output-channel";
 import { handleAnthropicRequest } from "./streaming/anthropic";
 import { processOpenAIStream, type OpenAIModelInfo } from "./streaming/openai";
 import { estimateMessagesTokens, estimateTokens } from "./tokenizer";
-import {
-  CommandCodeModelInfo,
-  ReasoningEffort,
-} from "./types";
+import { CommandCodeModelInfo, ReasoningEffort } from "./types";
 
 export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
   private readonly _onDidChangeLanguageModelChatInformation = new EventEmitter<void>();
@@ -312,7 +309,11 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
       const effectiveModelInfo = this.getModelInfo(effectiveModelId);
       const variantModelInfo = this.getModelInfo(model.id);
 
-      if (!effectiveModelInfo || effectiveModelInfo.isUserSelectable === false || !effectiveModelInfo.apiFormat) {
+      if (
+        !effectiveModelInfo ||
+        effectiveModelInfo.isUserSelectable === false ||
+        !effectiveModelInfo.apiFormat
+      ) {
         throw new Error(`Model ${model.id} is not supported or not selectable.`);
       }
 

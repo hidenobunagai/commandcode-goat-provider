@@ -87,9 +87,11 @@ describe("fetchModels", () => {
   });
 
   it("throws on non-200 status", async () => {
-    global.fetch = jest.fn().mockResolvedValue(
-      new Response("Service Unavailable", { status: 503, statusText: "Service Unavailable" }),
-    );
+    global.fetch = jest
+      .fn()
+      .mockResolvedValue(
+        new Response("Service Unavailable", { status: 503, statusText: "Service Unavailable" }),
+      );
     await expect(fetchModels()).rejects.toThrow();
   });
 });
@@ -138,14 +140,15 @@ describe("throwApiError", () => {
   it("normalizes 422 cmd_zdr_no_providers errors", async () => {
     const response = new Response(
       JSON.stringify({
-        error: { code: "cmd_zdr_no_providers", message: "No upstream provider supports ZDR for this model" },
+        error: {
+          code: "cmd_zdr_no_providers",
+          message: "No upstream provider supports ZDR for this model",
+        },
       }),
       { status: 422, statusText: "Unprocessable Entity" },
     );
 
-    await expect(throwApiError(response, "Command Code API error")).rejects.toThrow(
-      "ZDR",
-    );
+    await expect(throwApiError(response, "Command Code API error")).rejects.toThrow("ZDR");
   });
 });
 
@@ -155,9 +158,7 @@ describe("streamChatCompletion", () => {
   });
 
   it("sends ZDR only when enabled", async () => {
-    global.fetch = jest.fn().mockResolvedValue(
-      new Response("data: [DONE]\n\n", { status: 200 }),
-    );
+    global.fetch = jest.fn().mockResolvedValue(new Response("data: [DONE]\n\n", { status: 200 }));
 
     for await (const _chunk of streamChatCompletion(
       "secret",
@@ -181,9 +182,7 @@ describe("streamChatCompletion", () => {
   });
 
   it("does not send ZDR when disabled", async () => {
-    global.fetch = jest.fn().mockResolvedValue(
-      new Response("data: [DONE]\n\n", { status: 200 }),
-    );
+    global.fetch = jest.fn().mockResolvedValue(new Response("data: [DONE]\n\n", { status: 200 }));
 
     for await (const _chunk of streamChatCompletion(
       "secret",
@@ -221,7 +220,11 @@ describe("streamChatCompletion", () => {
       body: stream,
     } as any);
 
-    const gen = streamChatCompletion("key", { model: "deepseek/deepseek-v4-flash", messages: [], stream: true });
+    const gen = streamChatCompletion("key", {
+      model: "deepseek/deepseek-v4-flash",
+      messages: [],
+      stream: true,
+    });
     const results: OcGoStreamResponse[] = [];
     for await (const item of gen) {
       results.push(item);
@@ -239,7 +242,11 @@ describe("streamChatCompletion", () => {
       text: async () => "Server error",
     } as any);
 
-    const gen = streamChatCompletion("key", { model: "deepseek/deepseek-v4-flash", messages: [], stream: true });
+    const gen = streamChatCompletion("key", {
+      model: "deepseek/deepseek-v4-flash",
+      messages: [],
+      stream: true,
+    });
     await expect(gen.next()).rejects.toThrow("Command Code GOAT server error (500)");
   });
 
@@ -251,7 +258,11 @@ describe("streamChatCompletion", () => {
       text: async () => "Invalid key",
     } as any);
 
-    const gen = streamChatCompletion("key", { model: "deepseek/deepseek-v4-flash", messages: [], stream: true });
+    const gen = streamChatCompletion("key", {
+      model: "deepseek/deepseek-v4-flash",
+      messages: [],
+      stream: true,
+    });
     await expect(gen.next()).rejects.toThrow("Command Code GOAT API authentication failed (401)");
   });
 
@@ -268,7 +279,11 @@ describe("streamChatCompletion", () => {
     } as any);
 
     try {
-      const gen = streamChatCompletion("key", { model: "deepseek/deepseek-v4-flash", messages: [], stream: true });
+      const gen = streamChatCompletion("key", {
+        model: "deepseek/deepseek-v4-flash",
+        messages: [],
+        stream: true,
+      });
       await expect(gen.next()).rejects.toThrow("HTTP 429");
       expect(fetch).toHaveBeenCalledTimes(5);
     } finally {
@@ -385,7 +400,11 @@ describe("streamChatCompletion", () => {
       body: stream,
     } as any);
 
-    const gen = streamChatCompletion("key", { model: "deepseek/deepseek-v4-flash", messages: [], stream: true });
+    const gen = streamChatCompletion("key", {
+      model: "deepseek/deepseek-v4-flash",
+      messages: [],
+      stream: true,
+    });
     const results: OcGoStreamResponse[] = [];
     for await (const item of gen) {
       results.push(item);
@@ -410,7 +429,11 @@ describe("streamChatCompletion", () => {
       body: stream,
     } as any);
 
-    const gen = streamChatCompletion("key", { model: "deepseek/deepseek-v4-flash", messages: [], stream: true });
+    const gen = streamChatCompletion("key", {
+      model: "deepseek/deepseek-v4-flash",
+      messages: [],
+      stream: true,
+    });
     const results: OcGoStreamResponse[] = [];
     for await (const item of gen) {
       results.push(item);
@@ -433,7 +456,11 @@ describe("streamChatCompletion", () => {
         }),
     } as any);
 
-    const gen = streamChatCompletion("key", { model: "deepseek/deepseek-v4-flash", messages: [], stream: true });
+    const gen = streamChatCompletion("key", {
+      model: "deepseek/deepseek-v4-flash",
+      messages: [],
+      stream: true,
+    });
     await expect(gen.next()).rejects.toThrow("token limit exceeded");
   });
 
@@ -445,8 +472,11 @@ describe("streamChatCompletion", () => {
       text: async () => JSON.stringify({ error: { message: "Model not found: unknown-model" } }),
     } as any);
 
-    const gen = streamChatCompletion("key", { model: "deepseek/deepseek-v4-flash", messages: [], stream: true });
+    const gen = streamChatCompletion("key", {
+      model: "deepseek/deepseek-v4-flash",
+      messages: [],
+      stream: true,
+    });
     await expect(gen.next()).rejects.toThrow("Model not found");
   });
 });
-

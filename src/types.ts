@@ -127,7 +127,7 @@ export { FALLBACK_MODELS, inferModelInfo, REASONING_EFFORT_ORDER } from "./const
 
 // ============================================================================
 // Anthropic Messages API types
-// Used by MiniMax M2.5 and M2.7 via OpenCode Go proxy
+// Used by Claude models via Command Code GOAT (/messages endpoint)
 // ============================================================================
 
 /** Anthropic message content block */
@@ -216,68 +216,3 @@ export type AnthropicSSEEvent =
   | AnthropicContentBlockStopEvent
   | AnthropicMessageDeltaEvent
   | AnthropicMessageStopEvent;
-
-// ============================================================================
-// OpenAI Responses API types
-// Used by GPT 5.6 Luna via the OpenCode Go proxy (/responses endpoint)
-// ============================================================================
-
-/** Content part inside a Responses API message item */
-export type OcGoResponsesContentPart =
-  | { type: "input_text"; text: string }
-  | { type: "input_image"; image_url: string }
-  | { type: "output_text"; text: string };
-
-/** Input item for the Responses API */
-export type OcGoResponsesInputItem =
-  | {
-      type: "message";
-      role: "user" | "assistant";
-      content: string | OcGoResponsesContentPart[];
-    }
-  | { type: "function_call"; call_id: string; name: string; arguments: string }
-  | { type: "function_call_output"; call_id: string; output: string };
-
-/** Function tool definition for the Responses API */
-export interface OcGoResponsesTool {
-  type: "function";
-  name: string;
-  description?: string;
-  parameters?: JsonObject;
-}
-
-/** Responses API request body */
-export interface OcGoResponsesRequest {
-  model: string;
-  instructions?: string;
-  input: OcGoResponsesInputItem[];
-  tools?: OcGoResponsesTool[];
-  tool_choice?: "auto" | "required" | "none" | { type: "function"; name: string };
-  temperature?: number;
-  max_output_tokens?: number;
-  stream?: boolean;
-  store?: boolean;
-  reasoning?: { effort?: string; summary?: string };
-}
-
-/** Responses API SSE stream event */
-export interface OcGoResponsesStreamEvent {
-  type: string;
-  item_id?: string;
-  output_index?: number;
-  delta?: string;
-  item?: {
-    id?: string;
-    type?: string;
-    name?: string;
-    call_id?: string;
-    arguments?: string;
-    status?: string;
-    role?: string;
-  };
-  response?: {
-    status?: string;
-    incomplete_details?: { reason?: string };
-  };
-  error?: { message?: string; code?: string };
-}

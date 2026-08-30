@@ -7,23 +7,30 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hidenobunagai/opencode-go-provider"
+    "url": "https://github.com/hidenobunagai/commandcode-goat-provider"
   },
   "icon": "images/icon.png",
   "galleryBanner": {
     "color": "#1A1A2E",
     "theme": "dark"
   },
-  "keywords": ["commandcode", "goat", "copilot", "chat", "provider"],
+  "keywords": [
+    "commandcode",
+    "goat",
+    "copilot",
+    "chat",
+    "provider",
+    "claude",
+    "deepseek",
+    "qwen",
+    "kimi"
+  ],
   "engines": {
     "vscode": "^1.104.0"
   },
   "categories": [
     "AI",
     "Chat"
-  ],
-  "activationEvents": [
-    "onLanguageModelTool:opencode_go_analyze_image"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -34,52 +41,31 @@
         "managementCommand": "commandcode-goat.manage"
       }
     ],
-    "languageModelTools": [
-      {
-        "name": "opencode_go_analyze_image",
-        "toolReferenceName": "analyzeImage",
-        "displayName": "OpenCode Go Analyze Image",
-        "modelDescription": "Analyze an image with the OpenCode Go vision model and return a text description.",
-        "userDescription": "Analyze an image using OpenCode Go Vision.",
-        "inputSchema": {
-          "type": "object",
-          "properties": {
-            "image_data": {
-              "type": "string",
-              "description": "Base64-encoded image data URL."
-            },
-            "prompt": {
-              "type": "string",
-              "description": "Instruction describing what to analyze in the image."
-            }
-          },
-          "required": [
-            "image_data",
-            "prompt"
-          ]
+    "configuration": {
+      "title": "Command Code GOAT",
+      "properties": {
+        "commandcode-goat.enableZdr": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable Command Code Zero Data Retention (ZDR) mode (`x-cmd-zdr: 1`) on requests."
         }
       }
-    ],
+    },
     "commands": [
       {
         "command": "commandcode-goat.manage",
-        "title": "Manage OpenCode Go API Key",
-        "category": "OpenCode Go"
+        "title": "Manage API Key",
+        "category": "Command Code GOAT"
       },
       {
-        "command": "opencode-go.showUsage",
-        "title": "Show OpenCode Go Usage",
-        "category": "OpenCode Go"
-      },
-      {
-        "command": "opencode-go.toggleDebugLogging",
+        "command": "commandcode-goat.toggleDebugLogging",
         "title": "Toggle Debug Logging",
-        "category": "OpenCode Go"
+        "category": "Command Code GOAT"
       },
       {
-        "command": "opencode-go.openDebugLog",
+        "command": "commandcode-goat.openDebugLog",
         "title": "Open Debug Log",
-        "category": "OpenCode Go"
+        "category": "Command Code GOAT"
       }
     ]
   },
@@ -94,8 +80,6 @@
     "lint:fix": "eslint src/ tests/ --fix",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "check-changelog": "bun scripts/check-changelog.ts",
-    "sync:pi": "bun scripts/sync-from-pi.ts",
-    "sync:pi:write": "bun scripts/sync-from-pi.ts --write",
     "package:vsix": "bun run check-changelog && bun run compile && vsce package --allow-missing-repository"
   },
   "devDependencies": {

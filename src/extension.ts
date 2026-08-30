@@ -60,7 +60,9 @@ export function activate(context: vscode.ExtensionContext) {
       const existing = await context.secrets.get("commandcode-goat.apiKey");
       const apiKey = await vscode.window.showInputBox({
         title: "Command Code GOAT API Key",
-        prompt: existing ? "Update your Command Code GOAT API key" : "Enter your Command Code GOAT API key",
+        prompt: existing
+          ? "Update your Command Code GOAT API key"
+          : "Enter your Command Code GOAT API key",
         ignoreFocusOut: true,
         password: true,
         value: existing ?? "",

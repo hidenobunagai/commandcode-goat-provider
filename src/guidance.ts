@@ -49,9 +49,7 @@ export function applyOpenAiSystemPromptGuidance(
   }
 
   const guidance = [
-    isDeepSeek
-      ? buildProviderIdentityGuidance(modelId, commandCodeModelInfo ?? [])
-      : undefined,
+    isDeepSeek ? buildProviderIdentityGuidance(modelId, commandCodeModelInfo ?? []) : undefined,
     hasTools ? buildToolUseGroundingGuidance(options) : undefined,
   ]
     .filter((value): value is string => typeof value === "string" && value.trim().length > 0)

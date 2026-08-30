@@ -83,7 +83,9 @@ describe("CommandCodeChatModelProvider", () => {
     mockEnableZdr = false;
     jest.clearAllMocks();
     secrets = {
-      get: jest.fn(async (key: string) => (key === "commandcode-goat.apiKey" ? "test-key" : undefined)),
+      get: jest.fn(async (key: string) =>
+        key === "commandcode-goat.apiKey" ? "test-key" : undefined,
+      ),
       store: jest.fn(async () => undefined),
       delete: jest.fn(async () => undefined),
       onDidChange: jest.fn(() => ({ dispose: jest.fn() })),
@@ -184,14 +186,22 @@ describe("CommandCodeChatModelProvider", () => {
 
       await provider.provideLanguageModelChatResponse(
         model as any,
-        [{ role: vscode.LanguageModelChatMessageRole.User, content: [new (vscode as any).LanguageModelTextPart("hi")], name: undefined }] as any,
+        [
+          {
+            role: vscode.LanguageModelChatMessageRole.User,
+            content: [new (vscode as any).LanguageModelTextPart("hi")],
+            name: undefined,
+          },
+        ] as any,
         {} as any,
         progress as any,
         token as any,
       );
 
       expect(reportedParts).toHaveLength(1);
-      expect((reportedParts[0] as any).value).toContain("Command Code GOAT API key is not configured");
+      expect((reportedParts[0] as any).value).toContain(
+        "Command Code GOAT API key is not configured",
+      );
     });
 
     it("routes Claude models to Anthropic streaming", async () => {
@@ -209,7 +219,13 @@ describe("CommandCodeChatModelProvider", () => {
 
       await provider.provideLanguageModelChatResponse(
         model as any,
-        [{ role: vscode.LanguageModelChatMessageRole.User, content: [new (vscode as any).LanguageModelTextPart("hi")], name: undefined }] as any,
+        [
+          {
+            role: vscode.LanguageModelChatMessageRole.User,
+            content: [new (vscode as any).LanguageModelTextPart("hi")],
+            name: undefined,
+          },
+        ] as any,
         {} as any,
         progress as any,
         token as any,
@@ -238,7 +254,13 @@ describe("CommandCodeChatModelProvider", () => {
 
       await provider.provideLanguageModelChatResponse(
         model as any,
-        [{ role: vscode.LanguageModelChatMessageRole.User, content: [new (vscode as any).LanguageModelTextPart("hi")], name: undefined }] as any,
+        [
+          {
+            role: vscode.LanguageModelChatMessageRole.User,
+            content: [new (vscode as any).LanguageModelTextPart("hi")],
+            name: undefined,
+          },
+        ] as any,
         {} as any,
         progress as any,
         token as any,
@@ -280,7 +302,13 @@ describe("CommandCodeChatModelProvider", () => {
 
       await provider.provideLanguageModelChatResponse(
         model as any,
-        [{ role: vscode.LanguageModelChatMessageRole.User, content: [new (vscode as any).LanguageModelTextPart("hi")], name: undefined }] as any,
+        [
+          {
+            role: vscode.LanguageModelChatMessageRole.User,
+            content: [new (vscode as any).LanguageModelTextPart("hi")],
+            name: undefined,
+          },
+        ] as any,
         {} as any,
         progress as any,
         token as any,
@@ -309,7 +337,13 @@ describe("CommandCodeChatModelProvider", () => {
       await expect(
         provider.provideLanguageModelChatResponse(
           model as any,
-          [{ role: vscode.LanguageModelChatMessageRole.User, content: [new (vscode as any).LanguageModelTextPart("hi")], name: undefined }] as any,
+          [
+            {
+              role: vscode.LanguageModelChatMessageRole.User,
+              content: [new (vscode as any).LanguageModelTextPart("hi")],
+              name: undefined,
+            },
+          ] as any,
           {} as any,
           progress as any,
           token as any,
