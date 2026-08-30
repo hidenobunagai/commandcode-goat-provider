@@ -2,10 +2,12 @@ src/**
 tests/**
 scripts/**
 docs/**
+.superpowers/**
 __mocks__/**
 .vscode/**
 .github/
 node_modules/**
+images/opencode_go_provider_summary.png
 coverage/**
 .serena/**
 .headroom/**

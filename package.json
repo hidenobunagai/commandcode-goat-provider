@@ -80,7 +80,7 @@
     "lint:fix": "eslint src/ tests/ --fix",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "check-changelog": "bun scripts/check-changelog.ts",
-    "package:vsix": "bun run check-changelog && bun run compile && vsce package --allow-missing-repository"
+    "package:vsix": "bun run check-changelog && bun run compile && vsce package --no-dependencies --allow-missing-repository"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^2.20.1",
