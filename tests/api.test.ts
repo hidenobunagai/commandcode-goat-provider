@@ -1,4 +1,4 @@
-import { fetchWithRetry, streamChatCompletion } from "../src/api";
+import { fetchModels, fetchWithRetry, streamChatCompletion, throwApiError } from "../src/api";
 import { BASE_URL } from "../src/constants";
 import { OcGoStreamResponse } from "../src/types";
 
@@ -44,9 +44,159 @@ describe("fetchWithRetry", () => {
   });
 });
 
+describe("fetchModels", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("reads the unauthenticated live-list shape", async () => {
+    global.fetch = jest.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          object: "list",
+          data: [{ id: "Qwen/Qwen3.8-27B", name: "Qwen 3.8 27B", context_length: 262144 }],
+        }),
+        { status: 200 },
+      ),
+    );
+
+    await expect(fetchModels("test-agent")).resolves.toEqual([
+      { id: "Qwen/Qwen3.8-27B", name: "Qwen 3.8 27B", context_length: 262144 },
+    ]);
+    expect(global.fetch).toHaveBeenCalledWith(
+      "https://api.commandcode.ai/provider/v1/models",
+      expect.objectContaining({
+        method: "GET",
+        headers: expect.objectContaining({ "User-Agent": "test-agent" }),
+      }),
+    );
+  });
+
+  it.each([
+    { object: "list", data: [] },
+    { object: "object", data: [{ id: "model", name: "Model", context_length: 1 }] },
+    { object: "list", data: [{ id: "", name: "Model", context_length: 1 }] },
+    { object: "list", data: [{ id: "model", name: "", context_length: 1 }] },
+    { object: "list", data: [{ id: "model", name: "Model", context_length: 0 }] },
+    { object: "list", data: [{ id: "model", name: "Model", context_length: -100 }] },
+    { object: "list", data: [{ id: "model", name: "Model", context_length: NaN }] },
+    { object: "list", data: "not-an-array" },
+  ])("rejects invalid model catalog %#", async (body) => {
+    global.fetch = jest.fn().mockResolvedValue(new Response(JSON.stringify(body), { status: 200 }));
+    await expect(fetchModels()).rejects.toThrow();
+  });
+
+  it("throws on non-200 status", async () => {
+    global.fetch = jest.fn().mockResolvedValue(
+      new Response("Service Unavailable", { status: 503, statusText: "Service Unavailable" }),
+    );
+    await expect(fetchModels()).rejects.toThrow();
+  });
+});
+
+describe("throwApiError", () => {
+  it("normalizes standard error envelope", async () => {
+    const response = new Response(
+      JSON.stringify({
+        error: { type: "authentication_error", message: "Invalid API key" },
+      }),
+      { status: 401, statusText: "Unauthorized" },
+    );
+
+    await expect(throwApiError(response, "Command Code API error")).rejects.toThrow(
+      "authentication failed",
+    );
+  });
+
+  it("normalizes Command Code success-false authentication errors", async () => {
+    const response = new Response(
+      JSON.stringify({
+        success: false,
+        error: { code: "UNAUTHORIZED", status: 401, message: "Invalid token" },
+      }),
+      { status: 401, statusText: "Unauthorized" },
+    );
+
+    await expect(throwApiError(response, "Command Code API error")).rejects.toThrow(
+      "authentication failed",
+    );
+  });
+
+  it("includes manage command in 401 guidance", async () => {
+    const response = new Response(
+      JSON.stringify({
+        error: { message: "Invalid key" },
+      }),
+      { status: 401, statusText: "Unauthorized" },
+    );
+
+    await expect(throwApiError(response, "Command Code API error")).rejects.toThrow(
+      "Command Code GOAT: Manage API Key",
+    );
+  });
+
+  it("normalizes 422 cmd_zdr_no_providers errors", async () => {
+    const response = new Response(
+      JSON.stringify({
+        error: { code: "cmd_zdr_no_providers", message: "No upstream provider supports ZDR for this model" },
+      }),
+      { status: 422, statusText: "Unprocessable Entity" },
+    );
+
+    await expect(throwApiError(response, "Command Code API error")).rejects.toThrow(
+      "ZDR",
+    );
+  });
+});
+
 describe("streamChatCompletion", () => {
   afterEach(() => {
     jest.restoreAllMocks();
+  });
+
+  it("sends ZDR only when enabled", async () => {
+    global.fetch = jest.fn().mockResolvedValue(
+      new Response("data: [DONE]\n\n", { status: 200 }),
+    );
+
+    for await (const _chunk of streamChatCompletion(
+      "secret",
+      { model: "deepseek/deepseek-v4-flash", messages: [], stream: true },
+      undefined,
+      "test-agent",
+      true,
+    )) {
+      void _chunk;
+    }
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      "https://api.commandcode.ai/provider/v1/chat/completions",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: "Bearer secret",
+          "x-cmd-zdr": "1",
+        }),
+      }),
+    );
+  });
+
+  it("does not send ZDR when disabled", async () => {
+    global.fetch = jest.fn().mockResolvedValue(
+      new Response("data: [DONE]\n\n", { status: 200 }),
+    );
+
+    for await (const _chunk of streamChatCompletion(
+      "secret",
+      { model: "deepseek/deepseek-v4-flash", messages: [], stream: true },
+      undefined,
+      "test-agent",
+      false,
+    )) {
+      void _chunk;
+    }
+
+    const headers = (global.fetch as jest.Mock).mock.calls[0][1].headers;
+    expect(headers["x-cmd-zdr"]).toBeUndefined();
   });
 
   it("yields parsed SSE chunks", async () => {
@@ -54,7 +204,7 @@ describe("streamChatCompletion", () => {
       id: "1",
       object: "chat.completion.chunk",
       created: 1,
-      model: "kimi-k2.6",
+      model: "deepseek/deepseek-v4-flash",
       choices: [{ index: 0, delta: { content: "Hello" }, finish_reason: null }],
     };
     const encoder = new TextEncoder();
@@ -71,7 +221,7 @@ describe("streamChatCompletion", () => {
       body: stream,
     } as any);
 
-    const gen = streamChatCompletion("key", { model: "kimi-k2.6", messages: [], stream: true });
+    const gen = streamChatCompletion("key", { model: "deepseek/deepseek-v4-flash", messages: [], stream: true });
     const results: OcGoStreamResponse[] = [];
     for await (const item of gen) {
       results.push(item);
@@ -89,8 +239,8 @@ describe("streamChatCompletion", () => {
       text: async () => "Server error",
     } as any);
 
-    const gen = streamChatCompletion("key", { model: "kimi-k2.6", messages: [], stream: true });
-    await expect(gen.next()).rejects.toThrow("OpenCode Go server error (500)");
+    const gen = streamChatCompletion("key", { model: "deepseek/deepseek-v4-flash", messages: [], stream: true });
+    await expect(gen.next()).rejects.toThrow("Command Code GOAT server error (500)");
   });
 
   it("throws authentication error on 401", async () => {
@@ -101,8 +251,8 @@ describe("streamChatCompletion", () => {
       text: async () => "Invalid key",
     } as any);
 
-    const gen = streamChatCompletion("key", { model: "kimi-k2.6", messages: [], stream: true });
-    await expect(gen.next()).rejects.toThrow("OpenCode Go API authentication failed (401)");
+    const gen = streamChatCompletion("key", { model: "deepseek/deepseek-v4-flash", messages: [], stream: true });
+    await expect(gen.next()).rejects.toThrow("Command Code GOAT API authentication failed (401)");
   });
 
   it("retries on 429 and eventually throws after exhausting retries", async () => {
@@ -118,7 +268,7 @@ describe("streamChatCompletion", () => {
     } as any);
 
     try {
-      const gen = streamChatCompletion("key", { model: "kimi-k2.6", messages: [], stream: true });
+      const gen = streamChatCompletion("key", { model: "deepseek/deepseek-v4-flash", messages: [], stream: true });
       await expect(gen.next()).rejects.toThrow("HTTP 429");
       expect(fetch).toHaveBeenCalledTimes(5);
     } finally {
@@ -151,6 +301,7 @@ describe("streamChatCompletion", () => {
     );
     expect(fetch).toHaveBeenCalledTimes(3);
   });
+
   it("retries on 429 with Retry-After then succeeds", async () => {
     const response = {
       ok: true,
@@ -206,12 +357,13 @@ describe("streamChatCompletion", () => {
     expect(result.status).toBe(401);
     expect(fetch).toHaveBeenCalledTimes(1);
   });
+
   it("handles partial lines across chunks", async () => {
     const chunk: OcGoStreamResponse = {
       id: "1",
       object: "chat.completion.chunk",
       created: 1,
-      model: "kimi-k2.6",
+      model: "deepseek/deepseek-v4-flash",
       choices: [{ index: 0, delta: { content: "Hello" }, finish_reason: null }],
     };
     const encoder = new TextEncoder();
@@ -233,7 +385,7 @@ describe("streamChatCompletion", () => {
       body: stream,
     } as any);
 
-    const gen = streamChatCompletion("key", { model: "kimi-k2.6", messages: [], stream: true });
+    const gen = streamChatCompletion("key", { model: "deepseek/deepseek-v4-flash", messages: [], stream: true });
     const results: OcGoStreamResponse[] = [];
     for await (const item of gen) {
       results.push(item);
@@ -258,7 +410,7 @@ describe("streamChatCompletion", () => {
       body: stream,
     } as any);
 
-    const gen = streamChatCompletion("key", { model: "kimi-k2.6", messages: [], stream: true });
+    const gen = streamChatCompletion("key", { model: "deepseek/deepseek-v4-flash", messages: [], stream: true });
     const results: OcGoStreamResponse[] = [];
     for await (const item of gen) {
       results.push(item);
@@ -281,7 +433,7 @@ describe("streamChatCompletion", () => {
         }),
     } as any);
 
-    const gen = streamChatCompletion("key", { model: "kimi-k2.6", messages: [], stream: true });
+    const gen = streamChatCompletion("key", { model: "deepseek/deepseek-v4-flash", messages: [], stream: true });
     await expect(gen.next()).rejects.toThrow("token limit exceeded");
   });
 
@@ -293,19 +445,8 @@ describe("streamChatCompletion", () => {
       text: async () => JSON.stringify({ error: { message: "Model not found: unknown-model" } }),
     } as any);
 
-    const gen = streamChatCompletion("key", { model: "kimi-k2.6", messages: [], stream: true });
+    const gen = streamChatCompletion("key", { model: "deepseek/deepseek-v4-flash", messages: [], stream: true });
     await expect(gen.next()).rejects.toThrow("Model not found");
   });
-
-  it("includes 401 guidance with manage command", async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: false,
-      status: 401,
-      statusText: "Unauthorized",
-      text: async () => "Unauthorized",
-    } as any);
-
-    const gen = streamChatCompletion("key", { model: "kimi-k2.6", messages: [], stream: true });
-    await expect(gen.next()).rejects.toThrow("Manage OpenCode Go API Key");
-  });
 });
+

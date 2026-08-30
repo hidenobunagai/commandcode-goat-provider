@@ -41,7 +41,14 @@ export interface OcGoChatRequest {
   tools?: OcGoTool[];
   tool_choice?: "auto" | "none" | "required" | { type: string; function: { name: string } };
   reasoning_effort?: string;
+  stream_options?: { include_usage?: boolean };
 }
+
+export type CommandCodeChatRequest = OcGoChatRequest;
+export type CommandCodeChatMessage = OcGoChatMessage;
+export type CommandCodeContentPart = OcGoContentPart;
+export type CommandCodeTool = OcGoTool;
+export type CommandCodeToolCall = OcGoToolCall;
 
 export interface OcGoStreamChoice {
   index: number;
@@ -67,6 +74,9 @@ export interface OcGoStreamResponse {
   };
 }
 
+export type CommandCodeStreamResponse = OcGoStreamResponse;
+export type CommandCodeStreamChoice = OcGoStreamChoice;
+
 export interface OcGoChatCompletionResponse {
   choices?: Array<{ message?: { content?: string } }>;
   usage?: {
@@ -75,6 +85,8 @@ export interface OcGoChatCompletionResponse {
     total_tokens?: number;
   };
 }
+
+export type CommandCodeChatCompletionResponse = OcGoChatCompletionResponse;
 
 /** API format used by a model */
 export type CommandCodeApiFormat = "openai" | "anthropic";

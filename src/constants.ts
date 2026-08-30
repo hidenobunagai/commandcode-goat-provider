@@ -1,7 +1,7 @@
 import { version } from "../package.json";
 import type { CommandCodeApiModel, CommandCodeModelInfo, ReasoningEffort } from "./types";
 
-export const BASE_URL = "https://opencode.ai/zen/go/v1";
+export const BASE_URL = "https://api.commandcode.ai/provider/v1";
 export const EXTENSION_VERSION: string = version;
 
 /** Compute a dynamic safety margin: 1% of context window, minimum 2048 tokens.
@@ -39,8 +39,15 @@ const REASONING_CONTENT_WORKAROUND_STATIC_SET = new Set([
   "kimi-k2.6",
   "kimi-k2.7-code",
   "kimi-k3",
+  "moonshotai/Kimi-K2.6",
+  "moonshotai/Kimi-K2.7-Code",
+  "moonshotai/Kimi-K2.7-Code-Highspeed",
+  "moonshotai/Kimi-K3",
   "deepseek-v4-pro",
   "deepseek-v4-flash",
+  "deepseek/deepseek-v4-pro",
+  "deepseek/deepseek-v4-flash",
+  "deepseek/deepseek-v4-flash-vision-exp",
   "ox-alpha-free",
 ]);
 
@@ -50,7 +57,7 @@ const REASONING_CONTENT_WORKAROUND_STATIC_SET = new Set([
  * consume part of the output budget on reasoning, so they get the same
  * minimum output budget floor as workaround models.
  */
-const THINKING_MODEL_STATIC_SET = new Set(["gpt-5.6-luna", "muse-spark-1.2-contributor"]);
+const THINKING_MODEL_STATIC_SET = new Set(["gpt-5.6-luna", "meta/muse-spark-1.2-contributor"]);
 
 /** Models that require the reasoning_content workaround */
 export const REASONING_CONTENT_WORKAROUND_MODELS = {
@@ -58,16 +65,17 @@ export const REASONING_CONTENT_WORKAROUND_MODELS = {
     if (REASONING_CONTENT_WORKAROUND_STATIC_SET.has(modelId)) {
       return true;
     }
-    if (modelId.startsWith("kimi-")) {
-      return !modelId.includes("k2.5");
+    const lower = modelId.toLowerCase();
+    if (lower.includes("kimi")) {
+      return !lower.includes("k2.5");
     }
-    if (modelId.startsWith("deepseek-")) {
-      const match = modelId.match(/deepseek-v(\d+)/);
+    if (lower.includes("deepseek")) {
+      const match = lower.match(/deepseek-v(\d+)/);
       if (match) {
         const version = parseInt(match[1], 10);
         return version >= 4;
       }
-      return modelId.includes("-r1") || modelId.includes("-r2");
+      return lower.includes("-r1") || lower.includes("-r2");
     }
     return false;
   },
