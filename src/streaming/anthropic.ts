@@ -5,10 +5,9 @@ import { convertMessagesToAnthropic, convertToolsToAnthropic } from "../anthropi
 import { fetchWithRetry, throwApiError } from "../api";
 import { BASE_URL, ANTHROPIC_MAX_TOOL_RESULT_CHARS, REQUEST_TIMEOUT_MS } from "../constants";
 import { buildProviderIdentityGuidance, sanitizeSystemPromptForModel } from "../guidance";
-import { convertTools } from "../openai-conversion";
 import { captureLog, debugLog } from "../output-channel";
 import { extractChatRequestContext, getToolSchemaMap, isToolCallInput } from "../tool-repair";
-import { AnthropicMessage, AnthropicSSEEvent, OcGoModelInfo, type Json } from "../types";
+import { AnthropicMessage, AnthropicSSEEvent, CommandCodeModelInfo, type Json } from "../types";
 import { readSseLines } from "./sse";
 import { pushAttemptSnapshot, reportTruncated, setupStreamState, type StreamState } from "./shared";
 
@@ -22,9 +21,10 @@ export interface AnthropicRequestParams {
   progress: vscode.Progress<vscode.LanguageModelResponsePart>;
   token: vscode.CancellationToken;
   abortController: AbortController;
-  fallbackModels: readonly OcGoModelInfo[];
+  fallbackModels: readonly CommandCodeModelInfo[];
   userAgent: string;
   topPVal?: number;
+  enableZdr?: boolean;
 }
 
 export async function handleAnthropicRequest(params: AnthropicRequestParams): Promise<void> {
@@ -41,27 +41,13 @@ export async function handleAnthropicRequest(params: AnthropicRequestParams): Pr
     fallbackModels,
     userAgent,
     topPVal,
+    enableZdr,
   } = params;
 
-  const isDeepSeek = modelId.startsWith("deepseek-");
-  let toolConfig: { tools?: unknown[]; tool_choice?: unknown };
-  if (isDeepSeek) {
-    const openAiConfig = convertTools(options);
-    toolConfig = {
-      tools: openAiConfig.tools,
-      tool_choice: openAiConfig.tool_choice,
-    };
-  } else {
-    const anthropicConfig = convertToolsToAnthropic(options);
-    toolConfig = {
-      tools: anthropicConfig.tools,
-      tool_choice: anthropicConfig.tool_choice,
-    };
-  }
+  const toolConfig = convertToolsToAnthropic(options);
 
   const { messages: apiMessages, system } = convertMessagesToAnthropic(messages, {
     maxToolResultChars: ANTHROPIC_MAX_TOOL_RESULT_CHARS,
-    reasoningContentPlaceholderForToolUse: isDeepSeek ? " " : undefined,
   });
   const effectiveSystem = [
     sanitizeSystemPromptForModel(system, modelId),
@@ -100,18 +86,10 @@ export async function handleAnthropicRequest(params: AnthropicRequestParams): Pr
     if (token.isCancellationRequested) throw new vscode.CancellationError();
 
     if (attempt > 0) {
-      // Reasoning-only retry: model produced thinking but no text/tool calls.
-      // Increase output tokens so the model has room to reason AND respond.
-      // For DeepSeek models max_tokens is not sent to the API (budget is
-      // managed internally), but we still track the budget for non-DeepSeek
-      // models where doubling against the cap would be a no-op when already
-      // at limit.
-      currentMaxTokens = isDeepSeek
-        ? currentMaxTokens * 2
-        : Math.min(
-            currentMaxTokens * 2,
-            fallbackModels.find((m) => m.id === modelId)?.maxOutput ?? currentMaxTokens * 2,
-          );
+      currentMaxTokens = Math.min(
+        currentMaxTokens * 2,
+        fallbackModels.find((m) => m.id === modelId)?.maxOutput ?? currentMaxTokens * 2,
+      );
       debugLog("handleAnthropicRequest retry", { attempt, retryReason });
     }
 
@@ -129,11 +107,8 @@ export async function handleAnthropicRequest(params: AnthropicRequestParams): Pr
       model: modelId,
       messages: requestMessages,
       stream: true,
+      max_tokens: Math.max(1, currentMaxTokens),
     };
-
-    if (!isDeepSeek) {
-      requestBody.max_tokens = Math.max(1, currentMaxTokens);
-    }
 
     if (effectiveSystem) requestBody.system = effectiveSystem;
     if (typeof temperatureVal === "number" && temperatureVal > 0) {
@@ -149,7 +124,7 @@ export async function handleAnthropicRequest(params: AnthropicRequestParams): Pr
       }
     }
 
-    if (process.env.OPENCODE_GO_DEBUG === "1" && attempt === 0) {
+    if (process.env.COMMANDCODE_GOAT_DEBUG === "1" && attempt === 0) {
       debugLog("Outgoing request messages", {
         system: requestBody.system,
         messages: requestBody.messages,
@@ -167,10 +142,11 @@ export async function handleAnthropicRequest(params: AnthropicRequestParams): Pr
       {
         method: "POST",
         headers: {
-          "x-api-key": apiKey,
+          Authorization: `Bearer ${apiKey}`,
           "anthropic-version": "2023-06-01",
           "Content-Type": "application/json",
-          "User-Agent": userAgent,
+          ...(userAgent ? { "User-Agent": userAgent } : {}),
+          ...(enableZdr ? { "x-cmd-zdr": "1" } : {}),
         },
         signal: combinedSignal,
         body: JSON.stringify(requestBody),
@@ -179,7 +155,7 @@ export async function handleAnthropicRequest(params: AnthropicRequestParams): Pr
     ).finally(() => clearTimeout(timeoutId));
 
     if (!response.ok) {
-      await throwApiError(response, "OpenCode Go Anthropic API error");
+      await throwApiError(response, "Command Code GOAT Anthropic API error");
     }
 
     if (!response.body) {

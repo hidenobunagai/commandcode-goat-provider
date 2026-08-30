@@ -53,7 +53,7 @@ function parseToolUseInput(args: unknown): JsonObject {
 
 export function convertMessagesToAnthropic(
   messages: readonly vscode.LanguageModelChatMessage[],
-  options?: { maxToolResultChars?: number; reasoningContentPlaceholderForToolUse?: string },
+  options?: { maxToolResultChars?: number },
 ): { system?: string; messages: AnthropicMessage[] } {
   const systemParts: string[] = [];
   const result: AnthropicMessage[] = [];
@@ -123,11 +123,6 @@ export function convertMessagesToAnthropic(
       }
     }
 
-    const reasoningContentPlaceholder =
-      isAssistant && toolCalls.length > 0
-        ? options?.reasoningContentPlaceholderForToolUse
-        : undefined;
-
     if (isUser && toolResults.length > 0) {
       for (const toolResult of toolResults) {
         result.push({
@@ -153,16 +148,15 @@ export function convertMessagesToAnthropic(
         contentBlocks[0].type === "text" &&
         imageBlocks.length === 0
       ) {
-        result.push({ role, content: textContent, reasoning_content: reasoningContentPlaceholder });
+        result.push({ role, content: textContent });
       } else {
         result.push({
           role,
           content: contentBlocks,
-          reasoning_content: reasoningContentPlaceholder,
         });
       }
     } else {
-      result.push({ role, content: "", reasoning_content: reasoningContentPlaceholder });
+      result.push({ role, content: "" });
     }
   }
 
