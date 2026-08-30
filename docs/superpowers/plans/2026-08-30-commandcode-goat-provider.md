@@ -302,7 +302,7 @@ git commit -m "feat: add Command Code model catalog"
 - Modify: `tests/api.test.ts`.
 
 **Interfaces:**
-- Produces `BASE_URL`, `fetchWithRetry()`, `fetchModels()`, `streamChatCompletion()`, `streamAnthropicMessages()`, and `throwApiError()`.
+- Produces `BASE_URL`, `fetchWithRetry()`, `fetchModels()`, `streamChatCompletion()`, and `throwApiError()`.
 - `fetchModels(userAgent?: string): Promise<CommandCodeApiModel[]>` performs an unauthenticated GET to `/models` and validates `object === "list"`, a non-empty `data` array, non-empty string IDs and names, and positive finite `context_length` values.
 - Streaming functions accept an `AbortSignal`, optional user agent, and `enableZdr` flag without exposing the API key in errors or logs.
 
@@ -402,20 +402,20 @@ Implement `fetchModels()` with `GET ${BASE_URL}/models`, `Accept: application/js
 
 Retain exponential backoff with full jitter and `Retry-After` support for network failures and `429`, `502`, `503`, and `504`. Never retry `400`, `401`, `403`, `404`, `422`, or other client errors. Combine request timeout and caller cancellation with `AbortSignal.any()`.
 
-For OpenAI requests, POST to `${BASE_URL}/chat/completions`, set `stream: true`, set `stream_options.include_usage` to true, and parse `data: {...}` lines plus `[DONE]`. For Anthropic requests, POST to `${BASE_URL}/messages`, set `Authorization: Bearer ${apiKey}`, `anthropic-version: 2023-06-01`, and parse `event:`/`data:` lines. The official API also accepts `x-api-key` for Anthropic SDK clients, but this extension uses one universal Bearer header to keep the transport deterministic.
+For OpenAI requests, POST to `${BASE_URL}/chat/completions`, set `stream: true`, set `stream_options.include_usage` to true, and parse `data:` JSON events plus `[DONE]`. For Anthropic requests, POST to `${BASE_URL}/messages`, set `Authorization: Bearer ${apiKey}`, `anthropic-version: 2023-06-01`, and parse `event:`/`data:` lines. The official API also accepts `x-api-key` for Anthropic SDK clients, but this extension uses one universal Bearer header to keep the transport deterministic.
 
 - [ ] **Step 5: Normalize both error envelopes**
 
 `throwApiError()` must extract messages from both:
 
 ```json
-{"error":{"type":"authentication_error","message":"..."}}
+{"error":{"type":"authentication_error","message":"Invalid API key"}}
 ```
 
 and:
 
 ```json
-{"success":false,"error":{"code":"UNAUTHORIZED","status":401,"message":"...","docs":"..."}}
+{"success":false,"error":{"code":"UNAUTHORIZED","status":401,"message":"Invalid token","docs":"https://commandcode.ai/docs/reference/errors/unauthorized"}}
 ```
 
 Map status/code to the Command Code GOAT guidance in the design spec. Include only a bounded response-body excerpt and never include request headers or API keys.
@@ -454,7 +454,7 @@ git commit -m "feat: add Command Code Provider API client"
 
 - [ ] **Step 1: Add failing conversion and stream tests**
 
-Add conversion coverage for a Japanese text message, a `data:image/png;base64,...` image, a tool call with JSON arguments, and a paired tool result. Add stream coverage using this exact mock body:
+Add conversion coverage for a Japanese text message, a `data:image/png;base64,AQID` image, a tool call with JSON arguments, and a paired tool result. Add stream coverage using this exact mock body:
 
 ```text
 data: {"id":"cc-1","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"role":"assistant","content":"ok"},"finish_reason":null}]}
@@ -516,9 +516,24 @@ git commit -m "feat: support Command Code OpenAI streaming"
 
 - [ ] **Step 1: Add failing Anthropic conversion tests**
 
-Create tests for system extraction, consecutive user/assistant merge, base64 image blocks, `tool_use`, and `tool_result`:
+Create tests for system extraction, consecutive user/assistant merge, base64 image blocks, `tool_use`, and `tool_result`. Define these test helpers in `tests/anthropic-conversion.test.ts` before the test:
 
 ```typescript
+import * as vscode from "vscode";
+
+const userMessage = (text: string) => ({
+  role: vscode.LanguageModelChatMessageRole.User,
+  content: [new vscode.LanguageModelTextPart(text)],
+});
+const assistantMessageWithTool = (name: string, input: Record<string, unknown>, callId: string) => ({
+  role: vscode.LanguageModelChatMessageRole.Assistant,
+  content: [new vscode.LanguageModelToolCallPart(callId, name, input)],
+});
+const userMessageWithToolResult = (callId: string, text: string) => ({
+  role: vscode.LanguageModelChatMessageRole.User,
+  content: [new vscode.LanguageModelToolResultPart(callId, [new vscode.LanguageModelTextPart(text)])],
+});
+
 test("converts a Claude conversation to Anthropic blocks", () => {
   const result = convertMessagesToAnthropic([
     userMessage("Inspect this image"),
