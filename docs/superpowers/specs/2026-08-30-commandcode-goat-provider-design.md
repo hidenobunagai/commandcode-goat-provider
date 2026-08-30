@@ -25,7 +25,7 @@ summary: Command Code GOATのProvider APIをVS Code Copilot Chatから利用す�
 - `POST https://api.commandcode.ai/provider/v1/messages` — Anthropic Messages
 - `GET https://api.commandcode.ai/provider/v1/models` — モデル一覧
 
-両方のチャットエンドポイントは `stream: true` によるストリーミングに対応し、ストリーム末尾に使用トークンを返す。認証はBearerトークン、またはAnthropicエンドポイントでは `x-api-key` を使う。`x-cmd-zdr: 1` によるZero Data Retention指定も公式仕様に含まれる。未認証の実レスポンスは標準エラー形式以外に`{ success: false, error: { code, status, message, docs } }`形式になる場合も確認したため、クライアントは両形式を正規化する。
+両方のチャットエンドポイントは `stream: true` によるストリーミングに対応し、ストリーム末尾に使用トークンを返す。認証はBearerトークンを基本とし、公式にはAnthropicエンドポイントで `x-api-key` も受け付ける。クライアントは両endpointでBearerを使い、`anthropic-version`を追加する。`x-cmd-zdr: 1` によるZero Data Retention指定も公式仕様に含まれる。未認証の実レスポンスは標準エラー形式以外に`{ success: false, error: { code, status, message, docs } }`形式になる場合も確認したため、クライアントは両形式を正規化する。
 
 GOATの公式ページにはモデル一覧、モデルごとのコンテキスト長・推論・画像対応・料金情報が掲載されている。Provider APIのモデル一覧は認証なしでも取得でき、ID・表示名・コンテキスト長を返すが、推論・画像・ツール対応などの能力メタデータは保証しない。そのため、API一覧と公式カタログ由来の静的能力表を組み合わせる。
 
@@ -75,19 +75,20 @@ OpenCode専用のResponses API、使用量ステータスバー、MiMoへの画�
 
 ### 5.1 起動時の一覧
 
-providerはAPIキーなしでも`GET /provider/v1/models`を取得する。2026-08-30の実レスポンスはOpenAI互換の`{ object: "list", data: [...] }`で、各要素に`id`、`name`、`context_length`が含まれていた。API取得に成功したモデルを表示対象とし、静的能力表に同じIDがあれば能力メタデータを適用する。取得失敗、形式不正、またはAPIが利用できない場合は静的フォールバック一覧を使う。
+providerはAPIキーなしでも`GET /provider/v1/models`を取得する。2026-08-30の実レスポンスはOpenAI互換の`{ object: "list", data: [...] }`で、各要素に`id`、`name`、`context_length`が含まれていた。`object === "list"`、空でない`data`配列、各要素の非空`id`・`name`・正の`context_length`を検証し、条件を満たす一覧だけを採用する。取得失敗、形式不正、空一覧、またはAPIが利用できない場合は静的フォールバック一覧を使う。
 
-APIから返されたIDは静的表に存在しなくても捨てない。未知モデルにはAPIから得た表示名・コンテキスト長を優先し、残りに次の既定値を適用して表示する。次回の能力表更新で精度を改善する。
+APIの`name`と`context_length`は表示名・入力上限へ利用するが、API形式と能力判定は静的能力表を唯一の真実とする。静的表にないIDはモデルピッカーに表示できるが、選択不可として扱い、チャット要求を送信しない。未知モデルには能力を過大申告せず、次の値を適用する。
 
 - 表示名: APIの`name`、なければモデルID
 - コンテキスト長: APIの`context_length`、なければ262,144
 - 最大出力: 65,536
-- ツール呼び出し: 有効
+- ツール呼び出し: 無効
 - 画像入力: 無効
 - 推論設定: なし
-- API形式: `claude-`で始まるIDはAnthropic、それ以外はOpenAI
+- API形式: 未設定（送信不可）
+- `isUserSelectable`: `false`
 
-画像入力を誤って送ることを優先的に避けるため、未知モデルの画像対応は無効にする。API形式については、公式仕様の「ClaudeをChat Completionsへ送ると400、非AnthropicモデルをMessagesへ送ると400」という制約に基づき、Claude系IDだけをAnthropicへ振り分ける。
+静的表に存在するIDだけを、公式カタログのAPI形式・画像・ツール・推論能力で有効化する。これにより、将来の未知モデルを誤ったendpointへ黙って送らない。
 
 ### 5.2 静的能力表
 
@@ -125,7 +126,7 @@ VS Codeのテキスト、画像、assistantのツール呼び出し、tool結果
 Claude系モデルには次を送る。
 
 - URL: `https://api.commandcode.ai/provider/v1/messages`
-- `x-api-key: <API key>`
+- `Authorization: Bearer <API key>`
 - `anthropic-version: 2023-06-01`
 - `Content-Type: application/json`
 - `model`, `messages`, `stream: true`, `max_tokens`
@@ -135,7 +136,9 @@ systemメッセージはAnthropicの`system`フィールドへ分離し、連続
 
 ### 6.3 推論と再試行
 
-静的能力表にeffortがあるモデルだけモデル設定に推論選択肢を表示する。指定値がそのモデルで使えない場合は、リクエストから除外して既定動作に戻す。ストリームが推論だけで終了した場合、空応答、途中停止、出力上限終了、ツール呼び出しを宣言しただけで終了した場合は、既存実装の上限付きサイレント再試行を再利用する。
+静的能力表にCommand Code Provider APIで確認済みの`reasoning_effort`があるモデルだけ、モデル設定にeffort選択肢を表示する。これは初版ではOpenAI形式のモデルに限定する。Claude系の推論は自動動作として扱い、Provider APIがAnthropic向けのeffort指定を文書化するまで、未確認の`reasoning_effort`や`thinking`フィールドを送らない。OpenAIの`reasoning_content`とAnthropicの`thinking_delta`が返った場合は、どちらもVS Codeの推論出力へ変換する。
+
+指定値がそのモデルで使えない場合は、リクエストから除外して既定動作に戻す。ストリームが推論だけで終了した場合、空応答、途中停止、出力上限終了、ツール呼び出しを宣言しただけで終了した場合は、既存実装の上限付きサイレント再試行を再利用する。
 
 再試行は会話へ「Retrying」の文字列を出力しない。出力されたツール呼び出しを重複させないため、試行間で発行済みcall IDを保持する。
 
@@ -180,24 +183,28 @@ HTTPクライアントは既存の再試行方針を再利用する。エラー�
 秘密鍵を使わないモックテストを必須とする。
 
 1. APIクライアント
-   - URL、認証ヘッダー、ZDRヘッダー
+   - URL、Bearer認証、`anthropic-version`、ZDRヘッダー
    - OpenAI/Anthropicのbody
-   - モデル一覧の成功・失敗・不正形式
+   - モデル一覧の`object: "list"`、空一覧、非空ID・name・正のcontext_lengthの厳密検証
+   - API名/context_lengthと静的能力表のマージ優先順位
    - 標準エンベロープと`success: false`エンベロープのHTTPエラー、Retry-After、再試行、タイムアウト
 2. 変換
    - テキスト、画像、system、tool call、tool result
    - 連続roleの統合
    - reasoning effortと固定サンプリング値
+   - 大文字・スラッシュを含むモデルIDの保持
 3. ストリーミング
-   - SSEチャンク境界
-   - OpenAIのテキスト・推論・tool call
-   - Anthropicのcontent block・partial JSON・usage
+   - SSEチャンク境界、途中切断、再利用可能なキャンセル
+   - OpenAIのテキスト・推論・複数tool call・断片引数・末尾usage
+   - Anthropicのcontent block・thinking_delta・partial JSON・tool_result・usage
    - 空応答、推論のみ、途中停止、切り詰め、重複ツール呼び出し
 4. provider
-   - VS Codeへの登録
-   - 静的能力表と動的一覧のマージ
+   - VS Codeへの登録、`onDidChangeLanguageModelChatInformation`、`provideTokenCount`
+   - Claude/非Claudeのrouting matrix
+   - 静的能力表と動的一覧のマージ、未知モデルの選択不可
    - フォールバック一覧
-   - APIキー管理とキャンセル
+   - APIキー管理、画像対応/拒否、reasoning effort、キャンセル
+   - ツール呼び出しから次ターンのtool resultまでの往復
 5. パッケージ
    - `bun run compile`
    - `bun run lint`
@@ -209,12 +216,14 @@ HTTPクライアントは既存の再試行方針を再利用する。エラー�
 ## 10. 初版の受け入れ条件
 
 - VS Code 1.104以上で拡張が起動し、`commandcode-goat` providerが登録される
-- APIキーなしでも動的モデル一覧を取得でき、取得失敗時はフォールバックのGOATモデル一覧が表示される
+- APIキーなしでも動的モデル一覧を取得でき、取得失敗・空一覧時はフォールバックのGOATモデル一覧が表示される
+- API一覧の`name`・`context_length`が静的能力表と正しくマージされる
+- 静的表にない未知モデルは表示できるが選択不可で、APIへ送信されない
 - APIキー設定後にチャット要求を送信できる
-- OpenAI形式とAnthropic形式の双方でストリーミング応答を表示できる
-- 少なくとも1つの対応モデルでネイティブツール呼び出しをVS Codeへ返せる
-- 対応モデルで画像入力を送信でき、非対応モデルでは明示的に拒否できる
-- 静的表に推論effortがあるモデルでモデル設定を表示できる
+- OpenAI形式とAnthropic形式の双方で、正しいURL・認証・bodyによるストリーミング応答を表示できる
+- 少なくとも1つのOpenAI形式モデルと1つのAnthropic形式モデルで、複数・断片化されたネイティブツール呼び出しをVS Codeへ返し、次ターンのtool resultを再送できる
+- 対応モデルで画像入力を送信でき、非対応・未知モデルでは明示的に拒否できる
+- OpenAI形式で静的表に推論effortがあるモデルのモデル設定を表示し、reasoning deltaを推論出力へ返せる。Claude系は自動推論を表示し、未確認のeffortフィールドを送信しない
 - キー、ZDR設定、キャンセル、429/5xx再試行がテストされている
 - VSIXをローカル生成できる
 - GOATの利用量ステータスバーを実装していないことと、その理由がREADMEに明記されている
@@ -237,6 +246,7 @@ HTTPクライアントは既存の再試行方針を再利用する。エラー�
 - [Command Code Usage Limits](https://commandcode.ai/docs/resources/usage-limits)
 - [OpenCode Go Provider](https://github.com/hidenobunagai/opencode-go-provider)
 - [Pi Command Code Provider](https://github.com/patlux/pi-commandcode-provider)
+- [Pi Command Code model catalog](https://github.com/patlux/pi-commandcode-provider/blob/main/src/commandcode-catalog.ts)
 - [DeepSeek Harness Command Code Provider](https://github.com/Mars-Sea/dsh-commandcode-provider)
 
 既存コードを移植する場合は、元実装のMITライセンスと著作権表示を保持し、派生実装であることを`NOTICE`へ記録する。
