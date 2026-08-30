@@ -6,3 +6,19 @@ export class LanguageModelToolCallPart {
 export class LanguageModelToolResultPart {
   constructor(public callId: string, public content: unknown[]) {}
 }
+export class CancellationError extends Error {
+  constructor() {
+    super("Canceled");
+    this.name = "CancellationError";
+  }
+}
+export class CancellationTokenSource {
+  token = {
+    isCancellationRequested: false,
+    onCancellationRequested: jest.fn(),
+  };
+  cancel() {
+    this.token.isCancellationRequested = true;
+  }
+  dispose() {}
+}

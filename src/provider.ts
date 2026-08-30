@@ -23,7 +23,6 @@ import { extractImageData, getTextPartValue } from "./message-parts";
 import { debugLog } from "./output-channel";
 import { handleAnthropicRequest } from "./streaming/anthropic";
 import { processOpenAIStream, type OpenAIModelInfo } from "./streaming/openai";
-import { handleResponsesRequest } from "./streaming/responses";
 import { estimateMessagesTokens, estimateTokens } from "./tokenizer";
 import {
   FALLBACK_MODELS,
@@ -308,9 +307,6 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
       if (info.apiFormat === "anthropic") {
         tooltipParts.push("API: Anthropic format");
       }
-      if (info.apiFormat === "responses") {
-        tooltipParts.push("API: Responses format");
-      }
 
       return {
         id: info.id,
@@ -528,24 +524,6 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
           progress,
           token,
           abortController,
-        });
-        return;
-      }
-
-      if (apiFormat === "responses") {
-        await handleResponsesRequest({
-          modelId: effectiveModelId,
-          messages: effectiveMessages,
-          options,
-          apiKey,
-          requestedMaxTokens: effectiveMaxTokens,
-          temperatureVal,
-          userAgent: this.userAgent,
-          fallbackModels: FALLBACK_MODELS,
-          progress,
-          token,
-          abortController,
-          reasoningEffort,
         });
         return;
       }

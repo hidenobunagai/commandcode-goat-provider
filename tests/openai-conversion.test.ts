@@ -15,6 +15,19 @@ describe("convertMessages", () => {
     expect(result).toEqual<OcGoChatMessage[]>([{ role: "user", content: "Hello" }]);
   });
 
+  it("converts Japanese user text message", () => {
+    const messages = [
+      {
+        role: vscode.LanguageModelChatMessageRole.User,
+        content: [new vscode.LanguageModelTextPart("こんにちは、プロジェクトの構成を教えてください。")],
+      },
+    ];
+    const result = convertMessages(messages as any);
+    expect(result).toEqual<OcGoChatMessage[]>([
+      { role: "user", content: "こんにちは、プロジェクトの構成を教えてください。" },
+    ]);
+  });
+
   it("converts assistant text message", () => {
     const messages = [
       {
@@ -43,7 +56,7 @@ describe("convertMessages", () => {
     expect(result).toEqual<OcGoChatMessage[]>([{ role: "user", content: "" }]);
   });
 
-  it("converts image parts to base64", () => {
+  it("converts image parts to base64 data url", () => {
     const imageData = new Uint8Array([1, 2, 3]);
     const messages = [
       {
@@ -56,7 +69,7 @@ describe("convertMessages", () => {
     expect(result[0].role).toBe("user");
     const content = result[0].content as Array<{ type: string; image_url?: { url: string } }>;
     expect(content[0].type).toBe("image_url");
-    expect(content[0].image_url?.url).toMatch(/^data:image\/png;base64,/);
+    expect(content[0].image_url?.url).toBe("data:image/png;base64,AQID");
   });
 
   it("extracts reasoning content from details block", () => {
@@ -400,6 +413,13 @@ describe("applyReasoningContentWorkaround", () => {
     expect(result[0].reasoning_content).toBe(" ");
   });
 
+  it("adds reasoning_content for namespaced moonshotai/Kimi-K2.6", () => {
+    const { applyReasoningContentWorkaround } = require("../src/openai-conversion");
+    const messages: OcGoChatMessage[] = [{ role: "assistant", content: "Hello" }];
+    const result = applyReasoningContentWorkaround(messages, "moonshotai/Kimi-K2.6");
+    expect(result[0].reasoning_content).toBe(" ");
+  });
+
   it("adds reasoning_content for DeepSeek V4 Pro", () => {
     const { applyReasoningContentWorkaround } = require("../src/openai-conversion");
     const messages: OcGoChatMessage[] = [{ role: "assistant", content: "Hello" }];
@@ -407,10 +427,17 @@ describe("applyReasoningContentWorkaround", () => {
     expect(result[0].reasoning_content).toBe(" ");
   });
 
+  it("adds reasoning_content for namespaced deepseek/deepseek-v4-pro", () => {
+    const { applyReasoningContentWorkaround } = require("../src/openai-conversion");
+    const messages: OcGoChatMessage[] = [{ role: "assistant", content: "Hello" }];
+    const result = applyReasoningContentWorkaround(messages, "deepseek/deepseek-v4-pro");
+    expect(result[0].reasoning_content).toBe(" ");
+  });
+
   it("does not add reasoning_content for other models", () => {
     const { applyReasoningContentWorkaround } = require("../src/openai-conversion");
     const messages: OcGoChatMessage[] = [{ role: "assistant", content: "Hello" }];
-    const result = applyReasoningContentWorkaround(messages, "glm-5");
+    const result = applyReasoningContentWorkaround(messages, "zai-org/GLM-5.1");
     expect(result[0].reasoning_content).toBeUndefined();
   });
 
@@ -419,7 +446,7 @@ describe("applyReasoningContentWorkaround", () => {
     const messages: OcGoChatMessage[] = [
       { role: "assistant", content: "Hello", reasoning_content: "existing" },
     ];
-    const result = applyReasoningContentWorkaround(messages, "kimi-k2.6");
+    const result = applyReasoningContentWorkaround(messages, "moonshotai/Kimi-K2.6");
     expect(result[0].reasoning_content).toBe("existing");
   });
 });

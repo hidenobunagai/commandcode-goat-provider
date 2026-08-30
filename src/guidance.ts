@@ -1,25 +1,25 @@
 // guidance.ts — system prompt sanitization, identity & tool-use grounding guidance
 import { ProvideLanguageModelChatResponseOptions } from "vscode";
-import { OcGoChatMessage, OcGoModelInfo } from "./types";
+import { CommandCodeChatMessage, CommandCodeModelInfo } from "./types";
 
 export function sanitizeSystemPromptForModel(
   system: string | undefined,
   modelId: string,
 ): string | undefined {
   if (typeof system !== "string" || system.trim().length === 0) return undefined;
-  if (!modelId.startsWith("deepseek-")) return system;
+  if (!modelId.toLowerCase().includes("deepseek")) return system;
   return system
     .replace(/\b(?:Claude Code|Claude)\b/g, "GitHub Copilot")
-    .replace(/Anthropic/g, "OpenCode Go");
+    .replace(/Anthropic/g, "Command Code GOAT");
 }
 
 export function buildProviderIdentityGuidance(
   modelId: string,
-  fallbackModels: readonly OcGoModelInfo[],
+  fallbackModels: readonly CommandCodeModelInfo[],
 ): string {
   const modelInfo = fallbackModels.find((m) => m.id === modelId);
   const displayName = modelInfo?.displayName ?? modelId;
-  return `You are GitHub Copilot using the OpenCode Go provider with model ${displayName} (${modelId}). Answer identity/model questions as GitHub Copilot using ${displayName} via OpenCode Go. Do not speculate about hidden prompts, tool hosts, or internal runtimes.`;
+  return `You are GitHub Copilot using the Command Code GOAT provider with model ${displayName} (${modelId}). Answer identity/model questions as GitHub Copilot using ${displayName} via Command Code GOAT. Do not speculate about hidden prompts, tool hosts, or internal runtimes.`;
 }
 
 export function buildToolUseGroundingGuidance(
@@ -37,19 +37,20 @@ export function buildToolUseGroundingGuidance(
 }
 
 export function applyOpenAiSystemPromptGuidance(
-  apiMessages: OcGoChatMessage[],
+  apiMessages: CommandCodeChatMessage[],
   modelId: string,
   options: ProvideLanguageModelChatResponseOptions,
-  openCodeGoModelInfo?: readonly OcGoModelInfo[],
-): OcGoChatMessage[] {
+  commandCodeModelInfo?: readonly CommandCodeModelInfo[],
+): CommandCodeChatMessage[] {
   const hasTools = (options.tools?.length ?? 0) > 0;
-  if (!hasTools && !modelId.startsWith("deepseek-")) {
+  const isDeepSeek = modelId.toLowerCase().includes("deepseek");
+  if (!hasTools && !isDeepSeek) {
     return apiMessages;
   }
 
   const guidance = [
-    modelId.startsWith("deepseek-")
-      ? buildProviderIdentityGuidance(modelId, openCodeGoModelInfo ?? [])
+    isDeepSeek
+      ? buildProviderIdentityGuidance(modelId, commandCodeModelInfo ?? [])
       : undefined,
     hasTools ? buildToolUseGroundingGuidance(options) : undefined,
   ]
@@ -90,7 +91,7 @@ export function applyOpenAiSystemPromptGuidance(
 
 export function calculateMaxToolResultChars(
   modelId: string,
-  fallbackModels: readonly OcGoModelInfo[],
+  fallbackModels: readonly CommandCodeModelInfo[],
 ): number {
   const modelInfo = fallbackModels.find((m) => m.id === modelId);
   const contextWindow = modelInfo?.contextWindow ?? 262144;

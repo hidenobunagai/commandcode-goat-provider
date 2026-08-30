@@ -5,9 +5,9 @@ import {
   calculateMaxToolResultChars,
   sanitizeSystemPromptForModel,
 } from "../src/guidance";
-import { OcGoChatMessage, OcGoModelInfo } from "../src/types";
+import { CommandCodeChatMessage, CommandCodeModelInfo } from "../src/types";
 
-const MOCK_MODELS: OcGoModelInfo[] = [
+const MOCK_MODELS: CommandCodeModelInfo[] = [
   {
     id: "glm-5",
     name: "GLM-5",
@@ -16,6 +16,9 @@ const MOCK_MODELS: OcGoModelInfo[] = [
     maxOutput: 131072,
     supportsTools: true,
     supportsVision: false,
+    supportsThinking: false,
+    apiFormat: "openai",
+    isUserSelectable: true,
   },
   {
     id: "deepseek-v4-pro",
@@ -26,6 +29,8 @@ const MOCK_MODELS: OcGoModelInfo[] = [
     supportsTools: true,
     supportsVision: false,
     supportsThinking: true,
+    apiFormat: "openai",
+    isUserSelectable: true,
   },
   {
     id: "minimax-m3",
@@ -35,6 +40,9 @@ const MOCK_MODELS: OcGoModelInfo[] = [
     maxOutput: 131072,
     supportsTools: true,
     supportsVision: false,
+    supportsThinking: false,
+    apiFormat: "openai",
+    isUserSelectable: true,
   },
 ];
 
@@ -70,34 +78,34 @@ describe("sanitizeSystemPromptForModel", () => {
     expect(result).not.toContain("Claude Code");
   });
 
-  it('replaces Anthropic with "OpenCode Go"', () => {
+  it('replaces Anthropic with "Command Code GOAT"', () => {
     const prompt = "You are a model from Anthropic.";
     const result = sanitizeSystemPromptForModel(prompt, "deepseek-v4-pro");
-    expect(result).toContain("OpenCode Go");
+    expect(result).toContain("Command Code GOAT");
     expect(result).not.toContain("Anthropic");
   });
 
   it("handles multiple replacements in the same prompt", () => {
     const prompt =
       "You are Claude, the latest Claude Code model from Anthropic. Claude uses tools.";
-    const result = sanitizeSystemPromptForModel(prompt, "deepseek-v4-flash");
+    const result = sanitizeSystemPromptForModel(prompt, "deepseek/deepseek-v4-flash");
     expect(result).toBe(
-      "You are GitHub Copilot, the latest GitHub Copilot model from OpenCode Go. GitHub Copilot uses tools.",
+      "You are GitHub Copilot, the latest GitHub Copilot model from Command Code GOAT. GitHub Copilot uses tools.",
     );
   });
 });
 
 describe("buildProviderIdentityGuidance", () => {
   it("includes model display name when found", () => {
-    const result = buildProviderIdentityGuidance("deepseek-v4-pro", MOCK_MODELS);
+    const result = buildProviderIdentityGuidance("deepseek-v4-pro", MOCK_MODELS as any);
     expect(result).toContain("DeepSeek V4 Pro");
     expect(result).toContain("deepseek-v4-pro");
     expect(result).toContain("GitHub Copilot");
-    expect(result).toContain("OpenCode Go");
+    expect(result).toContain("Command Code GOAT");
   });
 
   it("falls back to modelId when model not in list", () => {
-    const result = buildProviderIdentityGuidance("unknown-model", MOCK_MODELS);
+    const result = buildProviderIdentityGuidance("unknown-model", MOCK_MODELS as any);
     expect(result).toContain("unknown-model");
     expect(result).not.toContain("undefined");
   });
@@ -125,7 +133,7 @@ describe("buildToolUseGroundingGuidance", () => {
 
 describe("applyOpenAiSystemPromptGuidance", () => {
   it("returns messages unchanged for non-deepseek model without tools", () => {
-    const messages: OcGoChatMessage[] = [
+    const messages: CommandCodeChatMessage[] = [
       { role: "system", content: "You are helpful." },
       { role: "user", content: "Hello" },
     ];
@@ -135,7 +143,7 @@ describe("applyOpenAiSystemPromptGuidance", () => {
   });
 
   it("appends identity guidance for deepseek model", () => {
-    const messages: OcGoChatMessage[] = [
+    const messages: CommandCodeChatMessage[] = [
       { role: "system", content: "You are helpful." },
       { role: "user", content: "Hello" },
     ];
@@ -153,7 +161,7 @@ describe("applyOpenAiSystemPromptGuidance", () => {
   });
 
   it("appends tool guidance when tools are present", () => {
-    const messages: OcGoChatMessage[] = [
+    const messages: CommandCodeChatMessage[] = [
       { role: "system", content: "You are helpful." },
       { role: "user", content: "Hello" },
     ];
@@ -163,7 +171,7 @@ describe("applyOpenAiSystemPromptGuidance", () => {
   });
 
   it("prepends system message when none exists and guidance is needed", () => {
-    const messages: OcGoChatMessage[] = [{ role: "user", content: "Hello" }];
+    const messages: CommandCodeChatMessage[] = [{ role: "user", content: "Hello" }];
     const options = {} as any;
     const result = applyOpenAiSystemPromptGuidance(
       messages,

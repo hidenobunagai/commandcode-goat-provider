@@ -122,11 +122,7 @@ export interface CommandCodeModelInfo {
   isUserSelectable: boolean;
 }
 
-export type OcGoModelInfo = Omit<CommandCodeModelInfo, "apiFormat" | "supportsThinking" | "isUserSelectable"> & {
-  apiFormat?: CommandCodeApiFormat | "responses";
-  supportsThinking?: boolean;
-  isUserSelectable?: boolean;
-};
+export type OcGoModelInfo = CommandCodeModelInfo;
 export { FALLBACK_MODELS, inferModelInfo, REASONING_EFFORT_ORDER } from "./constants";
 
 // ============================================================================

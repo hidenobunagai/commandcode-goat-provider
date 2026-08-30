@@ -12,8 +12,7 @@ import {
 } from "../openai-conversion";
 import { captureLog, debugLog } from "../output-channel";
 import { extractChatRequestContext, getToolSchemaMap } from "../tool-repair";
-import type { OcGoModelInfo } from "../types";
-import { OcGoChatRequest } from "../types";
+import type { CommandCodeModelInfo, OcGoChatRequest } from "../types";
 import {
   emitPendingToolCalls,
   getRetryReasoningEffort,
@@ -25,7 +24,7 @@ import {
 
 export interface OpenAIModelInfo {
   id: string;
-  modelInfo?: OcGoModelInfo;
+  modelInfo?: CommandCodeModelInfo;
   maxOutputTokens: number;
 }
 
@@ -37,19 +36,20 @@ export async function processOpenAIStream(
   requestedMaxTokens: number,
   temperatureVal: number | undefined,
   topPVal: number | undefined,
-  openCodeGoModelInfo: readonly OcGoModelInfo[],
+  commandCodeModelInfo: readonly CommandCodeModelInfo[],
   userAgent: string,
   progress: vscode.Progress<vscode.LanguageModelResponsePart>,
   token: vscode.CancellationToken,
   abortController: AbortController,
   reasoningEffort?: string,
+  enableZdr?: boolean,
 ): Promise<void> {
   const toolSchemas = getToolSchemaMap(options);
   const requestContext = extractChatRequestContext(
     apiMessages as readonly vscode.LanguageModelChatMessage[],
   );
 
-  const maxToolResultChars = calculateMaxToolResultChars(model.id, openCodeGoModelInfo);
+  const maxToolResultChars = calculateMaxToolResultChars(model.id, commandCodeModelInfo);
 
   let convertedMessages = convertMessages(apiMessages, { maxToolResultChars });
   convertedMessages = applyReasoningContentWorkaround(convertedMessages, model.id);
@@ -57,7 +57,7 @@ export async function processOpenAIStream(
     convertedMessages,
     model.id,
     options,
-    openCodeGoModelInfo,
+    commandCodeModelInfo,
   );
 
   const toolConfig = convertTools(options);
@@ -147,7 +147,7 @@ export async function processOpenAIStream(
     if (toolConfig.tool_choice) requestBody.tool_choice = toolConfig.tool_choice;
     if (attemptReasoningEffort) requestBody.reasoning_effort = attemptReasoningEffort;
 
-    if (process.env.OPENCODE_GO_DEBUG === "1" && attempt === 0) {
+    if (process.env.COMMANDCODE_GOAT_DEBUG === "1" && attempt === 0) {
       debugLog("Outgoing request messages", {
         messages: requestBody.messages,
         tools: requestBody.tools,
@@ -171,6 +171,7 @@ export async function processOpenAIStream(
         requestBody,
         abortController.signal,
         userAgent,
+        enableZdr,
       )) {
         if (token.isCancellationRequested) throw new vscode.CancellationError();
 
