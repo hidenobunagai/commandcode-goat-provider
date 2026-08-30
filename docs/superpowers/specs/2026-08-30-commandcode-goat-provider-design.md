@@ -25,7 +25,7 @@ summary: Command Code GOATのProvider APIをVS Code Copilot Chatから利用す�
 - `POST https://api.commandcode.ai/provider/v1/messages` — Anthropic Messages
 - `GET https://api.commandcode.ai/provider/v1/models` — モデル一覧
 
-両方のチャットエンドポイントは `stream: true` によるストリーミングに対応し、ストリーム末尾に使用トークンを返す。認証はBearerトークン、またはAnthropicエンドポイントでは `x-api-key` を使う。`x-cmd-zdr: 1` によるZero Data Retention指定も公式仕様に含まれる。
+両方のチャットエンドポイントは `stream: true` によるストリーミングに対応し、ストリーム末尾に使用トークンを返す。認証はBearerトークン、またはAnthropicエンドポイントでは `x-api-key` を使う。`x-cmd-zdr: 1` によるZero Data Retention指定も公式仕様に含まれる。未認証の実レスポンスは標準エラー形式以外に`{ success: false, error: { code, status, message, docs } }`形式になる場合も確認したため、クライアントは両形式を正規化する。
 
 GOATの公式ページにはモデル一覧、モデルごとのコンテキスト長・推論・画像対応・料金情報が掲載されている。Provider APIのモデル一覧は認証なしでも取得でき、ID・表示名・コンテキスト長を返すが、推論・画像・ツール対応などの能力メタデータは保証しない。そのため、API一覧と公式カタログ由来の静的能力表を組み合わせる。
 
@@ -157,7 +157,7 @@ ZDRは`commandcode-goat.enableZdr`というBoolean設定で提供し、既定値
 
 ## 8. エラーとネットワーク
 
-HTTPクライアントは既存の再試行方針を再利用する。
+HTTPクライアントは既存の再試行方針を再利用する。エラー本文はOpenAI/Anthropicの標準エンベロープに加え、Command Codeが返す`success: false`配下の`error.code`・`error.message`も読み取り、利用者向けの一貫したエラーへ正規化する。
 
 - 再試行: `429`, `502`, `503`, `504`と一時的なネットワーク失敗
 - `Retry-After`があれば尊重
@@ -183,7 +183,7 @@ HTTPクライアントは既存の再試行方針を再利用する。
    - URL、認証ヘッダー、ZDRヘッダー
    - OpenAI/Anthropicのbody
    - モデル一覧の成功・失敗・不正形式
-   - HTTPエラー、Retry-After、再試行、タイムアウト
+   - 標準エンベロープと`success: false`エンベロープのHTTPエラー、Retry-After、再試行、タイムアウト
 2. 変換
    - テキスト、画像、system、tool call、tool result
    - 連続roleの統合
