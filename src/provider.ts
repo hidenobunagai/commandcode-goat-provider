@@ -281,7 +281,7 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
     models: Array<{ id: string; name: string }>,
   ): LanguageModelChatInformation[] {
     return models.map((model) => {
-      const info = this._modelMap.get(model.id) ?? {
+      const info: OcGoModelInfo = this._modelMap.get(model.id) ?? {
         id: model.id,
         name: model.name,
         displayName: model.name,
@@ -289,6 +289,8 @@ export class OcGoChatModelProvider implements LanguageModelChatProvider {
         maxOutput: 65536,
         supportsTools: true,
         supportsVision: false,
+        supportsThinking: false,
+        isUserSelectable: true,
       };
 
       const tooltipParts: string[] = [`OpenCode Go — ${info.name}`];
