@@ -3,7 +3,7 @@
   "publisher": "HidenobuNagai",
   "displayName": "Command Code GOAT Provider",
   "description": "Command Code GOAT Chat Provider for VS Code Copilot Chat",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -70,7 +70,7 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "bun run compile",
+    "vscode:prepublish": "npm run compile",
     "compile": "rm -rf out && tsc -p ./",
     "watch": "tsc -w -p ./",
     "test": "jest",

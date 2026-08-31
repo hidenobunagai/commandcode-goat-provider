@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.2] - 2026-08-31
+
+### Added
+
+- Add `deepseek/deepseek-v4-flash-fast` (DeepSeek V4 Flash Fast): low-latency V4 Flash deployment, 1M context, OpenAI protocol, OpenAI reasoning efforts `high`/`max`, text-only. Available on Go plan and above (per [Command Code model page](https://commandcode.ai/models/deepseek-v4-flash-fast)).
+
 ## [0.1.1] - 2026-08-30
 
 ### Fixed

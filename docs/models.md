@@ -20,6 +20,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `xai/grok-4.6` | Grok 4.6 | 500K | 65,536 | OpenAI | low, medium, high, xhigh | Yes |
 | `deepseek/deepseek-v4-pro` | DeepSeek V4 Pro | 1M | 65,536 | OpenAI | high, max | No |
 | `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash | 1M | 65,536 | OpenAI | high, max | No |
+| `deepseek/deepseek-v4-flash-fast` | DeepSeek V4 Flash Fast | 1M | 65,536 | OpenAI | high, max | No |
 | `moonshotai/Kimi-K3` | Kimi K3 | 1M | 65,536 | OpenAI | - | Yes |
 | `moonshotai/Kimi-K2.7-Code` | Kimi K2.7 Code | 256K | 65,536 | OpenAI | - | Yes |
 | `Qwen/Qwen3.8-Max` | Qwen 3.8 Max | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |

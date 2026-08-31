@@ -48,6 +48,7 @@ const REASONING_CONTENT_WORKAROUND_STATIC_SET = new Set([
   "deepseek/deepseek-v4-pro",
   "deepseek/deepseek-v4-flash",
   "deepseek/deepseek-v4-flash-vision-exp",
+  "deepseek/deepseek-v4-flash-fast",
   "ox-alpha-free",
 ]);
 
@@ -106,6 +107,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["xai/grok-4.6", "Grok 4.6", 500000],
   ["deepseek/deepseek-v4-pro", "DeepSeek V4 Pro", 1000000],
   ["deepseek/deepseek-v4-flash", "DeepSeek V4 Flash", 1000000],
+  ["deepseek/deepseek-v4-flash-fast", "DeepSeek V4 Flash Fast", 1000000],
   ["moonshotai/Kimi-K3", "Kimi K3", 1000000],
   ["moonshotai/Kimi-K2.7-Code", "Kimi K2.7 Code", 256000],
   ["Qwen/Qwen3.8-Max", "Qwen 3.8 Max", 1000000],
@@ -220,6 +222,7 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["xai/grok-4.6", ["low", "medium", "high", "xhigh"]],
   ["deepseek/deepseek-v4-pro", ["high", "max"]],
   ["deepseek/deepseek-v4-flash", ["high", "max"]],
+  ["deepseek/deepseek-v4-flash-fast", ["high", "max"]],
   ["Qwen/Qwen3.8-Max", ["low", "medium", "xhigh"]],
   ["Qwen/Qwen3.8-Flash", ["low", "medium", "xhigh"]],
   ["Qwen/Qwen3.8-27B", ["low", "medium", "xhigh"]],
@@ -252,6 +255,7 @@ const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["xai/grok-4.6", "openai"],
   ["deepseek/deepseek-v4-pro", "openai"],
   ["deepseek/deepseek-v4-flash", "openai"],
+  ["deepseek/deepseek-v4-flash-fast", "openai"],
   ["moonshotai/Kimi-K3", "openai"],
   ["moonshotai/Kimi-K2.7-Code", "openai"],
   ["Qwen/Qwen3.8-Max", "openai"],

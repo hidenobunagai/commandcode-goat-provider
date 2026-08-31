@@ -63,7 +63,7 @@ The provider dynamically discovers available models from `GET https://api.comman
 | Model Family | Examples | Wire Protocol | Thinking / Reasoning | Vision |
 |---|---|---|---|---|
 | **Anthropic Claude** | `claude-sonnet-5`, `claude-sonnet-4-6`, `claude-opus-5`, `claude-haiku-4-5-20251001` | Anthropic `/messages` | Automatic | Supported |
-| **DeepSeek** | `deepseek/deepseek-v4-pro`, `deepseek/deepseek-v4-flash`, `deepseek/deepseek-v4-flash-vision-exp` | OpenAI `/chat/completions` | Configurable effort | Supported on Vision |
+| **DeepSeek** | `deepseek/deepseek-v4-pro`, `deepseek/deepseek-v4-flash`, `deepseek/deepseek-v4-flash-fast`, `deepseek/deepseek-v4-flash-vision-exp` | OpenAI `/chat/completions` | Configurable effort | Supported on Vision |
 | **Moonshot Kimi** | `moonshotai/Kimi-K3`, `moonshotai/Kimi-K2.7-Code`, `moonshotai/Kimi-K2.6` | OpenAI `/chat/completions` | Configurable effort | Supported |
 | **Zhipu GLM** | `z-ai/glm-5.3-flash`, `zai-org/GLM-5.3`, `zai-org/GLM-5.2` | OpenAI `/chat/completions` | Configurable effort | Text & Tools |
 | **MiniMax** | `MiniMaxAI/MiniMax-M3`, `MiniMaxAI/MiniMax-M2.7`, `MiniMaxAI/MiniMax-M2.5` | OpenAI `/chat/completions` | Provider default | Supported (M3) |

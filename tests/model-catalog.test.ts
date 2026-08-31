@@ -24,6 +24,23 @@ test("maps a known namespaced model without changing its case", () => {
   expect(info.supportsVision).toBe(true);
 });
 
+test("includes DeepSeek V4 Flash Fast as a selectable OpenAI model with reasoning", () => {
+  const info = inferModelInfo({
+    id: "deepseek/deepseek-v4-flash-fast",
+    name: "DeepSeek V4 Flash Fast",
+    context_length: 1_000_000,
+  });
+
+  expect(info.id).toBe("deepseek/deepseek-v4-flash-fast");
+  expect(info.displayName).toBe("DeepSeek V4 Flash Fast");
+  expect(info.apiFormat).toBe("openai");
+  expect(info.contextWindow).toBe(1_000_000);
+  expect(info.supportsThinking).toBe(true);
+  expect(info.supportedReasoningEfforts).toEqual(["high", "max"]);
+  expect(info.supportsVision).toBe(false);
+  expect(info.isUserSelectable).toBe(true);
+});
+
 test("marks an unknown model display-only and disables capabilities", () => {
   const info = inferModelInfo({
     id: "new-provider/new-model",
@@ -49,6 +66,6 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(62);
+  expect(FALLBACK_MODELS.length).toBe(63);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
