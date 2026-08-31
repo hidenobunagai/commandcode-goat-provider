@@ -48,6 +48,14 @@ In VS Code Settings (`Ctrl+,` / `Cmd+,`), search for `Command Code GOAT`:
 
 ---
 
+## Architecture
+
+[![Command Code GOAT Provider Architecture](images/architecture.png)](https://hidenobunagai.github.io/commandcode-goat-provider/)
+
+> 🌐 **[View Interactive Architecture Diagram (GitHub Pages)](https://hidenobunagai.github.io/commandcode-goat-provider/)** — Explore guided flows, dual-protocol routing, and streaming tool repairs in an interactive SVG diagram.
+
+---
+
 ## Model Catalog & Protocols
 
 The provider dynamically discovers available models from `GET https://api.commandcode.ai/provider/v1/models` while maintaining static capability authority:

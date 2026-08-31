@@ -1,5 +1,9 @@
 # Architecture
 
+[![Command Code GOAT Provider Architecture](../images/architecture.png)](https://hidenobunagai.github.io/commandcode-goat-provider/)
+
+> 🌐 **[View Interactive Architecture Diagram (GitHub Pages)](https://hidenobunagai.github.io/commandcode-goat-provider/)**
+
 ## Overview
 
 The Command Code GOAT Provider is a VS Code extension that registers a custom `LanguageModelChatProvider` ("commandcode-goat") for Copilot Chat. It translates Copilot Chat's internal message format into Command Code's Anthropic-compatible or OpenAI-compatible requests, routes them to `https://api.commandcode.ai/provider/v1`, and streams responses back through VS Code's language model API.

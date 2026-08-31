@@ -1,0 +1,274 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Command Code GOAT Provider Architecture",
+    "output": "architecture.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/hidenobunagai/commandcode-goat-provider",
+      "revision": "27022592f9811131e7c709ec896b214d02ab232a"
+    },
+    "views": [
+      {
+        "id": "e2e-flow",
+        "label": "Primary Request Flow",
+        "focus": ["copilot", "provider", "router", "stream", "gateway", "models"],
+        "note": "Follow how Copilot Chat user requests are routed to Command Code and dispatched to 60+ models."
+      },
+      {
+        "id": "dual-protocol",
+        "label": "Dual Protocol Routing",
+        "focus": ["router", "anthropic", "openai", "stream"],
+        "note": "Claude models route to Anthropic Messages while all other models use OpenAI Chat Completions."
+      },
+      {
+        "id": "tool-resilience",
+        "label": "Streaming & Tool Repair",
+        "focus": ["stream", "tool_engine", "provider", "copilot"],
+        "note": "Real-time SSE token stream parsing, tool call chunk assembly, schema coercion, and nudge continuation."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "copilot",
+      "type": "frontend",
+      "label": "Copilot Chat",
+      "sublabel": "VS Code UI",
+      "pos": [40, 280],
+      "size": [130, 60]
+    },
+    {
+      "id": "provider",
+      "type": "security",
+      "label": "GOAT Provider",
+      "sublabel": "ChatModelProvider",
+      "tag": "SecretStorage",
+      "pos": [250, 280],
+      "size": [140, 60],
+      "sources": [
+        { "path": "src/provider.ts", "line": 1, "label": "Provider Core" }
+      ]
+    },
+    {
+      "id": "guidance",
+      "type": "backend",
+      "label": "Prompt Guidance",
+      "sublabel": "grounding & sanitize",
+      "pos": [250, 140],
+      "size": [140, 60],
+      "sources": [
+        { "path": "src/guidance.ts", "line": 1, "label": "Guidance Engine" }
+      ]
+    },
+    {
+      "id": "router",
+      "type": "backend",
+      "label": "Protocol Router",
+      "sublabel": "format selector",
+      "pos": [470, 280],
+      "size": [130, 60],
+      "sources": [
+        { "path": "src/provider.ts", "line": 1, "label": "Format Routing" }
+      ]
+    },
+    {
+      "id": "anthropic",
+      "type": "backend",
+      "label": "Anthropic Wire",
+      "sublabel": "POST /messages",
+      "brand": "anthropic",
+      "pos": [470, 140],
+      "size": [130, 60],
+      "sources": [
+        { "path": "src/anthropic-conversion.ts", "line": 1, "label": "Anthropic Converter" }
+      ]
+    },
+    {
+      "id": "openai",
+      "type": "backend",
+      "label": "OpenAI Wire",
+      "sublabel": "POST /completions",
+      "brand": "openai",
+      "pos": [470, 420],
+      "size": [130, 60],
+      "sources": [
+        { "path": "src/openai-conversion.ts", "line": 1, "label": "OpenAI Converter" }
+      ]
+    },
+    {
+      "id": "tool_engine",
+      "type": "backend",
+      "label": "Tool Call Engine",
+      "sublabel": "parser & auto-repair",
+      "pos": [250, 420],
+      "size": [140, 60],
+      "sources": [
+        { "path": "src/tool-parser.ts", "line": 1, "label": "Tool Parser" },
+        { "path": "src/tool-repair.ts", "line": 1, "label": "Tool Repair" }
+      ]
+    },
+    {
+      "id": "stream",
+      "type": "backend",
+      "label": "SSE Transport",
+      "sublabel": "HTTP client & retry",
+      "pos": [680, 280],
+      "size": [130, 60],
+      "sources": [
+        { "path": "src/api.ts", "line": 1, "label": "API Client" }
+      ]
+    },
+    {
+      "id": "gateway",
+      "type": "cloud",
+      "label": "Command Code",
+      "sublabel": "api.commandcode.ai",
+      "pos": [890, 280],
+      "size": [140, 60]
+    },
+    {
+      "id": "models",
+      "type": "external",
+      "label": "60+ AI Models",
+      "sublabel": "Claude, DeepSeek, Qwen...",
+      "pos": [1110, 280],
+      "size": [140, 60]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "VS Code Extension Client",
+      "wraps": ["copilot", "provider", "guidance", "router", "anthropic", "openai", "stream", "tool_engine"]
+    },
+    {
+      "kind": "region",
+      "label": "Command Code API & Models",
+      "wraps": ["gateway", "models"]
+    }
+  ],
+  "connections": [
+    {
+      "id": "copilot-to-provider",
+      "from": "copilot",
+      "to": "provider",
+      "label": "prompt"
+    },
+    {
+      "id": "provider-to-guidance",
+      "from": "provider",
+      "to": "guidance",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "label": "grounding",
+      "labelDy": -58
+    },
+    {
+      "id": "guidance-to-router",
+      "from": "guidance",
+      "to": "router",
+      "fromSide": "right",
+      "toSide": "top"
+    },
+    {
+      "id": "provider-to-router",
+      "from": "provider",
+      "to": "router"
+    },
+    {
+      "id": "router-to-anthropic",
+      "from": "router",
+      "to": "anthropic",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "label": "Claude",
+      "labelDy": -58
+    },
+    {
+      "id": "router-to-openai",
+      "from": "router",
+      "to": "openai",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "label": "OpenAI-compat",
+      "labelDy": 58
+    },
+    {
+      "id": "anthropic-to-stream",
+      "from": "anthropic",
+      "to": "stream",
+      "fromSide": "right",
+      "toSide": "top"
+    },
+    {
+      "id": "openai-to-stream",
+      "from": "openai",
+      "to": "stream",
+      "fromSide": "right",
+      "toSide": "bottom"
+    },
+    {
+      "id": "stream-to-gateway",
+      "from": "stream",
+      "to": "gateway",
+      "label": "HTTPS SSE (ZDR)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "gateway-to-models",
+      "from": "gateway",
+      "to": "models",
+      "label": "route"
+    },
+    {
+      "id": "stream-to-tool-engine",
+      "from": "stream",
+      "to": "tool_engine",
+      "fromSide": "bottom",
+      "toSide": "right",
+      "via": [[745, 520], [420, 520], [420, 450]],
+      "label": "SSE tokens",
+      "labelAt": [580, 506]
+    },
+    {
+      "id": "tool-engine-to-provider",
+      "from": "tool_engine",
+      "to": "provider",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "label": "yield parts",
+      "labelDy": -58
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Dual Wire Protocol",
+      "items": [
+        "Claude models automatically route to Anthropic Messages (/provider/v1/messages)",
+        "Open models route to OpenAI-compatible Chat Completions (/provider/v1/chat/completions)",
+        "Static catalog authority ensures strict capability enforcement and context limits"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Stream & Tool Engine",
+      "items": [
+        "Streaming scanner incrementally assembles fragmented JSON and XML tool calls",
+        "Heuristic repair auto-coerces argument types and deduplicates duplicate invocations",
+        "Nudge continuation recovers turns when models announce actions without tool payloads"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Security & Resilience",
+      "items": [
+        "API keys stored in VS Code SecretStorage — never logged or exported to files",
+        "Optional Zero Data Retention (ZDR) mode sends x-cmd-zdr: 1 header on all requests",
+        "Exponential backoff retry with full jitter on 429 rate limits and 5xx outages"
+      ]
+    }
+  ]
+}
