@@ -16,6 +16,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 |---|---|---|---|---|---|---|
 | `gpt-5.6-luna` | GPT-5.6 Luna | 1.05M | 65,536 | OpenAI | low, medium, high, xhigh, max | Yes |
 | `gpt-5.6-sol` | GPT-5.6 Sol | 1.05M | 65,536 | OpenAI | low, medium, high, xhigh, max | Yes |
+| `google/gemini-3.8-flash` | Gemini 3.8 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
 | `google/gemini-3.7-flash` | Gemini 3.7 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
 | `xai/grok-4.6` | Grok 4.6 | 500K | 65,536 | OpenAI | low, medium, high, xhigh | Yes |
 | `deepseek/deepseek-v4-pro` | DeepSeek V4 Pro | 1M | 65,536 | OpenAI | high, max | No |
@@ -24,13 +25,15 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `moonshotai/Kimi-K3` | Kimi K3 | 1M | 65,536 | OpenAI | - | Yes |
 | `moonshotai/Kimi-K2.7-Code` | Kimi K2.7 Code | 256K | 65,536 | OpenAI | - | Yes |
 | `Qwen/Qwen3.8-Max` | Qwen 3.8 Max | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |
+| `Qwen/Qwen3.8-Max-0902` | Qwen 3.8 Max 0902 | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |
 | `Qwen/Qwen3.8-Flash` | Qwen 3.8 Flash | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |
 | `Qwen/Qwen3.8-27B` | Qwen 3.8 27B | 262K | 65,536 | OpenAI | low, medium, xhigh | Yes |
 | `z-ai/glm-5.3-flash` | GLM-5.3 Flash | 1M | 65,536 | OpenAI | low, high, max | Yes |
 | `zai-org/GLM-5.3` | GLM-5.3 | 1M | 65,536 | OpenAI | low, high, max | No |
 | `MiniMaxAI/MiniMax-M3` | MiniMax M3 | 1M | 65,536 | OpenAI | - | Yes |
-| `minimax/minimax-m3-free` | MiniMax M3 (Free) | 1M | 65,536 | OpenAI | - | Yes |
 | `xai/grok-4.5` | Grok 4.5 | 500K | 65,536 | OpenAI | low, medium, high | Yes |
+| `meta/muse-spark-1.3` | Muse Spark 1.3 | 1M | 65,536 | OpenAI | - | Yes |
+| `meta/muse-spark-1.3-contributor` | Muse Spark 1.3 Contributor | 1M | 65,536 | OpenAI | - | Yes |
 | `meta/muse-spark-1.2` | Muse Spark 1.2 | 1M | 65,536 | OpenAI | - | Yes |
 | `meta/muse-spark-1.2-contributor` | Muse Spark 1.2 Contributor | 1M | 65,536 | OpenAI | - | Yes |
 | `stepfun/Step-3.7-Flash` | Step 3.7 Flash | 256K | 65,536 | OpenAI | - | Yes |
@@ -58,7 +61,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `MiniMaxAI/MiniMax-M2.7` | MiniMax M2.7 | 1M | 65,536 | OpenAI | - | Yes |
 | `deepseek/deepseek-v4-flash-vision-exp` | DeepSeek V4 Flash Vision Exp | 1M | 65,536 | OpenAI | high, max | Yes |
 | `poolside/laguna-s-2.1-free` | Laguna S 2.1 Free | 256K | 65,536 | OpenAI | - | No |
-| `minimax/minimax-m2.7-free` | MiniMax M2.7 Free | 1M | 65,536 | OpenAI | - | No |
+| `claude-fable-5-1` | Claude Fable 5.1 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
 | `claude-fable-5` | Claude Fable 5 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
 | `claude-opus-4-7` | Claude Opus 4.7 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
 | `google/gemini-3.1-flash-lite` | Gemini 3.1 Flash Lite | 1M | 65,536 | OpenAI | low, medium, high | Yes |
@@ -77,3 +80,4 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `gpt-5.5` | GPT-5.5 | 400K | 65,536 | OpenAI | low, medium, high, xhigh | Yes |
 | `google/gemini-3.6-flash` | Gemini 3.6 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
 | `sakana/fugu-ultra` | Fugu Ultra | 1M | 65,536 | OpenAI | high, xhigh | Yes |
+| `meituan/LongCat-2.0:free` | LongCat 2.0 | 1M | 65,536 | OpenAI | - | No |

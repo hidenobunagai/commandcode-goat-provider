@@ -133,6 +133,9 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
   }
 
   private resolveApiModelId(modelId: string): string {
+    // Exact registered ids (e.g. "meituan/LongCat-2.0:free") are real API ids, not
+    // IDE-appended variants — never strip their suffix.
+    if (this._modelMap.has(modelId)) return modelId;
     const colonIndex = modelId.indexOf(":");
     return colonIndex > 0 ? modelId.slice(0, colonIndex) : modelId;
   }

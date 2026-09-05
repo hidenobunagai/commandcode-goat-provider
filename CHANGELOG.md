@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.1.3] - 2026-09-05
+
+### Added
+
+- Sync catalog with live API (`GET /provider/v1/models`, 67 models): add `claude-fable-5-1`, `google/gemini-3.8-flash`, `meta/muse-spark-1.3` (+contributor), `Qwen/Qwen3.8-Max-0902`, `meituan/LongCat-2.0:free`. Previously they appeared as unknown models with all capabilities disabled.
+- Guard `resolveApiModelId` so registered ids containing `:` (e.g. `meituan/LongCat-2.0:free`) are sent verbatim instead of being truncated as IDE variant suffixes.
+
+### Removed
+
+- Drop `minimax/minimax-m2.7-free` and `minimax/minimax-m3-free` from the static catalog (no longer served by the API).
+
 ## [0.1.2] - 2026-08-31
 
 ### Added

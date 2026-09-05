@@ -58,7 +58,11 @@ const REASONING_CONTENT_WORKAROUND_STATIC_SET = new Set([
  * consume part of the output budget on reasoning, so they get the same
  * minimum output budget floor as workaround models.
  */
-const THINKING_MODEL_STATIC_SET = new Set(["gpt-5.6-luna", "meta/muse-spark-1.2-contributor"]);
+const THINKING_MODEL_STATIC_SET = new Set([
+  "gpt-5.6-luna",
+  "meta/muse-spark-1.2-contributor",
+  "meta/muse-spark-1.3-contributor",
+]);
 
 /** Models that require the reasoning_content workaround */
 export const REASONING_CONTENT_WORKAROUND_MODELS = {
@@ -103,6 +107,7 @@ export const REASONING_EFFORT_ORDER: readonly ReasoningEffort[] = [
 const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["gpt-5.6-luna", "GPT-5.6 Luna", 1050000],
   ["gpt-5.6-sol", "GPT-5.6 Sol", 1050000],
+  ["google/gemini-3.8-flash", "Gemini 3.8 Flash", 1000000],
   ["google/gemini-3.7-flash", "Gemini 3.7 Flash", 1048576],
   ["xai/grok-4.6", "Grok 4.6", 500000],
   ["deepseek/deepseek-v4-pro", "DeepSeek V4 Pro", 1000000],
@@ -111,13 +116,15 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["moonshotai/Kimi-K3", "Kimi K3", 1000000],
   ["moonshotai/Kimi-K2.7-Code", "Kimi K2.7 Code", 256000],
   ["Qwen/Qwen3.8-Max", "Qwen 3.8 Max", 1000000],
+  ["Qwen/Qwen3.8-Max-0902", "Qwen 3.8 Max 0902", 1000000],
   ["Qwen/Qwen3.8-Flash", "Qwen 3.8 Flash", 1000000],
   ["Qwen/Qwen3.8-27B", "Qwen 3.8 27B", 262144],
   ["z-ai/glm-5.3-flash", "GLM-5.3 Flash", 1048576],
   ["zai-org/GLM-5.3", "GLM-5.3", 1000000],
   ["MiniMaxAI/MiniMax-M3", "MiniMax M3", 1000000],
-  ["minimax/minimax-m3-free", "MiniMax M3 (Free)", 1000000],
   ["xai/grok-4.5", "Grok 4.5", 500000],
+  ["meta/muse-spark-1.3", "Muse Spark 1.3", 1048576],
+  ["meta/muse-spark-1.3-contributor", "Muse Spark 1.3 Contributor", 1048576],
   ["meta/muse-spark-1.2", "Muse Spark 1.2", 1048576],
   ["meta/muse-spark-1.2-contributor", "Muse Spark 1.2 Contributor", 1048576],
   ["stepfun/Step-3.7-Flash", "Step 3.7 Flash", 256000],
@@ -145,7 +152,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["MiniMaxAI/MiniMax-M2.7", "MiniMax M2.7", 1000000],
   ["deepseek/deepseek-v4-flash-vision-exp", "DeepSeek V4 Flash Vision Exp", 1000000],
   ["poolside/laguna-s-2.1-free", "Laguna S 2.1 Free", 256000],
-  ["minimax/minimax-m2.7-free", "MiniMax M2.7 Free", 1000000],
+  ["claude-fable-5-1", "Claude Fable 5.1", 1000000],
   ["claude-fable-5", "Claude Fable 5", 1000000],
   ["claude-opus-4-7", "Claude Opus 4.7", 1000000],
   ["google/gemini-3.1-flash-lite", "Gemini 3.1 Flash Lite", 1000000],
@@ -164,23 +171,27 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["gpt-5.5", "GPT-5.5", 400000],
   ["google/gemini-3.6-flash", "Gemini 3.6 Flash", 1000000],
   ["sakana/fugu-ultra", "Fugu Ultra", 1000000],
+  ["meituan/LongCat-2.0:free", "LongCat 2.0", 1048576],
 ];
 
 // Synced from commandcode-goat-dsh-provider/src/catalog/data.ts (commandcode.ai/docs via pnpm generate:knowledge) — do not hand-edit modalities/efforts/protocol
 const VISION_SET = new Set([
   "gpt-5.6-luna",
   "gpt-5.6-sol",
+  "google/gemini-3.8-flash",
   "google/gemini-3.7-flash",
   "xai/grok-4.6",
   "moonshotai/Kimi-K3",
   "moonshotai/Kimi-K2.7-Code",
   "Qwen/Qwen3.8-Max",
+  "Qwen/Qwen3.8-Max-0902",
   "Qwen/Qwen3.8-Flash",
   "Qwen/Qwen3.8-27B",
   "z-ai/glm-5.3-flash",
   "MiniMaxAI/MiniMax-M3",
-  "minimax/minimax-m3-free",
   "xai/grok-4.5",
+  "meta/muse-spark-1.3",
+  "meta/muse-spark-1.3-contributor",
   "meta/muse-spark-1.2",
   "meta/muse-spark-1.2-contributor",
   "stepfun/Step-3.7-Flash",
@@ -196,6 +207,7 @@ const VISION_SET = new Set([
   "MiniMaxAI/MiniMax-M2.5",
   "MiniMaxAI/MiniMax-M2.7",
   "deepseek/deepseek-v4-flash-vision-exp",
+  "claude-fable-5-1",
   "claude-fable-5",
   "claude-opus-4-7",
   "google/gemini-3.1-flash-lite",
@@ -218,12 +230,14 @@ const VISION_SET = new Set([
 const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["gpt-5.6-luna", ["low", "medium", "high", "xhigh", "max"]],
   ["gpt-5.6-sol", ["low", "medium", "high", "xhigh", "max"]],
+  ["google/gemini-3.8-flash", ["low", "medium", "high"]],
   ["google/gemini-3.7-flash", ["low", "medium", "high"]],
   ["xai/grok-4.6", ["low", "medium", "high", "xhigh"]],
   ["deepseek/deepseek-v4-pro", ["high", "max"]],
   ["deepseek/deepseek-v4-flash", ["high", "max"]],
   ["deepseek/deepseek-v4-flash-fast", ["high", "max"]],
   ["Qwen/Qwen3.8-Max", ["low", "medium", "xhigh"]],
+  ["Qwen/Qwen3.8-Max-0902", ["low", "medium", "xhigh"]],
   ["Qwen/Qwen3.8-Flash", ["low", "medium", "xhigh"]],
   ["Qwen/Qwen3.8-27B", ["low", "medium", "xhigh"]],
   ["z-ai/glm-5.3-flash", ["low", "high", "max"]],
@@ -231,6 +245,7 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["xai/grok-4.5", ["low", "medium", "high"]],
   ["zai-org/GLM-5.2", ["high", "max"]],
   ["deepseek/deepseek-v4-flash-vision-exp", ["high", "max"]],
+  ["claude-fable-5-1", ["low", "medium", "high", "xhigh", "max"]],
   ["claude-fable-5", ["low", "medium", "high", "xhigh", "max"]],
   ["claude-opus-4-7", ["low", "medium", "high", "xhigh", "max"]],
   ["google/gemini-3.1-flash-lite", ["low", "medium", "high"]],
@@ -251,6 +266,7 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
 const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["gpt-5.6-luna", "openai"],
   ["gpt-5.6-sol", "openai"],
+  ["google/gemini-3.8-flash", "openai"],
   ["google/gemini-3.7-flash", "openai"],
   ["xai/grok-4.6", "openai"],
   ["deepseek/deepseek-v4-pro", "openai"],
@@ -259,13 +275,15 @@ const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["moonshotai/Kimi-K3", "openai"],
   ["moonshotai/Kimi-K2.7-Code", "openai"],
   ["Qwen/Qwen3.8-Max", "openai"],
+  ["Qwen/Qwen3.8-Max-0902", "openai"],
   ["Qwen/Qwen3.8-Flash", "openai"],
   ["Qwen/Qwen3.8-27B", "openai"],
   ["z-ai/glm-5.3-flash", "openai"],
   ["zai-org/GLM-5.3", "openai"],
   ["MiniMaxAI/MiniMax-M3", "openai"],
-  ["minimax/minimax-m3-free", "openai"],
   ["xai/grok-4.5", "openai"],
+  ["meta/muse-spark-1.3", "openai"],
+  ["meta/muse-spark-1.3-contributor", "openai"],
   ["meta/muse-spark-1.2", "openai"],
   ["meta/muse-spark-1.2-contributor", "openai"],
   ["stepfun/Step-3.7-Flash", "openai"],
@@ -293,7 +311,7 @@ const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["MiniMaxAI/MiniMax-M2.7", "openai"],
   ["deepseek/deepseek-v4-flash-vision-exp", "openai"],
   ["poolside/laguna-s-2.1-free", "openai"],
-  ["minimax/minimax-m2.7-free", "openai"],
+  ["claude-fable-5-1", "anthropic"],
   ["claude-fable-5", "anthropic"],
   ["claude-opus-4-7", "anthropic"],
   ["google/gemini-3.1-flash-lite", "openai"],
@@ -312,6 +330,7 @@ const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["gpt-5.5", "openai"],
   ["google/gemini-3.6-flash", "openai"],
   ["sakana/fugu-ultra", "openai"],
+  ["meituan/LongCat-2.0:free", "openai"],
 ]);
 const vision = (id: string) => VISION_SET.has(id);
 const thinking = (id: string) => EFFORTS_MAP.has(id);
