@@ -14,34 +14,34 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 
 | Model ID | Display Name | Context Window | Max Output | Wire Protocol | Thinking | Vision |
 |---|---|---|---|---|---|---|
-| `gpt-5.6-luna` | GPT-5.6 Luna | 1,050,000 | 128,000 | ✓ | low, medium, high, xhigh, max | ✓ (`low,medium,high,xhigh,max`) |
+| `gpt-5.6-luna` | GPT-5.6 Luna | 1,050,000 | 128,000 | Responses | ✓ (`low,medium,high,xhigh,max`) | ✓ |
 | `gpt-5.6-sol` | GPT-5.6 Sol | 1.05M | 65,536 | OpenAI | low, medium, high, xhigh, max | Yes |
 | `google/gemini-3.8-flash` | Gemini 3.8 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
 | `google/gemini-3.7-flash` | Gemini 3.7 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
-| `xai/grok-4.6` | Grok 4.6 | 500,000 | 500,000 | ✓ | low, medium, high, xhigh | ✓ (`low,medium,high,xhigh`) |
-| `deepseek/deepseek-v4-pro` | DeepSeek V4 Pro | 1,000,000 | 384,000 | ✗ | high, max | ✓ (`high,max`) |
-| `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash | 1,000,000 | 384,000 | ✗ | high, max | ✓ (`low,high,max`) |
+| `xai/grok-4.6` | Grok 4.6 | 500,000 | 500,000 | Responses | ✓ (`low,medium,high,xhigh`) | ✓ |
+| `deepseek/deepseek-v4-pro` | DeepSeek V4 Pro | 1,000,000 | 384,000 | OpenAI | ✓ (`high,max`) | ✗ |
+| `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash | 1,000,000 | 384,000 | OpenAI | ✓ (`low,high,max`) | ✗ |
 | `deepseek/deepseek-v4-flash-fast` | DeepSeek V4 Flash Fast | 1M | 65,536 | OpenAI | high, max | No |
-| `moonshotai/Kimi-K3` | Kimi K3 | 1,048,576 | 131,072 | ✓ | - | ✓ (`max`) |
-| `moonshotai/Kimi-K2.7-Code` | Kimi K2.7 Code | 262,144 | 262,144 | ✓ | - | Yes |
+| `moonshotai/Kimi-K3` | Kimi K3 | 1,048,576 | 131,072 | OpenAI | ✓ (`max`) | ✓ |
+| `moonshotai/Kimi-K2.7-Code` | Kimi K2.7 Code | 262,144 | 262,144 | OpenAI | - | ✓ |
 | `Qwen/Qwen3.8-Max` | Qwen 3.8 Max | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |
 | `Qwen/Qwen3.8-Max-0902` | Qwen 3.8 Max 0902 | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |
 | `Qwen/Qwen3.8-Flash` | Qwen 3.8 Flash | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |
 | `Qwen/Qwen3.8-27B` | Qwen 3.8 27B | 262K | 65,536 | OpenAI | low, medium, xhigh | Yes |
 | `z-ai/glm-5.3-flash` | GLM-5.3 Flash | 1M | 65,536 | OpenAI | low, high, max | Yes |
-| `zai-org/GLM-5.3` | GLM-5.3 | 1,000,000 | 131,072 | ✗ | low, high, max | ✓ (`low,high,max`) |
-| `MiniMaxAI/MiniMax-M3` | MiniMax M3 | 1,000,000 | 131,072 | ✓ | - | Yes |
+| `zai-org/GLM-5.3` | GLM-5.3 | 1,000,000 | 131,072 | OpenAI | ✓ (`low,high,max`) | ✗ |
+| `MiniMaxAI/MiniMax-M3` | MiniMax M3 | 1,000,000 | 131,072 | Anthropic | - | ✓ |
 | `xai/grok-4.5` | Grok 4.5 | 500K | 65,536 | OpenAI | low, medium, high | Yes |
 | `meta/muse-spark-1.3` | Muse Spark 1.3 | 1M | 65,536 | OpenAI | - | Yes |
-| `meta/muse-spark-1.3-contributor` | Muse Spark 1.3 Contributor | 1,048,576 | 131,072 | ✓ | - | ✓ (`minimal,low,medium,high,xhigh`) |
+| `meta/muse-spark-1.3-contributor` | Muse Spark 1.3 Contributor | 1,048,576 | 131,072 | Responses | ✓ (`minimal,low,medium,high,xhigh`) | ✓ |
 | `meta/muse-spark-1.2` | Muse Spark 1.2 | 1M | 65,536 | OpenAI | - | Yes |
-| `meta/muse-spark-1.2-contributor` | Muse Spark 1.2 Contributor | 1,048,576 | 131,072 | ✓ | - | ✓ (`minimal,low,medium,high,xhigh`) |
+| `meta/muse-spark-1.2-contributor` | Muse Spark 1.2 Contributor | 1,048,576 | 131,072 | Responses | ✓ (`minimal,low,medium,high,xhigh`) | ✓ |
 | `stepfun/Step-3.7-Flash` | Step 3.7 Flash | 256K | 65,536 | OpenAI | - | Yes |
 | `tencent/hy4-preview` | Tencent Hy4 Preview | 1M | 65,536 | OpenAI | - | No |
-| `xiaomi/mimo-v2.5-pro` | MiMo V2.5 Pro | 1,048,576 | 128,000 | ✗ | - | No |
+| `xiaomi/mimo-v2.5-pro` | MiMo V2.5 Pro | 1,048,576 | 128,000 | OpenAI | - | ✗ |
 | `Qwen/Qwen3.7-Flash` | Qwen 3.7 Flash | 1M | 65,536 | OpenAI | - | Yes |
 | `stepfun/Step-3.5-Flash` | Step 3.5 Flash | 256K | 65,536 | OpenAI | - | Yes |
-| `xiaomi/mimo-v2.5` | MiMo V2.5 | 1,000,000 | 128,000 | ✓ | - | Yes |
+| `xiaomi/mimo-v2.5` | MiMo V2.5 | 1,000,000 | 128,000 | OpenAI | - | ✓ |
 | `tencent/hy3-paid` | Hy3 Paid | 1M | 65,536 | OpenAI | - | No |
 | `Qwen/Qwen3.7-Plus` | Qwen 3.7 Plus | 1M | 65,536 | OpenAI | - | Yes |
 | `Qwen/Qwen3.6-Plus` | Qwen 3.6 Plus | 1M | 65,536 | OpenAI | - | Yes |
@@ -50,16 +50,16 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `zai-org/GLM-5` | GLM-5 | 1M | 65,536 | OpenAI | - | No |
 | `thinkingmachines/inkling` | Inkling | 1M | 65,536 | OpenAI | - | Yes |
 | `Qwen/Qwen3.6-Max-Preview` | Qwen 3.6 Max Preview | 1M | 65,536 | OpenAI | - | No |
-| `zai-org/GLM-5.1` | GLM-5.1 | 202,752 | 32,768 | ✗ | - | No |
-| `zai-org/GLM-5.2` | GLM-5.2 | 1,000,000 | 131,072 | ✗ | high, max | ✓ (`high,max`) |
-| `moonshotai/Kimi-K2.6` | Kimi K2.6 | 262,144 | 65,536 | ✓ | - | ✗ |
+| `zai-org/GLM-5.1` | GLM-5.1 | 202,752 | 32,768 | OpenAI | - | ✗ |
+| `zai-org/GLM-5.2` | GLM-5.2 | 1,000,000 | 131,072 | OpenAI | ✓ (`high,max`) | ✗ |
+| `moonshotai/Kimi-K2.6` | Kimi K2.6 | 262,144 | 65,536 | OpenAI | ✗ | ✓ |
 | `moonshotai/Kimi-K2.7-Code-Highspeed` | Kimi K2.7 Code Highspeed | 256K | 65,536 | OpenAI | - | No |
 | `Qwen/Qwen3.7-Max` | Qwen 3.7 Max | 1M | 65,536 | OpenAI | - | No |
 | `zai-org/GLM-5.2-Fast` | GLM-5.2 Fast | 1M | 65,536 | OpenAI | - | No |
 | `thinkingmachines/inkling-small` | Inkling Small | 1M | 65,536 | OpenAI | - | Yes |
 | `MiniMaxAI/MiniMax-M2.5` | MiniMax M2.5 | 1M | 65,536 | OpenAI | - | Yes |
-| `MiniMaxAI/MiniMax-M2.7` | MiniMax M2.7 | 204,800 | 131,072 | ✗ | - | Yes |
-| `deepseek/deepseek-v4-flash-vision-exp` | DeepSeek V4 Flash Vision Exp | 1,000,000 | 384,000 | ✓ | high, max | ✓ (`low,high,max`) |
+| `MiniMaxAI/MiniMax-M2.7` | MiniMax M2.7 | 204,800 | 131,072 | ✗ | - | ✗ |
+| `deepseek/deepseek-v4-flash-vision-exp` | DeepSeek V4 Flash Vision Exp | 1,000,000 | 384,000 | OpenAI | ✓ (`low,high,max`) | ✓ |
 | `poolside/laguna-s-2.1-free` | Laguna S 2.1 Free | 256K | 65,536 | OpenAI | - | No |
 | `claude-fable-5-1` | Claude Fable 5.1 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
 | `claude-fable-5` | Claude Fable 5 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
@@ -80,4 +80,4 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `gpt-5.5` | GPT-5.5 | 400K | 65,536 | OpenAI | low, medium, high, xhigh | Yes |
 | `google/gemini-3.6-flash` | Gemini 3.6 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
 | `sakana/fugu-ultra` | Fugu Ultra | 1M | 65,536 | OpenAI | high, xhigh | Yes |
-| `meituan/LongCat-2.0:free` | LongCat 2.0 | 1,000,000 | 131,072 | ✗ | - | No |
+| `meituan/LongCat-2.0:free` | LongCat 2.0 | 1,000,000 | 131,072 | OpenAI | - | ✗ |
