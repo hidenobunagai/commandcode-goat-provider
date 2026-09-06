@@ -47,7 +47,7 @@ jobs:
           title: "chore: sync model catalog from Pi AI"
           body: |
             Automated `sync:pi:write` detected catalog drift from Pi AI and updated
-            `src/model-catalog.ts` (+ docs/models.md for nvidia). Review the diff,
+            `src/types.ts` (+ `docs/models.md`). Review the diff,
             confirm capabilities. This PR is for human review only; publish manually with `vsce publish` after merging.
           branch: auto/pi-sync
           delete-branch: true
