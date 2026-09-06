@@ -380,43 +380,39 @@ function syncDocs(
   // So we will scan docs for each Pi model row and update its cells
 
   for (const [piId, piModel] of piMap.entries()) {
-    const displayName = piId
-      .split("-")
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(" ");
-    // Find row in docs: | DisplayName |  |  |  |  |  |  |
-    // Use a regex that matches the row with this displayName (case-insensitive for display?)
-    // The docs uses DisplayName as in fallback: e.g. "GLM-5.1", "Kimi K2.6", "Muse Spark 1.2 Contributor"
-    // We need to map Pi id to docs display: use same logic as fallback displayName but docs may have different.
-    // Safer: search for row containing piId's display parts? Instead, search for row where first cell contains model id's pretty name.
-    // We'll try to match by id's displayName lowercased
+    // Find the docs row for this model by Display Name (table header is
+    // `| Model ID | Display Name | Context Window | Max Output | Wire Protocol | Thinking | Vision |`),
+    // then compare/update each column from Pi's data.
+    // NOTE: the row-match previously started at `| Display Name |`, which shifted every
+    // column index by one and made the Wire Protocol update a silent no-op (it read the
+    // trailing empty cell and tried to replace `|  |`). Match the full line instead.
     const piDisplay = piId
       .split("-")
       .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
       .join(" ");
     // Also try fallback's displayName mapping: e.g. "Muse Spark 1.2 Contributor" vs piDisplay "Muse Spark 1.2 Contributor" matches
-    // We'll search for `| ${piDisplay} |` or `| ${piModel.name} |`
     const candidates = [piDisplay, piModel.name];
-    let rowRegex: RegExp | null = null;
     let rowMatch: RegExpMatchArray | null = null;
     for (const cand of candidates) {
       const escaped = cand.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const re = new RegExp(`\\|\\s*${escaped}\\s*\\|([^\\n]*\\n)`, "i");
+      // Match the full table row (from line start through the newline):
+      //   | `id` | Display Name | ctx | max | wire | thinking | vision |
+      const re = new RegExp(`^[^\\n]*\\|\\s*${escaped}\\s*\\|[^\\n]*\\n`, "im");
       const m = content.match(re);
       if (m) {
-        rowRegex = re;
         rowMatch = m;
         break;
       }
     }
-    if (!rowMatch || !rowRegex) {
+    if (!rowMatch) {
       // Try broader: find row with piId in tooltip? Skip
       continue;
     }
     const fullRow = rowMatch[0];
-    // Parse row: | Model | Context | Max | Vision | Tools | Thinking | API |
+    // Column indices (1-based; [0] is the segment before the row's first "|"):
+    // [1]=Model ID, [2]=Display Name, [3]=Context, [4]=Max Output,
+    // [5]=Wire Protocol, [6]=Thinking, [7]=Vision, [8]="\n"
     const cells = fullRow.split("|").map((c) => c.trim());
-    // cells[0] empty, [1] Model, [2] Context, [3] Max, [4] Vision, [5] Tools, [6] Thinking, [7] API
     if (cells.length < 8) continue;
 
     const expCtxStr = formatNumber(piModel.contextWindow);
@@ -431,36 +427,27 @@ function syncDocs(
     else expThinking = `✓ (\`${expEfforts.join(",")}\`)`;
 
     // Compare and update if different
-    const curCtx = cells[2];
-    const curMax = cells[3];
-    const curVision = cells[4];
+    const curCtx = cells[3];
+    const curMax = cells[4];
+    const curApi = cells[5];
     const curThinking = cells[6];
-    const curApi = cells[7];
+    const curVision = cells[7];
 
-    let newRow = fullRow;
+    const next = cells.slice();
     let rowChanged = false;
     if (curCtx !== expCtxStr) {
       diffs.push(`${piId}: docs Context ${curCtx} -> ${expCtxStr}`);
-      newRow = newRow.replace(`| ${curCtx} |`, `| ${expCtxStr} |`);
+      next[3] = expCtxStr;
       rowChanged = true;
     }
     if (curMax !== expMaxStr) {
       diffs.push(`${piId}: docs Max ${curMax} -> ${expMaxStr}`);
-      newRow = newRow.replace(`| ${curMax} |`, `| ${expMaxStr} |`);
-      rowChanged = true;
-    }
-    if (curVision !== expVision) {
-      diffs.push(`${piId}: docs Vision ${curVision} -> ${expVision}`);
-      // need to replace the vision cell: it's 4th column. Use split approach
-      // Simpler: replace the exact row's vision segment
-      const visionRe = new RegExp(`(\\|\\s*${cells[1].replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*\\|\\s*${curCtx.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*\\|\\s*${curMax.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*\\|\\s*)${curVision.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(\\s*\\|)`);
-      // fallback simple
-      newRow = newRow.replace(`| ${curVision} |`, `| ${expVision} |`);
+      next[4] = expMaxStr;
       rowChanged = true;
     }
     if (curApi !== expApi && !shouldIgnoreDocsDiff(piId, "API")) {
       diffs.push(`${piId}: docs API ${curApi} -> ${expApi}`);
-      newRow = newRow.replace(`| ${curApi} |`, `| ${expApi} |`);
+      next[5] = expApi;
       rowChanged = true;
     }
     // Thinking is more complex due to backticks
@@ -468,14 +455,23 @@ function syncDocs(
       // Only update if Pi has explicit map; if Pi map is null (generic), keep docs as is (don't force)
       if (expEfforts !== null) {
         diffs.push(`${piId}: docs Thinking ${curThinking} -> ${expThinking}`);
-        newRow = newRow.replace(`| ${curThinking} |`, `| ${expThinking} |`);
+        next[6] = expThinking;
         rowChanged = true;
       }
     }
+    if (curVision !== expVision) {
+      diffs.push(`${piId}: docs Vision ${curVision} -> ${expVision}`);
+      next[7] = expVision;
+      rowChanged = true;
+    }
 
     if (rowChanged) {
-      content = content.replace(fullRow, newRow);
-      changed++;
+      // Rebuild the row from the updated cells; skip if nothing actually changed
+      const newRow = `| ${next.slice(1, 8).join(" | ")} |${fullRow.endsWith("\n") ? "\n" : ""}`;
+      if (newRow !== fullRow) {
+        content = content.replace(fullRow, newRow);
+        changed++;
+      }
     }
   }
 
