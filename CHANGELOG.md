@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.5] - 2026-09-10
+
+### Added
+
+- Sync catalog with live API (`GET /provider/v1/models`, 69 models): add `deepseek/deepseek-v4.1-flash` (DeepSeek V4.1 Flash): 1M context, OpenAI protocol, OpenAI reasoning efforts `high`/`max`, vision-capable. Previously it appeared as an unknown model with all capabilities disabled.
+
 ## [0.1.4] - 2026-09-10
 
 ### Added

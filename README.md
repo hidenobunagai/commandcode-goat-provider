@@ -8,7 +8,7 @@ Command Code GOAT Chat Provider for GitHub Copilot in Visual Studio Code. Access
 
 ## Features
 
-- **60+ AI Models**: Full support for Claude 5 / 4.6 / 4.8 / 4.7 / Haiku 4.5, DeepSeek V4 Pro / Flash, Kimi K3 / K2.7 / K2.6, GLM-5.3 / 5.2, MiniMax M3, Qwen 3.8 / 3.7, Gemini 3.7 / 3.6 / 3.5, Grok 4.6 / 4.5, Muse Spark, and more.
+- **60+ AI Models**: Full support for Claude 5 / 4.6 / 4.8 / 4.7 / Haiku 4.5, DeepSeek V4.1 Flash / V4 Pro / Flash, Kimi K3 / K2.7 / K2.6, GLM-5.3 / 5.2, MiniMax M3, Qwen 3.8 / 3.7, Gemini 3.7 / 3.6 / 3.5, Grok 4.6 / 4.5, Muse Spark, and more.
 - **Dual Protocol Routing**: Automatically routes Claude models to the Anthropic Messages API (`/provider/v1/messages`) and other models to OpenAI-compatible Chat Completions (`/provider/v1/chat/completions`).
 - **Zero Data Retention (ZDR)**: Optional configuration (`commandcode-goat.enableZdr`) to send `x-cmd-zdr: 1` header for strict compliance and privacy requirements.
 - **Native Tool Calling & Thinking**: Assembles fragmented streaming tool calls in real time and renders model reasoning blocks in Copilot Chat.
@@ -63,7 +63,7 @@ The provider dynamically discovers available models from `GET https://api.comman
 | Model Family | Examples | Wire Protocol | Thinking / Reasoning | Vision |
 |---|---|---|---|---|
 | **Anthropic Claude** | `claude-sonnet-5`, `claude-sonnet-4-6`, `claude-opus-5`, `claude-haiku-4-5-20251001` | Anthropic `/messages` | Automatic | Supported |
-| **DeepSeek** | `deepseek/deepseek-v4-pro`, `deepseek/deepseek-v4-flash`, `deepseek/deepseek-v4-flash-fast`, `deepseek/deepseek-v4-flash-vision-exp` | OpenAI `/chat/completions` | Configurable effort | Supported on Vision |
+| **DeepSeek** | `deepseek/deepseek-v4.1-flash`, `deepseek/deepseek-v4-pro`, `deepseek/deepseek-v4-flash`, `deepseek/deepseek-v4-flash-fast`, `deepseek/deepseek-v4-flash-vision-exp` | OpenAI `/chat/completions` | Configurable effort | Supported on V4.1 Flash & Vision |
 | **Moonshot Kimi** | `moonshotai/Kimi-K3`, `moonshotai/Kimi-K2.7-Code`, `moonshotai/Kimi-K2.6` | OpenAI `/chat/completions` | Configurable effort | Supported |
 | **Zhipu GLM** | `z-ai/glm-5.3-flash`, `zai-org/GLM-5.3`, `zai-org/GLM-5.2` | OpenAI `/chat/completions` | Configurable effort | Text & Tools |
 | **MiniMax** | `MiniMaxAI/MiniMax-M3`, `MiniMaxAI/MiniMax-M2.7`, `MiniMaxAI/MiniMax-M2.5` | OpenAI `/chat/completions` | Provider default | Supported (M3) |
