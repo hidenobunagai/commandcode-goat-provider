@@ -19,8 +19,8 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `google/gemini-3.8-flash` | Gemini 3.8 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
 | `google/gemini-3.7-flash` | Gemini 3.7 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
 | `xai/grok-4.6` | Grok 4.6 | 500,000 | 500,000 | Responses | ✓ (`low,medium,high,xhigh`) | ✓ |
-| `deepseek/deepseek-v4-pro` | DeepSeek V4 Pro | 1,000,000 | 384,000 | OpenAI | ✓ (`high,max`) | ✗ |
-| `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash | 1,000,000 | 384,000 | OpenAI | ✓ (`low,high,max`) | ✗ |
+| `deepseek/deepseek-v4-pro` | DeepSeek V4 Pro (latest) | 1,000,000 | 384,000 | OpenAI | ✓ (`high,max`) | ✗ |
+| `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash (latest) | 1,000,000 | 384,000 | OpenAI | ✓ (`low,high,max`) | ✗ |
 | `deepseek/deepseek-v4-flash-fast` | DeepSeek V4 Flash Fast | 1M | 65,536 | OpenAI | high, max | No |
 | `moonshotai/Kimi-K3` | Kimi K3 | 1,048,576 | 131,072 | OpenAI | ✓ (`max`) | ✓ |
 | `moonshotai/Kimi-K2.7-Code` | Kimi K2.7 Code | 262,144 | 262,144 | OpenAI | - | ✓ |
@@ -40,27 +40,27 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `tencent/hy4-preview` | Tencent Hy4 Preview | 1M | 65,536 | OpenAI | - | No |
 | `xiaomi/mimo-v2.5-pro` | MiMo V2.5 Pro | 1,048,576 | 128,000 | OpenAI | - | ✗ |
 | `Qwen/Qwen3.7-Flash` | Qwen 3.7 Flash | 1M | 65,536 | OpenAI | - | Yes |
-| `stepfun/Step-3.5-Flash` | Step 3.5 Flash | 256K | 65,536 | OpenAI | - | Yes |
+| `stepfun/Step-3.5-Flash` | Step 3.5 Flash | 1,000,000 | 65,536 | OpenAI | - | Yes |
 | `xiaomi/mimo-v2.5` | MiMo V2.5 | 1,000,000 | 128,000 | OpenAI | - | ✓ |
-| `tencent/hy3-paid` | Hy3 Paid | 1M | 65,536 | OpenAI | - | No |
+| `tencent/hy3-paid` | Tencent Hy3 | 262,144 | 65,536 | OpenAI | - | No |
 | `Qwen/Qwen3.7-Plus` | Qwen 3.7 Plus | 1M | 65,536 | OpenAI | - | Yes |
-| `Qwen/Qwen3.6-Plus` | Qwen 3.6 Plus | 1M | 65,536 | OpenAI | - | Yes |
-| `moonshotai/Kimi-K2.5` | Kimi K2.5 | 1M | 65,536 | OpenAI | - | Yes |
+| `Qwen/Qwen3.6-Plus` | Qwen 3.6 Plus | 200,000 | 65,536 | OpenAI | - | Yes |
+| `moonshotai/Kimi-K2.5` | Kimi K2.5 | 256,000 | 65,536 | OpenAI | - | Yes |
 | `nvidia/nemotron-3-ultra-550b-a55b` | Nemotron 3 Ultra | 1M | 65,536 | OpenAI | - | No |
-| `zai-org/GLM-5` | GLM-5 | 1M | 65,536 | OpenAI | - | No |
-| `thinkingmachines/inkling` | Inkling | 1M | 65,536 | OpenAI | - | Yes |
-| `Qwen/Qwen3.6-Max-Preview` | Qwen 3.6 Max Preview | 1M | 65,536 | OpenAI | - | No |
-| `zai-org/GLM-5.1` | GLM-5.1 | 202,752 | 32,768 | OpenAI | - | ✗ |
+| `zai-org/GLM-5` | GLM-5 | 200,000 | 65,536 | OpenAI | - | No |
+| `thinkingmachines/inkling` | Inkling | 256,000 | 65,536 | OpenAI | - | Yes |
+| `Qwen/Qwen3.6-Max-Preview` | Qwen 3.6 Max Preview | 200,000 | 65,536 | OpenAI | - | No |
+| `zai-org/GLM-5.1` | GLM-5.1 | 200,000 | 32,768 | OpenAI | - | ✗ |
 | `zai-org/GLM-5.2` | GLM-5.2 | 1,000,000 | 131,072 | OpenAI | ✓ (`high,max`) | ✗ |
-| `moonshotai/Kimi-K2.6` | Kimi K2.6 | 262,144 | 65,536 | OpenAI | ✗ | ✓ |
-| `moonshotai/Kimi-K2.7-Code-Highspeed` | Kimi K2.7 Code Highspeed | 256K | 65,536 | OpenAI | - | No |
+| `moonshotai/Kimi-K2.6` | Kimi K2.6 | 256,000 | 65,536 | OpenAI | ✗ | ✓ |
+| `moonshotai/Kimi-K2.7-Code-Highspeed` | Kimi K2.7 Code HighSpeed | 262,000 | 65,536 | OpenAI | - | No |
 | `Qwen/Qwen3.7-Max` | Qwen 3.7 Max | 1M | 65,536 | OpenAI | - | No |
 | `zai-org/GLM-5.2-Fast` | GLM-5.2 Fast | 1M | 65,536 | OpenAI | - | No |
 | `thinkingmachines/inkling-small` | Inkling Small | 1M | 65,536 | OpenAI | - | Yes |
-| `MiniMaxAI/MiniMax-M2.5` | MiniMax M2.5 | 1M | 65,536 | OpenAI | - | Yes |
-| `MiniMaxAI/MiniMax-M2.7` | MiniMax M2.7 | 204,800 | 131,072 | ✗ | - | ✗ |
-| `deepseek/deepseek-v4-flash-vision-exp` | DeepSeek V4 Flash Vision Exp | 1,000,000 | 384,000 | OpenAI | ✓ (`low,high,max`) | ✓ |
-| `poolside/laguna-s-2.1-free` | Laguna S 2.1 Free | 256K | 65,536 | OpenAI | - | No |
+| `MiniMaxAI/MiniMax-M2.5` | MiniMax M2.5 | 200,000 | 65,536 | OpenAI | - | Yes |
+| `MiniMaxAI/MiniMax-M2.7` | MiniMax M2.7 | 200,000 | 131,072 | OpenAI | - | ✗ |
+| `deepseek/deepseek-v4-flash-vision-exp` | DeepSeek V4 Flash Vision (exp) | 1,000,000 | 384,000 | OpenAI | ✓ (`low,high,max`) | ✓ |
+| `poolside/laguna-s-2.1-free` | Laguna S 2.1 | 256,000 | 65,536 | OpenAI | - | No |
 | `claude-fable-5-1` | Claude Fable 5.1 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
 | `claude-fable-5` | Claude Fable 5 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
 | `claude-opus-4-7` | Claude Opus 4.7 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
@@ -81,3 +81,4 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `google/gemini-3.6-flash` | Gemini 3.6 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
 | `sakana/fugu-ultra` | Fugu Ultra | 1M | 65,536 | OpenAI | high, xhigh | Yes |
 | `meituan/LongCat-2.0:free` | LongCat 2.0 | 1,000,000 | 131,072 | OpenAI | - | ✗ |
+| `inclusionai/ling-3.0-flash-sante:free` | Ling 3.0 Flash Sante | 262,144 | 65,536 | OpenAI | - | No |

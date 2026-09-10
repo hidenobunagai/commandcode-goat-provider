@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.1.4] - 2026-09-10
+
+### Added
+
+- Sync catalog with live API (`GET /provider/v1/models`, 68 models): add `inclusionai/ling-3.0-flash-sante:free` (Ling 3.0 Flash Sante, 262,144 context, text-only free tier). Previously it appeared as an unknown model with all capabilities disabled.
+
+### Fixed
+
+- Align static context windows with the live API (12 models: Step 3.5 Flash, Kimi K2.5/K2.6/K2.7 Code HighSpeed, GLM-5/5.1, MiniMax M2.5/M2.7, Qwen 3.6 Plus/Max Preview, Inkling, Tencent Hy3).
+- Refresh display names to match the live API: DeepSeek V4 Pro/Flash `(latest)`, DeepSeek V4 Flash Vision `(exp)`, Kimi K2.7 Code HighSpeed, Tencent Hy3, Laguna S 2.1.
+
 ## [0.1.3] - 2026-09-05
 
 ### Added
