@@ -51,15 +51,15 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `zai-org/GLM-5` | GLM-5 | 200,000 | 65,536 | OpenAI | - | No |
 | `thinkingmachines/inkling` | Inkling | 256,000 | 65,536 | OpenAI | - | Yes |
 | `Qwen/Qwen3.6-Max-Preview` | Qwen 3.6 Max Preview | 200,000 | 65,536 | OpenAI | - | No |
-| `zai-org/GLM-5.1` | GLM-5.1 | 200,000 | 32,768 | OpenAI | - | ✗ |
+| `zai-org/GLM-5.1` | GLM-5.1 | 202,752 | 32,768 | OpenAI | - | ✗ |
 | `zai-org/GLM-5.2` | GLM-5.2 | 1,000,000 | 131,072 | OpenAI | ✓ (`high,max`) | ✗ |
-| `moonshotai/Kimi-K2.6` | Kimi K2.6 | 256,000 | 65,536 | OpenAI | ✗ | ✓ |
+| `moonshotai/Kimi-K2.6` | Kimi K2.6 | 262,144 | 65,536 | OpenAI | ✗ | ✓ |
 | `moonshotai/Kimi-K2.7-Code-Highspeed` | Kimi K2.7 Code HighSpeed | 262,000 | 65,536 | OpenAI | - | No |
 | `Qwen/Qwen3.7-Max` | Qwen 3.7 Max | 1M | 65,536 | OpenAI | - | No |
 | `zai-org/GLM-5.2-Fast` | GLM-5.2 Fast | 1M | 65,536 | OpenAI | - | No |
 | `thinkingmachines/inkling-small` | Inkling Small | 1M | 65,536 | OpenAI | - | Yes |
 | `MiniMaxAI/MiniMax-M2.5` | MiniMax M2.5 | 200,000 | 65,536 | OpenAI | - | Yes |
-| `MiniMaxAI/MiniMax-M2.7` | MiniMax M2.7 | 200,000 | 131,072 | OpenAI | - | ✗ |
+| `MiniMaxAI/MiniMax-M2.7` | MiniMax M2.7 | 204,800 | 131,072 | OpenAI | - | ✗ |
 | `deepseek/deepseek-v4-flash-vision-exp` | DeepSeek V4 Flash Vision (exp) | 1,000,000 | 384,000 | OpenAI | ✓ (`low,high,max`) | ✓ |
 | `poolside/laguna-s-2.1-free` | Laguna S 2.1 | 256,000 | 65,536 | OpenAI | - | No |
 | `claude-fable-5-1` | Claude Fable 5.1 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
