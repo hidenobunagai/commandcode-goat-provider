@@ -22,10 +22,19 @@ node scripts/check-live-models.ts          # exit 0 = clean, 2 = drift, 1 = API/
 Sections worth acting on:
 
 - **NEW** — served by the API but absent from the VS Code catalog → section 2.
-- **CHANGED** — context window or display name differs from the API → align the static value with the API.
+- **CHANGED** — context window or display name differs from the API (reported per side: `VS Code` / `DSH`) →
+  align the static value with the API.
 - **MISSING FROM DSH** — present in the extension but absent from the DSH `CATALOG` → add it to the DSH entry too.
 - **REMOVED** — in the extension catalog but no longer served by the API → drop it from the static catalog
   (do not keep dead ids; `minimax/minimax-m2.7-free` and `minimax/minimax-m3-free` were removed this way).
+- **CAPABILITY** — the extension's `VISION_SET` / `EFFORTS_MAP` / `PROTOCOL_MAP` disagree with the DSH
+  `CATALOG` for the same id. The two repositories are separate on purpose (different hosts, different
+  consumers), so the capability data is copied rather than imported; this section is the machine check that
+  keeps the copy honest. It compares `modalities`/`efforts`/`protocol` against vision/efforts/protocol and
+  must stay empty.
+
+A clean run across all five sections is the expected steady state: two independent repositories consuming one
+live API, with no drift between them.
 
 ## 2. Curate a new model
 
