@@ -72,7 +72,12 @@ Bump `version` in `package.json` (patch) and commit, e.g.
 `feat(catalog): add <id> (Command Code)`. Push to `main`.
 The DSH profile loads this checkout through a symlink
 (`~/.dsh/profiles/node_modules/dsh-commandcode-goat-provider`), so `bun run build` is the deploy step —
-a restart of `dsh web` picks it up; no npm publish exists for this package.
+a `dsh web` restart picks it up; no npm publish exists for this package.
+The restart always goes through the supervisor, never through a hand-started process:
+`scripts/restart-dsh-web.sh` runs `sudo -n systemctl restart dsh-web.service` on homepi and
+`launchctl kickstart -k gui/$UID/com.dsh.web` on the Mac. One `bun run build` deploys both hosts because
+`~/projects` is Mutagen-synced (`/Users/hidenobunagai/projects` ↔ `pi@homepi:/home/pi/projects`); only the
+restart differs per host, and the Mac side is covered by the launchd job `com.dsh.plugin-watch`.
 
 ## 4. Then the VS Code extension
 
@@ -118,7 +123,16 @@ from step 4. Never leave a broken build pushed without reporting it.
 1. `check-live-models.ts` gates for free; with no drift the run ends in seconds and no LLM quota is spent.
 2. On drift, a DSH headless agent session is started with this playbook as its prompt
    (`dsh --profile headless`), which performs sections 2–5 autonomously.
-3. Transcripts: `logs/daily-model-watch.log` (gitignored) plus the persisted DSH session, viewable in the Web GUI.
+3. When that run exits 0, the wrapper restarts `dsh web` through the supervisor
+   (`scripts/restart-dsh-web.sh --wait 600`) so homepi serves the rebuilt plugin. The script no-ops when the
+   running server is already newer than `lib/`, and defers while a session was written within the last 120s
+   (the agent's own session log stays busy until the run ends, which is what `--wait` is for). The agent
+   itself must not restart the server.
+4. Transcripts: `logs/daily-model-watch.log` (gitignored) plus the persisted DSH session, viewable in the Web GUI.
+
+The Mac is not part of the daily run: `~/projects` reaches it by Mutagen, and its launchd job
+`com.dsh.plugin-watch` (`~/Library/LaunchAgents/com.dsh.plugin-watch.plist`) restarts the Mac server on
+`lib/` changes, with a 10-minute interval as a fallback. Both hosts run the same `restart-dsh-web.sh`.
 
 ```bash
 systemctl --user list-timers daily-model-watch.timer

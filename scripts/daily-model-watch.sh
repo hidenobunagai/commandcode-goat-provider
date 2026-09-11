@@ -5,6 +5,8 @@
 # 2. Only when drift is detected, wake a DSH headless agent run that follows
 #    docs/model-sync.md to update the catalogs and publish (tag push -> GitHub
 #    Actions -> VS Code Marketplace).
+# 3. After that run, restart `dsh web` so the rebuilt DSH plugin is re-read
+#    (scripts/restart-dsh-web.sh; it no-ops when the server is already newer).
 #
 # Invoked by the systemd user timer daily-model-watch.timer.
 # Manual use:
@@ -93,6 +95,7 @@ $REPORT
 2. 新モデルがあれば capability（vision / thinking / protocol / 価格 / tier）を commandcode.ai の情報から確認して両カタログへ反映。
    確認できない項目は推測せず保守的デフォルトにし、判断できなかった点を最終報告に明記。
 3. 各リポジトリで test / lint / compile を実行し、通ってから version bump・CHANGELOG 更新・commit・push・tag push。
+   DSH プラグインは bun run build までで完了（deploy）。dsh web の再起動は呼び出し元のラッパーが行うので自分で再起動しないこと。
 4. VS Code 拡張の tag push で起動する GitHub Actions（Publish / CI）の結果を gh で確認し、成功を確認してから完了とする。
    失敗したら原因を直して再実行するところまでやる。Marketplace の VSCE_PAT は GitHub Secrets にあるのでホームディレクトリから探さないこと。
 5. 最後に、何をどう判断して何を公開したのか（または公開しなかったのか）を日本語で簡潔に報告。
@@ -117,6 +120,11 @@ AGENT_STATUS=$?
 
 if [ "$AGENT_STATUS" -eq 0 ]; then
   log "agent run finished OK (full transcript: $LOG_DIR/daily-model-watch.log)"
+  # Deploy step: the plugin has no npm publish, so the rebuilt lib/ only reaches the
+  # Web GUI when `dsh web` restarts. The script no-ops when the running server is
+  # already newer than the artifacts, and waits for an idle window (this agent's own
+  # session log stays busy until the run ends) before replacing a live turn.
+  "$REPO/scripts/restart-dsh-web.sh" --wait 600 || log "dsh web restart failed — see the output above"
 else
   log "agent run exited $AGENT_STATUS — see $LOG_DIR/daily-model-watch.log"
 fi
