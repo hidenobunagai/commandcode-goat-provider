@@ -64,6 +64,10 @@ bun run test && bun run build          # the gate that must be green
 bun run typecheck                      # optional: known pre-existing ToolCallId errors (unrelated to catalogs)
 ```
 
+CI (`.github/workflows/ci.yml`) runs install → OSV scan → lint → test → build on every push/PR and pins
+**bun 1.4.0**: this repo's `bun.lock` is `lockfileVersion: 2`, which bun 1.3.x cannot parse, so a lockfile
+rewritten by an older bun breaks the build with `Unknown lockfile version` before any test runs.
+
 Bump `version` in `package.json` (patch) and commit, e.g.
 `feat(catalog): add <id> (Command Code)`. Push to `main`.
 The DSH profile loads this checkout through a symlink
