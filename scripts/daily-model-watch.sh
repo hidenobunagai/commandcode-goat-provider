@@ -60,6 +60,16 @@ fi
 DRIFT=0
 [ "$CHECK_STATUS" -eq 2 ] && DRIFT=1
 
+# Releasing only makes sense from the default branch: a version bump, commit and tag
+# on a feature branch would publish a commit that is not on main.
+for repo in "$REPO" "$DSH_REPO"; do
+  branch="$(git -C "$repo" rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+  if [ "$branch" != "main" ]; then
+    log "$(basename "$repo") is on branch '$branch' (not main) — skipping agent run"
+    exit 1
+  fi
+done
+
 if [ "$DRIFT" -eq 0 ] && [ "$FORCE" -eq 0 ]; then
   log "no catalog drift — nothing to do (agent not started)"
   exit 0
