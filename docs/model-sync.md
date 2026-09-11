@@ -122,5 +122,7 @@ systemctl --user start daily-model-watch.service     # manual run
 scripts/daily-model-watch.sh --dry-run --force       # show the agent prompt without running it
 ```
 
-Related: `.github/workflows/sync-cron.yml` runs the same `check-live-models.ts` gate in CI daily and opens a
-PR on drift — it is the independent second check, not the publisher.
+Related: the gate also runs by hand (`bun run check:models`) and inside CI's `ci.yml` via `package:vsix`.
+There is deliberately **no** scheduled CI-side drift job: the comparison needs the sibling DSH checkout,
+which only exists on homepi, and the timer below already covers it (`Persistent=true` catches up after a
+host that was off at the scheduled time).
