@@ -103,7 +103,14 @@ bun run format
 
 # Build VSIX package
 bun run package:vsix
+
+# Check the bundled catalog against the live Command Code API (exit 2 = drift)
+bun run check:models
 ```
+
+Model catalog updates — new-model curation, version bump, tag-driven publish — follow
+[`docs/model-sync.md`](docs/model-sync.md). The same playbook runs automatically every day via the homepi
+watch timer (`daily-model-watch.timer`).
 
 ---
 
