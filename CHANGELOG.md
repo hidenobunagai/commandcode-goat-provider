@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.8] - 2026-09-12
+
+### Changed
+
+- CI: bump `actions/upload-artifact` from v4 to v7 so the coverage upload runs on its native Node.js 24 runtime. v4 declares `runs.using: node20`, which made GitHub print the "Node.js 20 is deprecated … forced to run on Node.js 24" annotation on every CI run (e.g. run 34679722959); v5 still declares `node20`, so only v6+ clears it. No change to the uploaded `coverage-report` artifact or its retention.
+
 ## [0.1.7] - 2026-09-12
 
 ### Changed
