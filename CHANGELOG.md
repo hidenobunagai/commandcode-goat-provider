@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.9] - 2026-09-12
+
+### Changed
+
+- Pages deploy: bump `actions/configure-pages` v5 to v6, `actions/deploy-pages` v4 to v5 and `actions/upload-pages-artifact` v3 to v5 so every step runs on its native Node.js 24 runtime. All three previous pins declared `runs.using: node20` (v3 of `upload-pages-artifact` also pulled in `actions/upload-artifact@v4`), which made GitHub print the "Node.js 20 is deprecated … forced to run on Node.js 24" annotation on every Pages run (e.g. run 34684833813). Inputs used here (`path: docs/`) and the `steps.deployment.outputs.page_url` output are unchanged, and `docs/` contains no dotfiles, so the v4 hidden-file default does not apply.
+
 ## [0.1.8] - 2026-09-12
 
 ### Changed
