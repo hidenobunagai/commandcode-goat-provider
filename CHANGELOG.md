@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.12] - 2026-09-12
+
+### Fixed
+
+- Docs: `docs/model-sync.md` section 1 and the usage header of `scripts/check-live-models.ts` now document the drift gate as `bun run check:models` instead of `node scripts/check-live-models.ts`. Node 22.23.2 does run the script (exit 0, verified), but it prints `MODULE_TYPELESS_PACKAGE_JSON` on every invocation because the file is ESM syntax in a package without `"type": "module"` — and that field cannot be added here, since the extension is compiled to CommonJS. Every other caller already uses bun (README, `package.json`, `scripts/daily-model-watch.sh`, CI pin 1.4.0), so the two stale command lines were the only place a reader was pointed at the warning-producing form. No script behaviour or invocation changed.
+
 ## [0.1.11] - 2026-09-12
 
 ### Changed

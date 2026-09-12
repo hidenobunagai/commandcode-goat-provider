@@ -15,9 +15,9 @@
  *   1  internal error (API unreachable, catalog unreadable, malformed entry)
  *
  * Usage:
- *   node scripts/check-live-models.ts            # human-readable report
- *   node scripts/check-live-models.ts --json     # machine-readable report
- *   node scripts/check-live-models.ts --repo <path>   # override sibling repo location
+ *   bun run check:models                       # human-readable report
+ *   bun run check:models --json                # machine-readable report
+ *   bun run check:models --repo <path>         # override sibling repo location
  */
 import fs from "node:fs";
 import path from "node:path";

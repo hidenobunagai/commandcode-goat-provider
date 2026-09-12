@@ -16,7 +16,7 @@ by the API — they must be curated from `commandcode.ai/models` and the provide
 
 ```bash
 cd ~/projects/commandcode-goat-provider
-node scripts/check-live-models.ts          # exit 0 = clean, 2 = drift, 1 = API/catalog error
+bun run check:models                       # exit 0 = clean, 2 = drift, 1 = API/catalog error
 ```
 
 Sections worth acting on:
