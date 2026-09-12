@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.14] - 2026-09-12
+
+### Fixed
+
+- Docs: the closing note in `docs/model-sync.md` claimed the drift gate "also runs … inside CI's `ci.yml` via `package:vsix`". `package:vsix` is `bun run check-changelog && bun run compile && vsce package`, and no workflow has a `check:models` step — `ci.yml`, `publish.yml` and `pages.yml` were read end to end, and the only callers in the repo are `scripts/daily-model-watch.sh` and a manual `bun run check:models`. The note now states the gate runs only by hand and in the daily watch, which is what the paragraph below it (no scheduled CI-side drift job: the comparison needs the sibling DSH checkout, present only on homepi) already implied. The same sentence's stale "timer below" — section 6 describes the timer above it — is corrected to "above". No script, workflow, or runtime behaviour changed.
+
 ## [0.1.13] - 2026-09-12
 
 ### Fixed

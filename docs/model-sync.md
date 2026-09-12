@@ -160,7 +160,9 @@ systemctl --user start daily-model-watch.service     # manual run
 scripts/daily-model-watch.sh --dry-run --force       # show the agent prompt without running it
 ```
 
-Related: the gate also runs by hand (`bun run check:models`) and inside CI's `ci.yml` via `package:vsix`.
+Related: the gate runs only by hand (`bun run check:models`) and in the daily watch above
+(`scripts/daily-model-watch.sh`). No workflow runs it: `ci.yml` and `publish.yml` call `package:vsix`,
+which is `check-changelog && compile && vsce package` with no `check:models` step.
 There is deliberately **no** scheduled CI-side drift job: the comparison needs the sibling DSH checkout,
-which only exists on homepi, and the timer below already covers it (`Persistent=true` catches up after a
+which only exists on homepi, and the timer above already covers it (`Persistent=true` catches up after a
 host that was off at the scheduled time).
