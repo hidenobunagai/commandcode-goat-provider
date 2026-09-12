@@ -9,6 +9,7 @@ __mocks__/**
 node_modules/**
 images/opencode_go_provider_summary.png
 coverage/**
+logs/**
 .serena/**
 .headroom/**
 .code-review-graph/**
