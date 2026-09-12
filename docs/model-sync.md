@@ -132,7 +132,13 @@ from step 4. Never leave a broken build pushed without reporting it.
    running server is already newer than `lib/`, and defers while a session was written within the last 120s
    (the agent's own session log stays busy until the run ends, which is what `--wait` is for). The agent
    itself must not restart the server.
-4. Transcripts: `logs/daily-model-watch.log` (gitignored) plus the persisted DSH session, viewable in the Web GUI.
+4. Logs: `logs/daily-model-watch.service.log` is the **canonical** service log. The unit
+   (`~/.config/systemd/user/daily-model-watch.service`, not versioned in this repo) sends stdout/stderr
+   straight to it with `StandardOutput=append:` / `StandardError=append:` rather than to journald, so
+   `journalctl --user -u daily-model-watch.service` holds only systemd's `Starting`/`Finished` lines —
+   read the file (or `tail -f` it) for the gate output, the `model route:` line and the agent status.
+   The file is not rotated; a normal run appends a handful of lines. The full agent transcript is
+   `logs/daily-model-watch.log` (gitignored) plus the persisted DSH session, viewable in the Web GUI.
 
 The Mac is not part of the daily run: `~/projects` reaches it by Mutagen, and its launchd job
 `com.dsh.plugin-watch` (`~/Library/LaunchAgents/com.dsh.plugin-watch.plist`) restarts the Mac server on

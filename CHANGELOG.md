@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.7] - 2026-09-12
+
+### Changed
+
+- Daily model watch: document `logs/daily-model-watch.service.log` as the canonical service log. The unit writes stdout/stderr there with `StandardOutput/StandardError=append:`, which bypasses journald — `journalctl --user -u daily-model-watch.service` records only the unit start/finish lines — so the stale "journald is canonical" comment in the unit and the playbook now match reality. No runtime behaviour change.
+
 ## [0.1.6] - 2026-09-12
 
 ### Changed
