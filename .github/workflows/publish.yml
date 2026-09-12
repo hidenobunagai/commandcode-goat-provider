@@ -25,7 +25,10 @@ jobs:
       - run: bun run compile
       - run: bun run test -- --runInBand
       - run: bun run package:vsix
+      # A manual run validates the build; only a v* tag may publish. This
+      # extension ships to the VS Code Marketplace only (it is not on Open VSX).
       - name: Publish to VS Code Marketplace
+        if: startsWith(github.ref, 'refs/tags/v')
         run: bunx vsce publish --no-dependencies --allow-missing-repository -p "$VSCE_PAT"
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
