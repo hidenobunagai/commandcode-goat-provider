@@ -114,7 +114,14 @@ if [ "$DRY_RUN" -eq 1 ]; then
 fi
 
 cd "$HARNESS" || { log "FATAL: cannot cd $HARNESS"; exit 1; }
-timeout "$AGENT_TIMEOUT_SEC" node --import tsx/esm apps/cli/src/bin.ts --profile "$DSH_PROFILE" "$PROMPT" \
+
+# headless has no usage-failover, so pick the model route from the quota before booting.
+# dsh-headless-route prints a --patch overlay only when Go is over its threshold and goat
+# has room; its reasoning goes to the transcript (stderr), and no output keeps the default.
+ROUTE_ARGS=(); ROUTE_PATCH="$("$HOME/bin/dsh-headless-route" 2>>"$LOG_DIR/daily-model-watch.log")"
+[ -n "$ROUTE_PATCH" ] && ROUTE_ARGS=(--patch "$ROUTE_PATCH")
+
+timeout "$AGENT_TIMEOUT_SEC" node --import tsx/esm apps/cli/src/bin.ts --profile "$DSH_PROFILE" "${ROUTE_ARGS[@]}" "$PROMPT" \
   >>"$LOG_DIR/daily-model-watch.log" 2>&1
 AGENT_STATUS=$?
 
