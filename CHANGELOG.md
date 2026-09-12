@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.11] - 2026-09-12
+
+### Changed
+
+- CI/Publish: pin `bun-version` to **1.4.0** (was 1.3.8) so both workflows run the same toolchain as this checkout, matching the DSH sibling repo. `bun.lock` here is still `lockfileVersion: 1` and 1.4.0 keeps it that way (`bun install` and `bun add` both leave it untouched), but a lockfile regenerated from scratch is `lockfileVersion: 2`: `bunx bun@1.3.8` against that file fails `--frozen-lockfile` with `Unknown lockfile version`, and without `--frozen-lockfile` — which is what these workflows run — it merely warns "Ignoring lockfile", re-resolves from `package.json` and rewrites the lock, so the committed pins silently stop being what CI installs. 1.4.0 reads both formats, so the pin no longer depends on nobody regenerating the lockfile. `docs/model-sync.md` section 4 updated to match; no lockfile or dependency changed.
+
 ## [0.1.10] - 2026-09-12
 
 ### Fixed
