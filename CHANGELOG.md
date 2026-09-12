@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.10] - 2026-09-12
+
+### Fixed
+
+- `docs/model-sync.md`: the bun-pin note in section 3 ("pins **bun 1.4.0** … this repo's `bun.lock` is `lockfileVersion: 2`") describes the **DSH sibling repo's** CI, but read from this checkout "this repo" looks like the extension repo, which pins `bun 1.3.8` in `ci.yml`/`publish.yml` against a `lockfileVersion: 1` lockfile. The paragraph now names the DSH repo explicitly, and section 4 states this repo's opposite case. Both sides were verified rather than assumed: the DSH `ci.yml` pins `1.4.0` with a `lockfileVersion: 2` lockfile, and bun 1.4.0 keeps this repo's lockfile at `lockfileVersion: 1` (unchanged after `bun install` and after `bun add`), so no version pin or lockfile changed here.
+
 ## [0.1.9] - 2026-09-12
 
 ### Changed

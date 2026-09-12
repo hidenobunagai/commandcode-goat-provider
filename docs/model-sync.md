@@ -64,8 +64,9 @@ bun run test && bun run build          # the gate that must be green
 bun run typecheck                      # optional: known pre-existing ToolCallId errors (unrelated to catalogs)
 ```
 
-CI (`.github/workflows/ci.yml`) runs install → OSV scan → lint → test → build on every push/PR and pins
-**bun 1.4.0**: this repo's `bun.lock` is `lockfileVersion: 2`, which bun 1.3.x cannot parse, so a lockfile
+The **DSH repo's** CI (`.github/workflows/ci.yml` — a different file from this extension repo's, see
+section 4) runs install → OSV scan → lint → test → build on every push/PR and pins **bun 1.4.0**: that
+checkout's `bun.lock` was created as `lockfileVersion: 2`, which bun 1.3.x cannot parse, so a lockfile
 rewritten by an older bun breaks the build with `Unknown lockfile version` before any test runs.
 
 Bump `version` in `package.json` (patch) and commit, e.g.
@@ -87,6 +88,10 @@ cd ~/projects/commandcode-goat-provider
 # docs/models.md, README.md model table
 bun run lint && bun run test -- --runInBand && bun run compile
 ```
+
+The bun pin here is the opposite case from section 3: this repo's `bun.lock` stays `lockfileVersion: 1`
+(bun 1.4.0 preserves the existing format even when it rewrites, `bun add` included), so `ci.yml` and
+`publish.yml` pin **bun 1.3.8** and the local bun 1.4.0 does not invalidate that pin.
 
 Requirements before tagging:
 
