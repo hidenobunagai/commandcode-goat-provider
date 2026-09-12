@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.13] - 2026-09-12
+
+### Fixed
+
+- CI/Publish: install with `--frozen-lockfile` (`bun install --frozen-lockfile --ignore-scripts`). The committed `bun.lock` is now the only dependency set CI and a tagged release install. With bun 1.4.0 a plain `bun install` resolves from the lockfile when the two files agree — verified here: `bun install --frozen-lockfile --ignore-scripts --dry-run` exits 0 against the committed lock — but when `package.json` and the lockfile drift it exits 0 anyway and rewrites the lock, so CI reported green while installing a set no committed file records. Reproduced in a scratch copy: pinning `prettier` to `3.9.5` against a lock holding `3.9.6` rewrote `bun.lock` (sha256 `c6c8cbb6…` → `2095d3b9…`) under a plain install, while the same drift with the flag exits 1 with `error: lockfile had changes, but lockfile is frozen`. Both workflows now match the sibling repos that already pass the flag (`commandcode-goat-dsh-provider`, `inline-sql-toolkit`, `noteeees`, `nvidia-nim-provider`, `goen-net`). `docs/model-sync.md` section 4 updated to state the frozen install; no lockfile or dependency changed.
+
 ## [0.1.12] - 2026-09-12
 
 ### Fixed

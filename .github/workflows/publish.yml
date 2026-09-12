@@ -18,7 +18,9 @@ jobs:
           # Same pin as ci.yml: 1.4.0 reads both lockfile formats, so a
           # regenerated (lockfileVersion 2) lock cannot break the release.
           bun-version: 1.4.0
-      - run: bun install --ignore-scripts
+      # Same frozen install as ci.yml: a tagged release must ship the
+      # committed lockfile, not a set re-resolved from package.json.
+      - run: bun install --frozen-lockfile --ignore-scripts
       - run: bun run lint
       - run: bun run compile
       - run: bun run test -- --runInBand

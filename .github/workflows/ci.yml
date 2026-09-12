@@ -19,7 +19,11 @@ jobs:
           # "Unknown lockfile version", without it bun warns "Ignoring
           # lockfile" and quietly re-resolves from package.json instead.
           bun-version: 1.4.0
-      - run: bun install --ignore-scripts
+      # --frozen-lockfile: the committed lockfile is the only dependency set CI
+      # installs. Without it, a package.json/lockfile drift (e.g. a dep added
+      # locally but never `bun add`ed) re-resolves from package.json and still
+      # exits 0; with it bun 1.4.0 fails the run instead.
+      - run: bun install --frozen-lockfile --ignore-scripts
       - name: Supply chain scan (OSV)
         uses: google/osv-scanner-action/osv-scanner-action@v2.5.0
         with:

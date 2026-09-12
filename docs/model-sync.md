@@ -89,12 +89,14 @@ cd ~/projects/commandcode-goat-provider
 bun run lint && bun run test -- --runInBand && bun run compile
 ```
 
-`ci.yml` and `publish.yml` pin **bun 1.4.0**, the same as section 3 and the local toolchain. This repo's
-`bun.lock` is still `lockfileVersion: 1` (bun 1.4.0 preserves the existing format even when it rewrites,
-`bun add` included), but a lockfile regenerated from scratch is `lockfileVersion: 2`, and bun 1.3.8 cannot
-read that: with `--frozen-lockfile` it dies with `Unknown lockfile version`, and without the flag it only
-warns "Ignoring lockfile" and re-resolves from `package.json`, so the pin silently stops deciding what CI
-installs. 1.4.0 reads both formats, so the pin no longer depends on nobody regenerating the lockfile.
+`ci.yml` and `publish.yml` pin **bun 1.4.0** and install with **`--frozen-lockfile`**, the same as
+section 3 and the local toolchain: the committed `bun.lock` is the only dependency set CI and a release
+build install, so a `package.json`/lockfile drift fails the run instead of being re-resolved silently.
+This repo's `bun.lock` is still `lockfileVersion: 1` (bun 1.4.0 preserves the existing format even when it
+rewrites, `bun add` included), but a lockfile regenerated from scratch is `lockfileVersion: 2`, and bun
+1.3.8 cannot read that: with `--frozen-lockfile` it dies with `Unknown lockfile version`, and without the
+flag it only warns "Ignoring lockfile" and re-resolves from `package.json`. 1.4.0 reads both formats, so
+the pin no longer depends on nobody regenerating the lockfile.
 
 Requirements before tagging:
 
