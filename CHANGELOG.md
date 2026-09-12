@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.6] - 2026-09-12
+
+### Changed
+
+- Daily model watch (`scripts/daily-model-watch.sh`): mirror the `~/bin/dsh-headless-route` decision to the service log (`logs/daily-model-watch.service.log`) as a single `model route:` line. Previously that reasoning only reached the transcript, so the service log alone could not tell whether a daily run booted on Go or goat.
+
 ## [0.1.5] - 2026-09-10
 
 ### Added

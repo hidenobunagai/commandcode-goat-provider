@@ -117,9 +117,15 @@ cd "$HARNESS" || { log "FATAL: cannot cd $HARNESS"; exit 1; }
 
 # headless has no usage-failover, so pick the model route from the quota before booting.
 # dsh-headless-route prints a --patch overlay only when Go is over its threshold and goat
-# has room; its reasoning goes to the transcript (stderr), and no output keeps the default.
-ROUTE_ARGS=(); ROUTE_PATCH="$("$HOME/bin/dsh-headless-route" 2>>"$LOG_DIR/daily-model-watch.log")"
+# has room; no output keeps the default. Its one-line reasoning (stderr) still goes to the
+# transcript, and is echoed here as well so the service log alone shows which of Go / goat
+# the run used — the transcript is the only other place that line would appear.
+ROUTE_ARGS=(); ROUTE_ERR="$(mktemp /tmp/model-watch.route.XXXXXX)"
+ROUTE_PATCH="$("$HOME/bin/dsh-headless-route" 2>"$ROUTE_ERR")"
 [ -n "$ROUTE_PATCH" ] && ROUTE_ARGS=(--patch "$ROUTE_PATCH")
+ROUTE_NOTE="$(cat "$ROUTE_ERR")"; rm -f "$ROUTE_ERR"
+[ -n "$ROUTE_NOTE" ] && printf '%s\n' "$ROUTE_NOTE" >>"$LOG_DIR/daily-model-watch.log"
+log "model route: ${ROUTE_NOTE:-no reason reported by dsh-headless-route (default route)}"
 
 timeout "$AGENT_TIMEOUT_SEC" node --import tsx/esm apps/cli/src/bin.ts --profile "$DSH_PROFILE" "${ROUTE_ARGS[@]}" "$PROMPT" \
   >>"$LOG_DIR/daily-model-watch.log" 2>&1

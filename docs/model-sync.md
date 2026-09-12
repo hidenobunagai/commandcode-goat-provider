@@ -125,7 +125,8 @@ from step 4. Never leave a broken build pushed without reporting it.
    (`dsh --profile headless`), which performs sections 2–5 autonomously. Headless has no
    usage-failover, so the wrapper asks `~/bin/dsh-headless-route` for a `--patch` overlay first: when Go is
    over 80% of a quota window and goat has room, the run boots on the goat provider instead. The decision is
-   appended to the transcript.
+   written to both the transcript and the service log (`logs/daily-model-watch.service.log`, one
+   `model route:` line), so the daily outcome can be traced without opening the transcript.
 3. When that run exits 0, the wrapper restarts `dsh web` through the supervisor
    (`scripts/restart-dsh-web.sh --wait 600`) so homepi serves the rebuilt plugin. The script no-ops when the
    running server is already newer than `lib/`, and defers while a session was written within the last 120s
