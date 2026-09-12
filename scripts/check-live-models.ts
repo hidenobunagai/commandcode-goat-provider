@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Detect model-catalog drift against the live Command Code provider API.
  *

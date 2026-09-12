@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.15] - 2026-09-12
+
+### Fixed
+
+- Removed the dead `#!/usr/bin/env node` shebang from `scripts/check-live-models.ts`. No caller ever executes the file directly: its mode is `0600`, so `test -x` fails and `./scripts/check-live-models.ts` exits 126 "Permission denied", verified here. Both real callers go through bun — `package.json`'s `"check:models": "bun scripts/check-live-models.ts"` and `scripts/daily-model-watch.sh:48` (`bun run check:models`) — and the sibling `scripts/check-changelog.ts`, also non-executable and also bun-run, carries no shebang at all. The line was worse than redundant: it named the interpreter this repo cannot usefully use, since node 22.23.2 prints `MODULE_TYPELESS_PACKAGE_JSON` for this ESM-syntax file in a CommonJS package (see 0.1.12). Rewriting it to `#!/usr/bin/env bun` was rejected for the same reason — a non-executable file cannot use a shebang — so the line is deleted rather than retargeted. Verified behaviour-neutral: `bun run check:models --json` emitted byte-identical JSON before and after (exit 0, 69 live models, no drift), and `bun scripts/check-live-models.ts --json --repo <dsh>` still exits 0. No dependency, workflow or runtime behaviour changed.
+
 ## [0.1.14] - 2026-09-12
 
 ### Fixed
