@@ -77,28 +77,14 @@ for repo in "$REPO" "$DSH_REPO"; do
   fi
 done
 
-# 未リリースのコミット数 (VS Code 拡張の最新 v* タグ以降)。カタログ差分が無くても、
-# 30 分のアイドルループが積んだ修正を翌日のこのジョブでまとめて 1 版に載せる。
-pending_release_count() {
-  local dir="$1" tag count
-  tag="$(git -C "$dir" tag --list 'v*' --sort=-v:refname 2>/dev/null | head -1)"
-  [ -n "$tag" ] || { echo 0; return; }
-  count="$(git -C "$dir" rev-list --count "$tag..HEAD" 2>/dev/null || echo 0)"
-  echo "${count:-0}"
-}
-
-PENDING="$(pending_release_count "$REPO")"
-LAST_TAG="$(git -C "$REPO" tag --list 'v*' --sort=-v:refname 2>/dev/null | head -1)"
-
-if [ "$DRIFT" -eq 0 ] && [ "$PENDING" -eq 0 ] && [ "$FORCE" -eq 0 ]; then
-  log "no catalog drift and no unreleased commits (last tag ${LAST_TAG:-none}) — nothing to do (agent not started)"
+if [ "$DRIFT" -eq 0 ] && [ "$FORCE" -eq 0 ]; then
+  log "no catalog drift — nothing to do (agent not started)"
   exit 0
 fi
-log "release run: drift=$DRIFT pending_commits=$PENDING (last tag ${LAST_TAG:-none})"
 
 REPORT="$(cat "$REPORT_FILE")"
 PROMPT="$(cat <<EOF
-Command Code の日次リリース判定を実行してください。
+Command Code のモデルカタログ日次同期を実行してください。
 
 手順書: $REPO/docs/model-sync.md を必ず最初に読み、そこに書かれた手順に従ってください。
 対象リポジトリ: $REPO （VS Code 拡張）と $DSH_REPO （DSH プラグイン）。
@@ -109,16 +95,13 @@ Command Code の日次リリース判定を実行してください。
 $REPORT
 ---
 
-未リリースのコミット: $PENDING 件（$REPO の最新タグ ${LAST_TAG:-なし} 以降。30 分のアイドルループが積んだ修正を含む）
-カタログ差分の有無: $([ "$DRIFT" -eq 0 ] && echo 'なし（カタログには触らない）' || echo 'あり')
-
 やること:
-1. 上記の差分が実在するか確認する。実在しなければカタログは触らず、未リリースのコミットのリリースだけを行う
-   （差分が実在せず未リリースも無い場合のみ、何も変更せず理由を1段落で報告して終了）。
-2. 差分が実在する時だけ、新モデルの capability（vision / thinking / protocol / 価格 / tier）を commandcode.ai の情報から
-   確認して両カタログへ反映。確認できない項目は推測せず保守的デフォルトにし、判断できなかった点を最終報告に明記。
+1. 上記の差分が実在するか確認し、実在しなければ何も変更せず、その理由を1段落で報告して終了。
+2. 新モデルがあれば capability（vision / thinking / protocol / 価格 / tier）を commandcode.ai の情報から確認して両カタログへ反映。
+   確認できない項目は推測せず保守的デフォルトにし、判断できなかった点を最終報告に明記。
 3. 各リポジトリで test / lint / compile を実行し、通ってから version bump・CHANGELOG 更新・commit・push・tag push。
-   CHANGELOG には、カタログ更新と未リリースだったコミットの要点をまとめて書く（何を載せた版か後から分かるように）。
+   CHANGELOG にはカタログ更新の要点を書く。同じ版に未リリースのコミット（30 分のアイドル自動改善の分）が
+   載る場合は、その要点もまとめて書く（何を載せた版か後から分かるように）。
    DSH プラグインは bun run build までで完了（deploy）。dsh web の再起動は呼び出し元のラッパーが行うので自分で再起動しないこと。
 4. VS Code 拡張の tag push で起動する GitHub Actions（Publish / CI）の結果を gh で確認し、成功を確認してから完了とする。
    失敗したら原因を直して再実行するところまでやる。Marketplace の VSCE_PAT は GitHub Secrets にあるのでホームディレクトリから探さないこと。
