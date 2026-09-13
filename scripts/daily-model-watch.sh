@@ -8,6 +8,11 @@
 # 3. After that run, restart `dsh web` so the rebuilt DSH plugin is re-read
 #    (scripts/restart-dsh-web.sh; it no-ops when the server is already newer).
 #
+# 公開ポリシー (2026-09-13): リリース (version bump + タグ push = 公開) を行うのは
+# **この日次ジョブと daily-pi-provider-sync.sh だけ**。30 分ごとの dsh-idle-improve.sh は
+# 公開しない (項目本文が明示した時だけ)。この拡張は Copilot Chat プロバイダなので
+# publish.yml は VS Code Marketplace のみへ出す (Open VSX には出さない)。
+#
 # Invoked by the systemd user timer daily-model-watch.timer.
 # Manual use:
 #   scripts/daily-model-watch.sh              # gate + agent only on drift
