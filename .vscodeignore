@@ -35,6 +35,7 @@ package-lock.json
 bun.lock
 jest.config.js
 tsconfig.json
+tsconfig.scripts.json
 bunfig.toml
 eslint.config.mjs
 .prettierrc

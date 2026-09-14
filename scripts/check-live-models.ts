@@ -22,13 +22,17 @@ import fs from "node:fs";
 import path from "node:path";
 
 const API_URL = "https://api.commandcode.ai/provider/v1/models";
-const DEFAULT_DSH_REPO = path.join(process.env.HOME ?? "/home/pi", "projects/commandcode-goat-dsh-provider");
+const DEFAULT_DSH_REPO = path.join(
+  process.env.HOME ?? "/home/pi",
+  "projects/commandcode-goat-dsh-provider",
+);
 const VSCE_REPO = process.cwd();
 
 const argv = process.argv.slice(2);
 const JSON_OUT = argv.includes("--json");
 const repoIdx = argv.indexOf("--repo");
-const DSH_REPO = repoIdx >= 0 && argv[repoIdx + 1] ? path.resolve(argv[repoIdx + 1]) : DEFAULT_DSH_REPO;
+const DSH_REPO =
+  repoIdx >= 0 && argv[repoIdx + 1] ? path.resolve(argv[repoIdx + 1]) : DEFAULT_DSH_REPO;
 
 interface ApiModel {
   id: string;
@@ -140,9 +144,17 @@ function parseVsceCapabilities(repo: string): Map<string, Capability> {
     return source.slice(start, end);
   };
 
-  const vision = new Set([...block("const VISION_SET", "const EFFORTS_MAP").matchAll(/^\s*"([^"]+)",/gm)].map((m) => m[1]));
+  const vision = new Set(
+    [...block("const VISION_SET", "const EFFORTS_MAP").matchAll(/^\s*"([^"]+)",/gm)].map(
+      (m) => m[1],
+    ),
+  );
   const efforts = new Map(
-    [...block("const EFFORTS_MAP", "const PROTOCOL_MAP").matchAll(/^\s*\["([^"]+)",\s*\[([^\]]*)\]\]/gm)].map((m) => [
+    [
+      ...block("const EFFORTS_MAP", "const PROTOCOL_MAP").matchAll(
+        /^\s*\["([^"]+)",\s*\[([^\]]*)\]\]/gm,
+      ),
+    ].map((m) => [
       m[1],
       m[2]
         .split(",")
@@ -151,13 +163,21 @@ function parseVsceCapabilities(repo: string): Map<string, Capability> {
         .sort(),
     ]),
   );
-  const protocol = new Map([...block("const PROTOCOL_MAP", "const vision =").matchAll(/^\s*\["([^"]+)",\s*"([^"]+)"\]/gm)].map((m) => [m[1], m[2]]));
+  const protocol = new Map(
+    [
+      ...block("const PROTOCOL_MAP", "const vision =").matchAll(/^\s*\["([^"]+)",\s*"([^"]+)"\]/gm),
+    ].map((m) => [m[1], m[2]]),
+  );
 
   const ids = new Set([...vision, ...efforts.keys(), ...protocol.keys()]);
   return new Map(
     [...ids].map((id) => [
       id,
-      { vision: vision.has(id), efforts: efforts.get(id) ?? [], protocol: protocol.get(id) ?? "openai" } satisfies Capability,
+      {
+        vision: vision.has(id),
+        efforts: efforts.get(id) ?? [],
+        protocol: protocol.get(id) ?? "openai",
+      } satisfies Capability,
     ]),
   );
 }
@@ -188,7 +208,10 @@ function parseDshCapabilities(repo: string): Map<string, Capability> {
 }
 
 /** The extension derives its tables from the DSH CATALOG; surface any divergence in either direction. */
-function compareCapabilities(vscode: Map<string, Capability>, dsh: Map<string, Capability>): ModelDiff[] {
+function compareCapabilities(
+  vscode: Map<string, Capability>,
+  dsh: Map<string, Capability>,
+): ModelDiff[] {
   const diffs: ModelDiff[] = [];
   for (const id of new Set([...vscode.keys(), ...dsh.keys()])) {
     const vs = vscode.get(id);
@@ -200,7 +223,8 @@ function compareCapabilities(vscode: Map<string, Capability>, dsh: Map<string, C
     }
     const changed: string[] = [];
     if (vs.vision !== ds.vision) changed.push(`vision vsce=${vs.vision} dsh=${ds.vision}`);
-    if (vs.protocol !== ds.protocol) changed.push(`protocol vsce=${vs.protocol} dsh=${ds.protocol}`);
+    if (vs.protocol !== ds.protocol)
+      changed.push(`protocol vsce=${vs.protocol} dsh=${ds.protocol}`);
     if (vs.efforts.join(",") !== ds.efforts.join(",")) {
       changed.push(`efforts vsce=[${vs.efforts.join(",")}] dsh=[${ds.efforts.join(",")}]`);
     }
@@ -211,7 +235,9 @@ function compareCapabilities(vscode: Map<string, Capability>, dsh: Map<string, C
 
 function gitVersion(repo: string): string | undefined {
   try {
-    const pkg = JSON.parse(fs.readFileSync(path.join(repo, "package.json"), "utf8")) as { version?: string };
+    const pkg = JSON.parse(fs.readFileSync(path.join(repo, "package.json"), "utf8")) as {
+      version?: string;
+    };
     return pkg.version;
   } catch {
     return undefined;
@@ -232,25 +258,49 @@ function compare(
     const vs = vscode.get(id);
     const ds = dsh.get(id);
     if (!vs) {
-      newModels.push({ id, name: api.name, contextWindow: api.context_length, dsh: ds, changed: [] });
+      newModels.push({
+        id,
+        name: api.name,
+        contextWindow: api.context_length,
+        dsh: ds,
+        changed: [],
+      });
       continue;
     }
     const changed: string[] = [];
     const side = (label: string, entry: ModelEntry) => {
-      if (typeof api.context_length === "number" && api.context_length > 0 && api.context_length !== entry.contextWindow) {
+      if (
+        typeof api.context_length === "number" &&
+        api.context_length > 0 &&
+        api.context_length !== entry.contextWindow
+      ) {
         changed.push(`${label} contextWindow ${entry.contextWindow} → ${api.context_length}`);
       }
-      if (api.name && api.name !== entry.name) changed.push(`${label} name "${entry.name}" → "${api.name}"`);
+      if (api.name && api.name !== entry.name)
+        changed.push(`${label} name "${entry.name}" → "${api.name}"`);
     };
     side("VS Code", vs);
     if (ds) side("DSH", ds);
     if (changed.length > 0) changedModels.push({ id, vscode: vs, dsh: ds, changed });
-    else if (!ds) missingFromDsh.push({ id, vscode: vs, changed: ["present in VS Code catalog, absent from DSH CATALOG"] });
+    else if (!ds)
+      missingFromDsh.push({
+        id,
+        vscode: vs,
+        changed: ["present in VS Code catalog, absent from DSH CATALOG"],
+      });
   }
 
   const removedModels: ModelDiff[] = [];
   for (const [id, vs] of vscode) {
-    if (!liveById.has(id)) removedModels.push({ id, name: vs.name, contextWindow: vs.contextWindow, vscode: vs, dsh: dsh.get(id), changed: [] });
+    if (!liveById.has(id))
+      removedModels.push({
+        id,
+        name: vs.name,
+        contextWindow: vs.contextWindow,
+        vscode: vs,
+        dsh: dsh.get(id),
+        changed: [],
+      });
   }
 
   return { newModels, removedModels, changedModels, missingFromDsh };
@@ -263,8 +313,12 @@ function writeText(report: Report): void {
   } else {
     console.log(`✅ live API: ${report.apiCount} models — ${API_URL}`);
   }
-  console.log(`   VS Code catalog: ${report.vscode.count ?? "?"} models (v${report.vscode.version ?? "?"}) ${report.vscode.path}`);
-  console.log(`   DSH catalog:     ${report.dsh.count ?? "?"} models (v${report.dsh.version ?? "?"}) ${report.dsh.path}`);
+  console.log(
+    `   VS Code catalog: ${report.vscode.count ?? "?"} models (v${report.vscode.version ?? "?"}) ${report.vscode.path}`,
+  );
+  console.log(
+    `   DSH catalog:     ${report.dsh.count ?? "?"} models (v${report.dsh.version ?? "?"}) ${report.dsh.path}`,
+  );
 
   if (!report.drift) {
     console.log("✅ no catalog drift");
@@ -281,11 +335,31 @@ function writeText(report: Report): void {
     for (const item of items) console.log(`  - ${render(item)}`);
   };
 
-  section("NEW — in live API, missing from both catalogs", report.newModels, (m) => `${m.id}  "${m.name}"  ctx=${m.contextWindow}`);
-  section("CHANGED — metadata differs from live API", report.changedModels, (m) => `${m.id}  ${m.changed.join("; ")}`);
-  section("MISSING FROM DSH — VS Code only", report.missingFromDsh, (m) => `${m.id}  ${m.changed.join("; ")}`);
-  section("REMOVED — in VS Code catalog, no longer served by API", report.removedModels, (m) => `${m.id}  "${m.name}"`);
-  section("CAPABILITY — VS Code tables differ from the DSH CATALOG", report.capabilityModels, (m) => `${m.id}  ${m.changed.join("; ")}`);
+  section(
+    "NEW — in live API, missing from both catalogs",
+    report.newModels,
+    (m) => `${m.id}  "${m.name}"  ctx=${m.contextWindow}`,
+  );
+  section(
+    "CHANGED — metadata differs from live API",
+    report.changedModels,
+    (m) => `${m.id}  ${m.changed.join("; ")}`,
+  );
+  section(
+    "MISSING FROM DSH — VS Code only",
+    report.missingFromDsh,
+    (m) => `${m.id}  ${m.changed.join("; ")}`,
+  );
+  section(
+    "REMOVED — in VS Code catalog, no longer served by API",
+    report.removedModels,
+    (m) => `${m.id}  "${m.name}"`,
+  );
+  section(
+    "CAPABILITY — VS Code tables differ from the DSH CATALOG",
+    report.capabilityModels,
+    (m) => `${m.id}  ${m.changed.join("; ")}`,
+  );
 
   console.log(`\n${line}`);
   console.log("Next: follow docs/model-sync.md to update both catalogs and publish.");
@@ -310,7 +384,9 @@ const report: Report = {
   drift: false,
 };
 
-if (!report.ok) {
+// Same test as `!report.ok`, but spelled on `live` so control-flow analysis narrows it
+// back to ApiModel[] past the never-returning exit below.
+if ("error" in live) {
   // A dead API is not catalog drift: report it and exit 1 so the timer logs an error
   // instead of waking an agent that would only be able to conclude "API unreachable".
   if (JSON_OUT) console.log(JSON.stringify(report, null, 2));
@@ -323,7 +399,10 @@ const dsh = parseDshCatalog(DSH_REPO);
 report.vscode.count = vscode.size;
 report.dsh.count = dsh.size;
 
-const capabilities = compareCapabilities(parseVsceCapabilities(VSCE_REPO), parseDshCapabilities(DSH_REPO));
+const capabilities = compareCapabilities(
+  parseVsceCapabilities(VSCE_REPO),
+  parseDshCapabilities(DSH_REPO),
+);
 Object.assign(report, compare(live, vscode, dsh));
 report.capabilityModels = capabilities.filter((m) => !report.newModels.some((n) => n.id === m.id));
 report.drift =

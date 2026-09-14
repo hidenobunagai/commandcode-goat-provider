@@ -71,14 +71,14 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "rm -rf out && tsc -p ./",
+    "compile": "rm -rf out && tsc -p ./ && tsc -p tsconfig.scripts.json",
     "watch": "tsc -w -p ./",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
-    "lint": "eslint src/ tests/",
-    "lint:fix": "eslint src/ tests/ --fix",
-    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "lint": "eslint src/ tests/ scripts/",
+    "lint:fix": "eslint src/ tests/ scripts/ --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\" \"scripts/**/*.ts\"",
     "check-changelog": "bun scripts/check-changelog.ts",
     "check:models": "bun scripts/check-live-models.ts",
     "package:vsix": "bun run check-changelog && bun run compile && vsce package --no-dependencies --allow-missing-repository"
