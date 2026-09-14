@@ -1,5 +1,23 @@
 # Change Log
 
+## [0.1.16] - 2026-09-15
+
+### Added
+
+- `tests/check-live-models.test.ts` (10 cases) plus `scripts/model-catalog.ts`: the drift gate's five catalog parsers (`parseVsceCatalog`, `parseDshCatalog`, `parseVsceCapabilities`, `parseDshCapabilities`, `compareCapabilities`/`compare`) moved out of `check-live-models.ts` into a module that takes source text and throws instead of calling `die()`; `check-live-models.ts` keeps the I/O. Two cases pin the parsers against this extension's own tables — `parseVsceCatalog` must return exactly `FALLBACK_MODELS` and `parseVsceCapabilities` exactly its capabilities — so a prettier reflow of the `OFFICIAL_MODELS` literal, which the regexes read line by line, fails the suite instead of quietly shrinking the catalog. Remaining cases cover the DSH fixture shapes, the loud failures (malformed row, missing block, zero rows) and both comparators. The live path is behaviour-neutral: `--json` output is byte-identical (69 live models, no drift, exit 0).
+
+### Changed
+
+- `scripts/` are now gated: new `tsconfig.scripts.json` (noEmit, module preserve) is chained into `compile`, and `lint` / `lint:fix` / `format` cover `scripts/`, so `check-changelog.ts` (the release check `package:vsix` runs) and the 13.5 KB drift gate can no longer carry type errors or formatting drift unnoticed. The new typecheck immediately caught one real error — `check-live-models.ts` passed `ApiModel[] | { error: string }` to `compare()` because the guard tested `report.ok`, a boolean control-flow analysis cannot map back to the union — fixed by spelling the same test `"error" in live`. The 26 pre-existing prettier errors in `scripts/` are resolved by formatting only (drift-gate `--json` stdout/stderr byte-identical). `.vscodeignore` keeps the new dev config out of the shipped VSIX.
+- Jest now sees untested `src` modules: `roots` gained `<rootDir>/src` so `collectCoverageFrom: ["src/**/*.ts"]` reports a module no test imports yet at 0% instead of leaving it out of the file list and the totals (CoverageReporter._addUntestedFiles walks `context.hasteFS`, which `roots` scopes). All 18 `src/**/*.ts` files are already reached through tests, so today's totals are unchanged (77.97 / 61.84 / 82.65 / 78.72).
+- `publish.yml` publishes only from a `v*` tag: the Marketplace step is guarded by `if: startsWith(github.ref, 'refs/tags/v')`, so a manual `workflow_dispatch` run now validates the build up to the VSIX and stops, instead of reaching `vsce publish` with a version already on the Marketplace and failing with "already exists". The extension stays VS Code Marketplace only (not Open VSX).
+- `scripts/daily-model-watch.sh`: the header states the release policy — releases (version bump + tag push) belong to this daily job and `daily-pi-provider-sync.sh`, the 30-minute idle loop does not publish unless a backlog item says so, and this extension ships to the VS Code Marketplace only. Its agent prompt now also tells the CHANGELOG to cover the unreleased idle commits that ride along in one version ("what this version shipped" stays readable after the fact). The gate itself stays on catalog drift only: the "also release accumulated commits" trigger was reverted, so only the CHANGELOG instruction from that change survives.
+
+### Fixed
+
+- `.vscodeignore`: added `logs/**`, so a locally built VSIX no longer carries `logs/daily-model-watch.log` / `logs/daily-model-watch.service.log` (`vsce ls` 28 → 26 entries; `package:vsix` reports 28 files, was 30, with no `logs/` entry). CI-built artifacts were unaffected — both files are untracked and `*.log` is gitignored, so a CI checkout never has them.
+- `.vscodeignore`: dropped the dead exclusion for `images/opencode_go_provider_summary.png`, an image deleted earlier and referenced nowhere else in the working tree; the line excluded nothing. `vsce ls` output is unchanged (26 entries) and all three real images remain in the artifact.
+
 ## [0.1.15] - 2026-09-12
 
 ### Fixed
