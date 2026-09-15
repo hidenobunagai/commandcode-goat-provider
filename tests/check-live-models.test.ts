@@ -70,6 +70,26 @@ test("parseVsceCatalog fails loudly on a row it cannot fully read", () => {
   expect(() => parseVsceCatalog(source)).toThrow(/malformed OFFICIAL_MODELS row/);
 });
 
+test("parseVsceCatalog fails loudly on a row a reflow split across lines", () => {
+  // Prettier keeps this shape when the literal is wrapped; the old parser skipped
+  // the bare `[` line and returned the other rows, one short and none the wiser.
+  const source = [
+    "const OFFICIAL_MODELS: Array<[string, string, number]> = [",
+    '  ["good-model", "Good Model", 1000],',
+    "  [",
+    '    "split-model",',
+    '    "Split Model",',
+    "    2000,",
+    "  ],",
+    "];",
+    "const VISION_SET = new Set([",
+    '  "good-model",',
+    "]);",
+  ].join("\n");
+
+  expect(() => parseVsceCatalog(source)).toThrow(/malformed OFFICIAL_MODELS row/);
+});
+
 test("parseVsceCatalog fails loudly when the tables are gone", () => {
   expect(() => parseVsceCatalog("export const OTHER = [];\n")).toThrow(
     /cannot locate OFFICIAL_MODELS block/,

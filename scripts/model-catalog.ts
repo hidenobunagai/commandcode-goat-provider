@@ -52,7 +52,16 @@ export function parseVsceCatalog(source: string): Map<string, ModelEntry> {
   const entries = new Map<string, ModelEntry>();
   for (const line of block.split("\n")) {
     const id = /^\s*\[\s*"([^"]+)"/.exec(line);
-    if (!id) continue;
+    if (!id) {
+      // Every other line in the block (the declaration, the closing bracket, blank
+      // lines, comments) does not open a row. One that does and still fails to read
+      // means a row was split or reshaped: skipping it like the rest would shrink the
+      // catalog instead of failing the gate the way a one-line malformed row does.
+      if (line.trim().startsWith("[")) {
+        throw new Error(`malformed OFFICIAL_MODELS row: ${line.trim()}`);
+      }
+      continue;
+    }
     const name = /^\s*\[\s*"[^"]+"\s*,\s*"([^"]*)"/.exec(line);
     const ctx = /^\s*\[\s*"[^"]+"\s*,\s*"[^"]*"\s*,\s*(\d+)\s*\]/.exec(line);
     if (!name || !ctx) throw new Error(`malformed OFFICIAL_MODELS row: ${line.trim()}`);
