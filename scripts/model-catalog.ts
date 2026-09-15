@@ -74,17 +74,20 @@ export function parseVsceCatalog(source: string): Map<string, ModelEntry> {
 /**
  * Slice out the CATALOG literal, from its declaration to its own closing bracket.
  *
- * The close (`]`, `] as const`, `];`) is the only line that both opens with `]` and
- * holds nothing after it -- a bracket closed inside a row is indented and/or trailed
- * by a comma -- so cutting here keeps the guards below inside the catalog instead of
- * over the helpers that follow the literal. With no recognisable close the rest of
- * the file is scanned, the way it was before, rather than dropping rows silently.
+ * The close (`]`, `] as const`, `] as const satisfies T`, `];`) is the only line that
+ * both opens with `]` at column 0 and holds nothing after it -- a bracket closed inside
+ * a row is indented and/or trailed by a comma -- so cutting here keeps the guards below
+ * inside the catalog instead of over the helpers that follow the literal. Anything else
+ * throws, the way a missing declaration does: falling back to an end-of-file scan would
+ * reach those helpers, and the `malformed CATALOG row` it reports there (`  {` opening an
+ * array of objects, say) names code that has nothing to do with the catalog's shape.
  */
 function dshCatalogBlock(source: string): string {
   const start = source.indexOf("export const CATALOG");
   if (start < 0) throw new Error("cannot locate CATALOG");
-  const close = /^\]\s*(?:as const)?\s*;?\s*$/m.exec(source.slice(start));
-  return close ? source.slice(start, start + close.index) : source.slice(start);
+  const close = /^\]\s*(?:as const)?\s*(?:satisfies\s+[^,;]+)?\s*;?\s*$/m.exec(source.slice(start));
+  if (!close) throw new Error("cannot locate the close of the CATALOG literal");
+  return source.slice(start, start + close.index);
 }
 
 /** DSH plugin: CATALOG rows are `{ id: '...', name: '...', contextWindow: N, ... }`. */

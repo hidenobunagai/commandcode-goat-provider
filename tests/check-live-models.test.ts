@@ -116,7 +116,7 @@ test("parseDshCatalog reads CATALOG rows and ignores everything else", () => {
 });
 
 test("parseDshCatalog fails loudly when no CATALOG row survives", () => {
-  expect(() => parseDshCatalog("export const CATALOG: readonly CatalogEntry[] = []\n")).toThrow(
+  expect(() => parseDshCatalog("export const CATALOG: readonly CatalogEntry[] = [\n]\n")).toThrow(
     /no CATALOG rows parsed/,
   );
 });
@@ -158,6 +158,67 @@ test("parseDshCatalog stops at the literal's close instead of the end of the fil
   ].join("\n");
 
   expect([...parseDshCatalog(source).values()]).toEqual([entry("good-model", "Good Model", 1000)]);
+});
+
+test("parseDshCatalog reads a close written as `] as const satisfies ...`", () => {
+  // The accepted shapes used to stop at `]`/`] as const`/`];`, so this one fell back to
+  // the end-of-file scan and threw at the helper's object literal instead of reading the
+  // one row above it.
+  const source = [
+    "export const CATALOG = [",
+    "  { id: 'good-model', name: 'Good Model', contextWindow: 1000 },",
+    "] as const satisfies readonly CatalogEntry[]",
+    "",
+    "export const STATIC_MODELS: CommandCodeStaticModel[] = [",
+    "  { id: 'derived', name: 'Derived', contextWindow: 2000 },",
+    "  {",
+    "    id: 'split-derived',",
+    "    name: 'Split Derived',",
+    "    contextWindow: 3000,",
+    "  },",
+    "]",
+  ].join("\n");
+
+  expect([...parseDshCatalog(source).values()]).toEqual([entry("good-model", "Good Model", 1000)]);
+});
+
+test("parseDshCatalog fails loudly when the close is not one it recognises", () => {
+  // An indented bracket is not the literal's close -- indent is exactly how a bracket
+  // closed inside a row is told apart from it -- and with no later column-0 bracket to
+  // mistake for it, the scan ran on to the helpers, where the row-shaped one-liner below
+  // joined the catalog without a word.
+  const source = [
+    "export const CATALOG: readonly CatalogEntry[] = [",
+    "  { id: 'good-model', name: 'Good Model', contextWindow: 1000 },",
+    "  ] as const",
+    "",
+    "export const STATIC_MODELS: CommandCodeStaticModel[] = [",
+    "  { id: 'derived', name: 'Derived', contextWindow: 2000 },",
+  ].join("\n");
+
+  expect(() => parseDshCatalog(source)).toThrow(/cannot locate the close of the CATALOG literal/);
+});
+
+test("parseDshCatalog stays loud when an unrecognised close is followed by another literal", () => {
+  // The same file with a helper that does close at column 0. The locator cannot tell that
+  // bracket from the catalog's own close, so the guard ends up reading the helper as
+  // catalog code: the wrong culprit, but not a quiet one.
+  const source = [
+    "export const CATALOG: readonly CatalogEntry[] = [",
+    "  { id: 'good-model', name: 'Good Model', contextWindow: 1000 },",
+    "  ] as const",
+    "",
+    "export const STATIC_MODELS: CommandCodeStaticModel[] = [",
+    "  { id: 'derived', name: 'Derived', contextWindow: 2000 },",
+    "  {",
+    "    id: 'split-derived',",
+    "    name: 'Split Derived',",
+    "    contextWindow: 3000,",
+    "  },",
+    "]",
+  ].join("\n");
+
+  expect(() => parseDshCatalog(source)).toThrow(/malformed CATALOG row/);
 });
 
 test("parseDshCatalog reads past a bracket closed inside a row", () => {
