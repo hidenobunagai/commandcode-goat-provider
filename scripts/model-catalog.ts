@@ -79,7 +79,19 @@ export function parseDshCatalog(source: string): Map<string, ModelEntry> {
 
   const entries = new Map<string, ModelEntry>();
   for (const line of block.split("\n")) {
-    if (!/^\s*\{\s*id:/.test(line)) continue;
+    if (!/^\s*\{\s*id:/.test(line)) {
+      // Every other line in the block (the declaration, the closing bracket, blanks,
+      // comments, and the helpers that follow the literal) does not open a row. One
+      // that does and still fails to read means a row was split or reshaped: skipping
+      // it like the rest would shrink the catalog instead of failing the gate the way
+      // a one-line malformed row does. Unlike the VS Code block there is no closing
+      // marker to stop at, so this covers the rest of the file -- which is fine, since
+      // a line opening an object literal there is unreadable to this parser either way.
+      if (line.trim().startsWith("{")) {
+        throw new Error(`malformed CATALOG row: ${line.trim()}`);
+      }
+      continue;
+    }
     const id = /id:\s*(['"])((?:\\.|(?!\1).)*)\1/.exec(line);
     const name = /name:\s*(['"])((?:\\.|(?!\1).)*)\1/.exec(line);
     const ctx = /contextWindow:\s*(\d+)/.exec(line);
@@ -143,7 +155,15 @@ export function parseDshCapabilities(source: string): Map<string, Capability> {
 
   const entries = new Map<string, Capability>();
   for (const line of block.split("\n")) {
-    if (!/^\s*\{\s*id:/.test(line)) continue;
+    if (!/^\s*\{\s*id:/.test(line)) {
+      // Same guard as parseDshCatalog: a line that opens a row but cannot be read is
+      // a split row, not filler, and skipping it would hide the capabilities of a
+      // model the catalog still ships.
+      if (line.trim().startsWith("{")) {
+        throw new Error(`malformed CATALOG row: ${line.trim()}`);
+      }
+      continue;
+    }
     const id = /id:\s*'([^']+)'/.exec(line);
     if (!id) throw new Error(`malformed CATALOG row: ${line.trim()}`);
     const modalities = /modalities:\s*\[([^\]]*)\]/.exec(line)?.[1] ?? "";

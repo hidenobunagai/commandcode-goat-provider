@@ -121,6 +121,23 @@ test("parseDshCatalog fails loudly when no CATALOG row survives", () => {
   );
 });
 
+test("parseDshCatalog fails loudly on a row a reflow split across lines", () => {
+  // Prettier keeps this shape when the literal is wrapped; the old parser skipped the
+  // bare `{` line and returned the other rows, one short and none the wiser.
+  const source = [
+    "export const CATALOG: readonly CatalogEntry[] = [",
+    "  { id: 'good-model', name: 'Good Model', contextWindow: 1000 },",
+    "  {",
+    "    id: 'split-model',",
+    "    name: 'Split Model',",
+    "    contextWindow: 2000,",
+    "  },",
+    "]",
+  ].join("\n");
+
+  expect(() => parseDshCatalog(source)).toThrow(/malformed CATALOG row/);
+});
+
 test("parseDshCapabilities derives vision, sorted efforts and protocol per row", () => {
   const source = [
     "export const CATALOG: readonly CatalogEntry[] = [",
@@ -132,6 +149,22 @@ test("parseDshCapabilities derives vision, sorted efforts and protocol per row",
 
   expect(parsed.get("vision-anthropic")).toEqual(cap(true, ["high", "max"], "anthropic"));
   expect(parsed.get("text-openai")).toEqual(cap(false, [], "openai"));
+});
+
+test("parseDshCapabilities fails loudly on a row a reflow split across lines", () => {
+  const source = [
+    "export const CATALOG: readonly CatalogEntry[] = [",
+    "  { id: 'good-model', name: 'Good Model', contextWindow: 1000, protocol: 'anthropic' },",
+    "  {",
+    "    id: 'split-model',",
+    "    name: 'Split Model',",
+    "    contextWindow: 2000,",
+    "    efforts: ['low'],",
+    "  },",
+    "]",
+  ].join("\n");
+
+  expect(() => parseDshCapabilities(source)).toThrow(/malformed CATALOG row/);
 });
 
 test("compareCapabilities reports each divergence and each one-sided model", () => {
