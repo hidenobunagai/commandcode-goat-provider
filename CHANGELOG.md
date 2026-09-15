@@ -1,5 +1,21 @@
 # Change Log
 
+## [0.1.17] - 2026-09-16
+
+### Added
+
+- `tests/check-changelog.test.ts` (10 cases) plus `scripts/changelog.ts`: the release check that `bun run package:vsix` runs first had no test — `scripts/check-changelog.ts` ends in `process.exit`, so importing it from a test runs the gate and kills the Jest worker. The pure half now lives in `scripts/changelog.ts`, the same split as `scripts/model-catalog.ts` for the drift gate: `hasChangelogEntry(version, changelog)` and the new `findChangelogProblems(changelog)`, both taking text, while `check-changelog.ts` keeps the file I/O and the exit codes. The first case pins the heading match against this repo's own `package.json` + `CHANGELOG.md`, so a reflow that stops the regex finding the shipping version fails the suite instead of only failing at package time; the rest cover the accepted spacing variants, the rejections (`0.1.160` / `0.1.1` / `###` heading / inline mention / `[Unreleased]`), the semver build suffix, same-day releases and numbering gaps staying clean, and the three failure messages.
+- `tests/check-live-models.test.ts`: 9 cases for the drift gate's parsers — a row a prettier reflow splits across lines on both sides (`OFFICIAL_MODELS` and `CATALOG`), the `CATALOG` block ending at the literal's close rather than at the helpers after it, a bracket closed inside a row not cutting the block short, and the `] as const satisfies T` close. Suite total is 14 suites / 216 tests (was 13 / 197 at 0.1.16).
+
+### Changed
+
+- The drift gate reads the DSH `CATALOG` literal only: `dshCatalogBlock()` slices from `export const CATALOG` to the literal's own close — the only line that opens with `]` at column 0 and holds nothing after it (`]`, `] as const`, `] as const satisfies T`, `];`) — and both `parseDshCatalog` and `parseDshCapabilities` read that slice. The block used to run to the end of the file, so the row guards also covered the helpers after the literal, where an array of multi-line objects threw `malformed CATALOG row` at code with nothing to do with the catalog and a row-shaped one-liner was silently added to it. Sharing the locator also makes `parseDshCapabilities` throw on a missing `CATALOG` instead of returning an empty map. A close the pattern cannot read throws `cannot locate the close of the CATALOG literal` instead of falling back to the end-of-file scan. Latent, not broken: the sibling DSH `src/catalog/data.ts` closes at line 114 with `] as const` and has 0 lines opening with `{` after it.
+
+### Fixed
+
+- `bun run check:models` no longer reads an unreadable catalog row as filler: a line inside the catalog block that opens a row (`[` after trim for `OFFICIAL_MODELS` in `src/constants.ts`, `{` for the DSH `CATALOG`) but does not match the row regex now throws the same `malformed OFFICIAL_MODELS row` / `malformed CATALOG row` error as a row that matches without a name or context window. Reflowing one row into prettier's wrapped shape used to drop it silently — `parseDshCatalog` and `parseDshCapabilities` returned 68 entries where the DSH catalog ships 69, `parseVsceCatalog` 68 where the extension ships 69 — and the gate then reported that row as "NEW — in live API, missing from both catalogs", sending the daily watch after a model already sitting in the file. The parser suite pinned the VS Code side against `FALLBACK_MODELS`, but the gate runs on a timer with no test behind it; only the `entries.size === 0` guard stood between a reflow and a quietly shorter catalog. The live path is unchanged: `bun scripts/check-live-models.ts --json` exits 0 with 69/69/69 models and no drift.
+- `bun run package:vsix`'s release check no longer passes a CHANGELOG whose version history is unreadable: `findChangelogProblems` fails the gate (exit 1, same banner style) on a version whose section appears twice — how a rebase that lands two version bumps on the same number goes unnoticed — a version heading below an older one, and a section dated after the newer section above it. Same-day releases and gaps in the numbering stay allowed. The extracted heading match also fixes a latent bug: only dots were escaped before, so a semver build suffix (`0.1.17+build.1`) was read as a quantifier and could never match its own heading.
+
 ## [0.1.16] - 2026-09-15
 
 ### Added
