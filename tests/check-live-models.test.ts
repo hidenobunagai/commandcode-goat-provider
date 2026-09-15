@@ -199,10 +199,11 @@ test("parseDshCatalog fails loudly when the close is not one it recognises", () 
   expect(() => parseDshCatalog(source)).toThrow(/cannot locate the close of the CATALOG literal/);
 });
 
-test("parseDshCatalog stays loud when an unrecognised close is followed by another literal", () => {
-  // The same file with a helper that does close at column 0. The locator cannot tell that
-  // bracket from the catalog's own close, so the guard ends up reading the helper as
-  // catalog code: the wrong culprit, but not a quiet one.
+test("parseDshCatalog blames the catalog, not the helper, for an unrecognised close", () => {
+  // The same file with a helper that does close at column 0. That bracket is not this
+  // literal's close, and the column-0 declaration above it says the catalog ended before
+  // it: the locator stops there and names the catalog, instead of reading the helper as
+  // catalog code and reporting a `malformed CATALOG row` that code has nothing to do with.
   const source = [
     "export const CATALOG: readonly CatalogEntry[] = [",
     "  { id: 'good-model', name: 'Good Model', contextWindow: 1000 },",
@@ -218,7 +219,28 @@ test("parseDshCatalog stays loud when an unrecognised close is followed by anoth
     "]",
   ].join("\n");
 
-  expect(() => parseDshCatalog(source)).toThrow(/malformed CATALOG row/);
+  expect(() => parseDshCatalog(source)).toThrow(/cannot locate the close of the CATALOG literal/);
+});
+
+test("parseDshCatalog reads past a column-0 comment inside the literal", () => {
+  // Section dividers are written at column 0 between the rows. They are the literal's own
+  // lines, so the scan that stops at the next column-0 line has to step over them.
+  const source = [
+    "export const CATALOG: readonly CatalogEntry[] = [",
+    "  { id: 'first', name: 'First', contextWindow: 1000 },",
+    "// ── Second section ──",
+    "  { id: 'second', name: 'Second', contextWindow: 2000 },",
+    "] as const",
+    "",
+    "export const STATIC_MODELS: CommandCodeStaticModel[] = [",
+    "  { id: 'derived', name: 'Derived', contextWindow: 2000 },",
+    "]",
+  ].join("\n");
+
+  expect([...parseDshCatalog(source).values()]).toEqual([
+    entry("first", "First", 1000),
+    entry("second", "Second", 2000),
+  ]);
 });
 
 test("parseDshCatalog reads past a bracket closed inside a row", () => {

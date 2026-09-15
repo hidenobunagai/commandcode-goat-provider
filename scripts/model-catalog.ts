@@ -77,16 +77,29 @@ export function parseVsceCatalog(source: string): Map<string, ModelEntry> {
  * The close (`]`, `] as const`, `] as const satisfies T`, `];`) is the only line that
  * both opens with `]` at column 0 and holds nothing after it -- a bracket closed inside
  * a row is indented and/or trailed by a comma -- so cutting here keeps the guards below
- * inside the catalog instead of over the helpers that follow the literal. Anything else
- * throws, the way a missing declaration does: falling back to an end-of-file scan would
- * reach those helpers, and the `malformed CATALOG row` it reports there (`  {` opening an
- * array of objects, say) names code that has nothing to do with the catalog's shape.
+ * inside the catalog instead of over the helpers that follow the literal.
+ *
+ * The rows are indented, so a column-0 line above the close belongs to the catalog only
+ * if it is one of its own comments. Any other one means the literal ended without a shape
+ * this recognises: the scan stops there rather than reading on, which would take the next
+ * literal's `]` for this one's close and let the guards blame the helper for a catalog
+ * that ended early (an unrecognised close followed by a row-shaped one-liner used to read
+ * that helper straight into the catalog). Anything else throws, the way a missing
+ * declaration does.
  */
 function dshCatalogBlock(source: string): string {
   const start = source.indexOf("export const CATALOG");
   if (start < 0) throw new Error("cannot locate CATALOG");
-  const close = /^\]\s*(?:as const)?\s*(?:satisfies\s+[^,;]+)?\s*;?\s*$/m.exec(source.slice(start));
-  if (!close) throw new Error("cannot locate the close of the CATALOG literal");
+  const rest = source.slice(start);
+  const close = /^\]\s*(?:as const)?\s*(?:satisfies\s+[^,;]+)?\s*;?\s*$/m.exec(rest);
+  const stray = rest
+    .slice(0, close ? close.index : rest.length)
+    .split("\n")
+    .slice(1) // the declaration line opens at column 0 by definition
+    .find((line) => line.trim() !== "" && !/^\s/.test(line) && !/^(\/\/|\/\*|\*)/.test(line));
+  if (!close || stray !== undefined) {
+    throw new Error("cannot locate the close of the CATALOG literal");
+  }
   return source.slice(start, start + close.index);
 }
 
