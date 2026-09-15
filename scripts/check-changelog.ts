@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { hasChangelogEntry } from "./changelog";
+import { findChangelogProblems, hasChangelogEntry } from "./changelog";
 
 function main() {
   const workspaceDir = path.resolve(__dirname, "..");
@@ -34,6 +34,29 @@ function main() {
   }
 
   const changelog = fs.readFileSync(changelogPath, "utf8");
+
+  // Checked before the current version, so a rebase that left two sections on one version
+  // number is reported as such instead of depending on which check runs first.
+  const problems = findChangelogProblems(changelog);
+  if (problems.length > 0) {
+    console.error(
+      "================================================================================",
+    );
+    console.error(
+      "❌ RELEASE CHECK FAILED: CHANGELOG.md version sections are duplicated or unsorted",
+    );
+    console.error(
+      "================================================================================",
+    );
+    for (const problem of problems) {
+      console.error(problem);
+    }
+    console.error("Each version must appear exactly once, in descending version and date order.");
+    console.error(
+      "================================================================================",
+    );
+    process.exit(1);
+  }
 
   if (!hasChangelogEntry(version, changelog)) {
     console.error(
