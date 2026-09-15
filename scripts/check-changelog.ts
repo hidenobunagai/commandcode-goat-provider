@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { hasChangelogEntry } from "./changelog";
 
 function main() {
   const workspaceDir = path.resolve(__dirname, "..");
@@ -34,11 +35,7 @@ function main() {
 
   const changelog = fs.readFileSync(changelogPath, "utf8");
 
-  // Escaping special characters in version for the regex matching ## [X.Y.Z]
-  const escapedVersion = version.replace(/\./g, "\\.");
-  const versionHeaderRegex = new RegExp(`^##\\s*\\[\\s*${escapedVersion}\\s*\\]`, "m");
-
-  if (!versionHeaderRegex.test(changelog)) {
+  if (!hasChangelogEntry(version, changelog)) {
     console.error(
       "================================================================================",
     );
