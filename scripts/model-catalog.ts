@@ -71,22 +71,33 @@ export function parseVsceCatalog(source: string): Map<string, ModelEntry> {
   return entries;
 }
 
-/** DSH plugin: CATALOG rows are `{ id: '...', name: '...', contextWindow: N, ... }`. */
-export function parseDshCatalog(source: string): Map<string, ModelEntry> {
+/**
+ * Slice out the CATALOG literal, from its declaration to its own closing bracket.
+ *
+ * The close (`]`, `] as const`, `];`) is the only line that both opens with `]` and
+ * holds nothing after it -- a bracket closed inside a row is indented and/or trailed
+ * by a comma -- so cutting here keeps the guards below inside the catalog instead of
+ * over the helpers that follow the literal. With no recognisable close the rest of
+ * the file is scanned, the way it was before, rather than dropping rows silently.
+ */
+function dshCatalogBlock(source: string): string {
   const start = source.indexOf("export const CATALOG");
   if (start < 0) throw new Error("cannot locate CATALOG");
-  const block = source.slice(start);
+  const close = /^\]\s*(?:as const)?\s*;?\s*$/m.exec(source.slice(start));
+  return close ? source.slice(start, start + close.index) : source.slice(start);
+}
+
+/** DSH plugin: CATALOG rows are `{ id: '...', name: '...', contextWindow: N, ... }`. */
+export function parseDshCatalog(source: string): Map<string, ModelEntry> {
+  const block = dshCatalogBlock(source);
 
   const entries = new Map<string, ModelEntry>();
   for (const line of block.split("\n")) {
     if (!/^\s*\{\s*id:/.test(line)) {
-      // Every other line in the block (the declaration, the closing bracket, blanks,
-      // comments, and the helpers that follow the literal) does not open a row. One
-      // that does and still fails to read means a row was split or reshaped: skipping
-      // it like the rest would shrink the catalog instead of failing the gate the way
-      // a one-line malformed row does. Unlike the VS Code block there is no closing
-      // marker to stop at, so this covers the rest of the file -- which is fine, since
-      // a line opening an object literal there is unreadable to this parser either way.
+      // Every other line in the block (the declaration, the closing bracket, blanks
+      // and comments) does not open a row. One that does and still fails to read means
+      // a row was split or reshaped: skipping it like the rest would shrink the
+      // catalog instead of failing the gate the way a one-line malformed row does.
       if (line.trim().startsWith("{")) {
         throw new Error(`malformed CATALOG row: ${line.trim()}`);
       }
@@ -151,7 +162,7 @@ export function parseVsceCapabilities(source: string): Map<string, Capability> {
 
 /** DSH plugin: capabilities implied by `modalities`, `efforts` and `protocol` on each CATALOG row. */
 export function parseDshCapabilities(source: string): Map<string, Capability> {
-  const block = source.slice(source.indexOf("export const CATALOG"));
+  const block = dshCatalogBlock(source);
 
   const entries = new Map<string, Capability>();
   for (const line of block.split("\n")) {

@@ -138,6 +138,47 @@ test("parseDshCatalog fails loudly on a row a reflow split across lines", () => 
   expect(() => parseDshCatalog(source)).toThrow(/malformed CATALOG row/);
 });
 
+test("parseDshCatalog stops at the literal's close instead of the end of the file", () => {
+  // The helpers after CATALOG open object literals too. Scanning to EOF read them as
+  // CATALOG rows: the bare `{` threw `malformed CATALOG row`, the one-liner was added
+  // to the catalog without a word.
+  const source = [
+    "export const CATALOG: readonly CatalogEntry[] = [",
+    "  { id: 'good-model', name: 'Good Model', contextWindow: 1000 },",
+    "] as const",
+    "",
+    "export const STATIC_MODELS: CommandCodeStaticModel[] = [",
+    "  { id: 'derived', name: 'Derived', contextWindow: 2000 },",
+    "  {",
+    "    id: 'split-derived',",
+    "    name: 'Split Derived',",
+    "    contextWindow: 3000,",
+    "  },",
+    "]",
+  ].join("\n");
+
+  expect([...parseDshCatalog(source).values()]).toEqual([entry("good-model", "Good Model", 1000)]);
+});
+
+test("parseDshCatalog reads past a bracket closed inside a row", () => {
+  // A wrapped array inside a row closes with `],`; treating that as the catalog's close
+  // would drop every row below it without a word.
+  const source = [
+    "export const CATALOG: readonly CatalogEntry[] = [",
+    "  { id: 'wrapped', name: 'Wrapped', contextWindow: 1000, modalities: [",
+    "    'text',",
+    "    'image',",
+    "  ] },",
+    "  { id: 'after', name: 'After', contextWindow: 2000 },",
+    "] as const",
+  ].join("\n");
+
+  expect([...parseDshCatalog(source).values()]).toEqual([
+    entry("wrapped", "Wrapped", 1000),
+    entry("after", "After", 2000),
+  ]);
+});
+
 test("parseDshCapabilities derives vision, sorted efforts and protocol per row", () => {
   const source = [
     "export const CATALOG: readonly CatalogEntry[] = [",
@@ -165,6 +206,27 @@ test("parseDshCapabilities fails loudly on a row a reflow split across lines", (
   ].join("\n");
 
   expect(() => parseDshCapabilities(source)).toThrow(/malformed CATALOG row/);
+});
+
+test("parseDshCapabilities stops at the literal's close instead of the end of the file", () => {
+  const source = [
+    "export const CATALOG: readonly CatalogEntry[] = [",
+    "  { id: 'vision-anthropic', name: 'A', contextWindow: 1, protocol: 'anthropic', modalities: ['text', 'image'] },",
+    "] as const",
+    "",
+    "export const STATIC_MODELS: CommandCodeStaticModel[] = [",
+    "  { id: 'derived', name: 'Derived', contextWindow: 2000, protocol: 'anthropic' },",
+    "  {",
+    "    id: 'split-derived',",
+    "    name: 'Split Derived',",
+    "    contextWindow: 3000,",
+    "  },",
+    "]",
+  ].join("\n");
+  const parsed = parseDshCapabilities(source);
+
+  expect([...parsed.keys()]).toEqual(["vision-anthropic"]);
+  expect(parsed.get("vision-anthropic")).toEqual(cap(true, [], "anthropic"));
 });
 
 test("compareCapabilities reports each divergence and each one-sided model", () => {
