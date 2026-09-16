@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.1.18] - 2026-09-17
+
+### Fixed
+
+- `bun run check:models`: `dshCatalogBlock()` no longer reads a helper as catalog code when the DSH `CATALOG` close is written in a shape its pattern does not recognise. The locator took the first column-0 `]` line after the declaration, so an unrecognised close (an indented `  ] as const`, a trailing `// ...`) let the scan run on to the next literal's bracket — the following helper's `]` — and the returned slice then held helper code. The row guards added in 0.1.17 flag any line inside the block that opens a row (`{`) without matching the row regex, so the helper's indented `  {` was reported as `malformed CATALOG row`, naming code that has nothing to do with the catalog's shape; and a row-shaped one-liner down there would have joined the catalog without a word. The rows are indented, so any other column-0 line above the close says the literal ended before it: the scan stops there and throws `cannot locate the close of the CATALOG literal` instead of reading on, while the literal's own column-0 comments (`//`, `/*`, `*`) are stepped over. The live path is unchanged: `bun scripts/check-live-models.ts --json` exits 0 with 69/69/69 models and no drift.
+- `tests/check-live-models.test.ts`: the unrecognised-close-plus-helper case now pins the catalog as the culprit (`cannot locate the close of the CATALOG literal`) instead of accepting the `malformed CATALOG row` thrown at the helper, which is what the locator did when it read past the literal; a new case pins a column-0 section divider inside the literal as readable, so the guard that stops the scan cannot reject the literal's own comments. Suite total is 14 suites / 217 tests (was 216 at 0.1.17).
+
 ## [0.1.17] - 2026-09-16
 
 ### Added
