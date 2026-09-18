@@ -83,6 +83,6 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(69);
+  expect(FALLBACK_MODELS.length).toBe(71);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });

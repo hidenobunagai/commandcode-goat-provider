@@ -1,5 +1,20 @@
 # Change Log
 
+## [0.1.19] - 2026-09-18
+
+### Added
+
+- Catalog sync with the live provider API, which gained two ids since v0.1.18 and now serves 71 models. Both are curated into the two catalogs that the drift gate holds together (this repo's `src/constants.ts` and `commandcode-goat-dsh-provider/src/catalog/data.ts`) and land here as `OFFICIAL_MODELS` + `VISION_SET` + `EFFORTS_MAP` + `PROTOCOL_MAP` rows:
+  - `z-ai/glm-5.3-flashx` — "GLM-5.3 FlashX", 1M context, Vision, Reasoning `low, high, max`, $0.37 / $1.25 per 1M tokens, Go and above. Z.AI's parameter reference documents `reasoning_effort` for GLM-5.2 and above with the values `low`, `high` and `max`, and its GLM-5.3-Flash/FlashX page lists image input and `reasoning_effort: max` as the recommended setting, so the level set is the vendor's. The default effort follows `z-ai/glm-5.3-flash` (`high`) instead of the vendor default (`max`): `defaultEffort` records Command Code's choice for a family, and the two GLM-5.3 entries stay consistent.
+  - `Qwen/Qwen3.8-Omni-Flash` — "Qwen 3.8 Omni Flash", 1M context, Vision, Reasoning `low, medium, xhigh`, $0.15 / $0.47 per 1M tokens, Go and above. Alibaba's Qwen3.8 guidance names `xhigh`, `medium` and `low` as the supported `reasoning_effort` levels with `xhigh` as the vendor default; the entry reuses the Qwen3.8 family's `low, medium, xhigh` and `medium` default already carried by Qwen 3.8 Max / Max 0902 / Flash / 27B, for the same reason.
+- This release carries the catalog change only: `main` was already at the v0.1.18 tag, with no unreleased commits from the 30-minute idle loop to fold in.
+
+### Changed
+
+- `GET /provider/v1/models` serves only `id`, `name` and `context_length`, so the capabilities above come from `commandcode.ai/models` (capability labels **Text input, Vision, Reasoning**) and the vendor docs. `commandcode.ai/models` publishes no intelligence index for either model ("not yet scored"), so no `intelligence` value was invented and nothing derived from it moved.
+- `maxTokens` stays at the family default the sibling entries already use (65,536). Z.AI documents 128K maximum output for GLM-5.3-Flash/FlashX, so the static value is a conservative under-estimate rather than the vendor ceiling; raising it is a separate change.
+- `tests/model-catalog.test.ts` pins `FALLBACK_MODELS` at 71 (was 69), and `docs/models.md` plus the `README.md` family table carry both ids. Suite total is 14 suites / 217 tests (test count unchanged). `bun run check:models` is clean at 71 live / 71 VS Code / 71 DSH models.
+
 ## [0.1.18] - 2026-09-17
 
 ### Fixed

@@ -65,9 +65,9 @@ The provider dynamically discovers available models from `GET https://api.comman
 | **Anthropic Claude** | `claude-sonnet-5`, `claude-sonnet-4-6`, `claude-opus-5`, `claude-haiku-4-5-20251001` | Anthropic `/messages` | Automatic | Supported |
 | **DeepSeek** | `deepseek/deepseek-v4.1-flash`, `deepseek/deepseek-v4-pro`, `deepseek/deepseek-v4-flash`, `deepseek/deepseek-v4-flash-fast`, `deepseek/deepseek-v4-flash-vision-exp` | OpenAI `/chat/completions` | Configurable effort | Supported on V4.1 Flash & Vision |
 | **Moonshot Kimi** | `moonshotai/Kimi-K3`, `moonshotai/Kimi-K2.7-Code`, `moonshotai/Kimi-K2.6` | OpenAI `/chat/completions` | Configurable effort | Supported |
-| **Zhipu GLM** | `z-ai/glm-5.3-flash`, `zai-org/GLM-5.3`, `zai-org/GLM-5.2` | OpenAI `/chat/completions` | Configurable effort | Text & Tools |
+| **Zhipu GLM** | `z-ai/glm-5.3-flashx`, `z-ai/glm-5.3-flash`, `zai-org/GLM-5.3`, `zai-org/GLM-5.2` | OpenAI `/chat/completions` | Configurable effort | Text & Tools |
 | **MiniMax** | `MiniMaxAI/MiniMax-M3`, `MiniMaxAI/MiniMax-M2.7`, `MiniMaxAI/MiniMax-M2.5` | OpenAI `/chat/completions` | Provider default | Supported (M3) |
-| **Alibaba Qwen** | `Qwen/Qwen3.8-Max`, `Qwen/Qwen3.8-27B`, `Qwen/Qwen3.7-Max`, `Qwen/Qwen3.7-Plus` | OpenAI `/chat/completions` | Configurable effort | Supported |
+| **Alibaba Qwen** | `Qwen/Qwen3.8-Omni-Flash`, `Qwen/Qwen3.8-Max`, `Qwen/Qwen3.8-27B`, `Qwen/Qwen3.7-Max`, `Qwen/Qwen3.7-Plus` | OpenAI `/chat/completions` | Configurable effort | Supported |
 | **Google Gemini** | `google/gemini-3.7-flash`, `google/gemini-3.6-flash`, `google/gemini-3.5-flash` | OpenAI `/chat/completions` | Provider default | Supported |
 | **xAI Grok** | `xai/grok-4.6`, `xai/grok-4.5` | OpenAI `/chat/completions` | Configurable effort | Supported |
 | **Meta Muse** | `meta/muse-spark-1.2`, `meta/muse-spark-1.2-contributor` | OpenAI `/chat/completions` | Configurable effort | Supported |

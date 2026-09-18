@@ -29,7 +29,9 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `Qwen/Qwen3.8-Max-0902` | Qwen 3.8 Max 0902 | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |
 | `Qwen/Qwen3.8-Flash` | Qwen 3.8 Flash | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |
 | `Qwen/Qwen3.8-27B` | Qwen 3.8 27B | 262K | 65,536 | OpenAI | low, medium, xhigh | Yes |
+| `Qwen/Qwen3.8-Omni-Flash` | Qwen 3.8 Omni Flash | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |
 | `z-ai/glm-5.3-flash` | GLM-5.3 Flash | 1M | 65,536 | OpenAI | low, high, max | Yes |
+| `z-ai/glm-5.3-flashx` | GLM-5.3 FlashX | 1M | 65,536 | OpenAI | low, high, max | Yes |
 | `zai-org/GLM-5.3` | GLM-5.3 | 1,000,000 | 131,072 | OpenAI | ✓ (`low,high,max`) | ✗ |
 | `MiniMaxAI/MiniMax-M3` | MiniMax M3 | 1,000,000 | 131,072 | Anthropic | - | ✓ |
 | `xai/grok-4.5` | Grok 4.5 | 500K | 65,536 | OpenAI | low, medium, high | Yes |
