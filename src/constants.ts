@@ -175,7 +175,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["gpt-5.5", "GPT-5.5", 400000],
   ["google/gemini-3.6-flash", "Gemini 3.6 Flash", 1000000],
   ["sakana/fugu-ultra", "Fugu Ultra", 1000000],
-  ["meituan/LongCat-2.0:free", "LongCat 2.0", 1048576],
+  ["meituan/LongCat-2.0", "LongCat 2.0", 1048576],
 ];
 
 // Synced from commandcode-goat-dsh-provider/src/catalog/data.ts (commandcode.ai/docs via pnpm generate:knowledge) — do not hand-edit modalities/efforts/protocol
@@ -343,7 +343,7 @@ const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["gpt-5.5", "openai"],
   ["google/gemini-3.6-flash", "openai"],
   ["sakana/fugu-ultra", "openai"],
-  ["meituan/LongCat-2.0:free", "openai"],
+  ["meituan/LongCat-2.0", "openai"],
   ["inclusionai/ling-3.0-flash-sante:free", "openai"],
 ]);
 const vision = (id: string) => VISION_SET.has(id);

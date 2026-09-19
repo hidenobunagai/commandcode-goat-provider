@@ -83,5 +83,5 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `gpt-5.5` | GPT-5.5 | 400K | 65,536 | OpenAI | low, medium, high, xhigh | Yes |
 | `google/gemini-3.6-flash` | Gemini 3.6 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
 | `sakana/fugu-ultra` | Fugu Ultra | 1M | 65,536 | OpenAI | high, xhigh | Yes |
-| `meituan/LongCat-2.0:free` | LongCat 2.0 | 1,000,000 | 131,072 | OpenAI | - | ✗ |
+| `meituan/LongCat-2.0` | LongCat 2.0 | 1,000,000 | 131,072 | OpenAI | - | ✗ |
 | `inclusionai/ling-3.0-flash-sante:free` | Ling 3.0 Flash Sante | 262,144 | 65,536 | OpenAI | - | No |

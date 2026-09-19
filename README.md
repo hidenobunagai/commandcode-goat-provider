@@ -71,7 +71,7 @@ The provider dynamically discovers available models from `GET https://api.comman
 | **Google Gemini** | `google/gemini-3.7-flash`, `google/gemini-3.6-flash`, `google/gemini-3.5-flash` | OpenAI `/chat/completions` | Provider default | Supported |
 | **xAI Grok** | `xai/grok-4.6`, `xai/grok-4.5` | OpenAI `/chat/completions` | Configurable effort | Supported |
 | **Meta Muse** | `meta/muse-spark-1.2`, `meta/muse-spark-1.2-contributor` | OpenAI `/chat/completions` | Configurable effort | Supported |
-| **Other Partners** | `stepfun/Step-3.7-Flash`, `tencent/hy4-preview`, `sakana/fugu-ultra`, `nvidia/nemotron-3-ultra-550b-a55b` | OpenAI `/chat/completions` | Varied | Varied |
+| **Other Partners** | `stepfun/Step-3.7-Flash`, `tencent/hy4-preview`, `sakana/fugu-ultra`, `meituan/LongCat-2.0`, `nvidia/nemotron-3-ultra-550b-a55b` | OpenAI `/chat/completions` | Varied | Varied |
 
 ---
 

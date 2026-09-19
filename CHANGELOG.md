@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.1.20] - 2026-09-19
+
+### Changed
+
+- Catalog sync with the live provider API, which still serves 71 models but swapped one id: `meituan/LongCat-2.0:free` is gone and `meituan/LongCat-2.0` is new. Command Code moved LongCat 2.0 off the free tier onto Go — `commandcode.ai/models/longcat-2-0` lists it at $0.30 / $1.20 per 1M tokens with cache reads at $0.006/M and an effective agent-loop input rate of about $0.09/M, and its plan row reads "Available on Go and above". Both catalogs the drift gate holds together (this repo's `src/constants.ts` and `commandcode-goat-dsh-provider/src/catalog/data.ts`) now carry the paid id; the DSH `CATALOG` entry moves `tier` `free` → `go`, `label` `Free` → `Go/GOAT`, `inputPrice` / `outputPrice` `'free'` → `0.30` / `1.20`, and gains the `intelligence` of 19.7 that the model page publishes.
+- Capabilities were re-confirmed against the model page instead of carried over from the free id, and both come out unchanged. Its modality row is **Text input / Text output** with no **Image input**, so the entry stays text-only and out of `VISION_SET`. The **Reasons before answering** marker is present, but the model record's `reasoningEfforts` list is empty, so the entry keeps no `efforts`, stays out of `EFFORTS_MAP` and offers no effort picker — exactly how the free id was treated. The id does not start with `claude-`, so `PROTOCOL_MAP` keeps it on `openai`, which is also the only endpoint the API advertises for it (`/chat/completions`).
+- `maxTokens` stays at 65,536 rather than the 131,072 this repo's `staticInfo` derives for a non-Claude/Qwen/Kimi/Gemini id. `GET /provider/v1/models` serves only `id` / `name` / `context_length` and the model page publishes no maximum-output figure, so the conservative value already shipped for this model — and already used by every other `CATALOG` entry (`DEFAULT_MAX_OUTPUT_TOKENS`) — was kept instead of guessed upward. `docs/models.md` continues to record the extension's derived 131,072 in its max-output column.
+- `src/provider.ts`: the comment that used `meituan/LongCat-2.0:free` as its example of a real vendor id containing `:` now points at `inclusionai/ling-3.0-flash-sante:free`, which the API still serves. The guard itself is id-agnostic and unchanged.
+- This release carries the catalog change only: `main` was already at the v0.1.19 tag, with no unreleased commits from the 30-minute idle loop to fold in. The sibling DSH plugin ships the same catalog change as v0.1.9, whose bump additionally folds in its two idle commits (drop a reasoning effort the failover target cannot use, and default `fallbackToFree` to `false` together with the laguna `maxTokens` correction).
+- `tests/model-catalog.test.ts` keeps `FALLBACK_MODELS` pinned at 71 because the swap is one-for-one, and `docs/models.md` plus the `README.md` family table carry the new id. Suite total is 14 suites / 217 tests (unchanged). `bun run check:models` is clean at 71 live / 71 VS Code / 71 DSH models.
+
 ## [0.1.19] - 2026-09-18
 
 ### Added
