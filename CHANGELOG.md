@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.1.21] - 2026-09-21
+
+### Added
+
+- Catalog sync with the live provider API, which now serves 73 models (`stepfun/Step-5-Preview`, `xai/grok-4.7`); both catalogs gain the two ids. `xai/grok-4.7`: vision on (`commandcode.ai/models/grok-4-7` lists Image input and 500K context, "Available on GOAT and above", $2 / $6 per 1M tokens), efforts `low/medium/high/xhigh` and `defaultEffort: medium` follow the `grok-4.6` sibling, intelligence omitted because the page is not yet scored. `stepfun/Step-5-Preview`: vision on and efforts `low/medium/high` taken from StepFun's official model docs (1M context, text/image input, 64k max output → `maxTokens: 65536`, `reasoning_effort` levels), prices $0.99 / $2.82 converted from the published ¥7 / ¥20 per 1M tokens at the same rate as the `Step-3.7-Flash` entry; Command Code does not publish a page for it yet, so its tier follows the stepfun family (`go`). `PROTOCOL_MAP` carries both ids as `openai`.
+- `tests/model-catalog.test.ts` pins `FALLBACK_MODELS` at 73, and `docs/models.md` plus the `README.md` family tables carry the two ids.
+
 ## [0.1.20] - 2026-09-19
 
 ### Changed

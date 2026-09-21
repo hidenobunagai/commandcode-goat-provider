@@ -19,6 +19,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `google/gemini-3.8-flash` | Gemini 3.8 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
 | `google/gemini-3.7-flash` | Gemini 3.7 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
 | `xai/grok-4.6` | Grok 4.6 | 500,000 | 500,000 | Responses | ✓ (`low,medium,high,xhigh`) | ✓ |
+| `xai/grok-4.7` | Grok 4.7 | 500,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✓ |
 | `deepseek/deepseek-v4-pro` | DeepSeek V4 Pro (latest) | 1,000,000 | 384,000 | OpenAI | ✓ (`high,max`) | ✗ |
 | `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash (latest) | 1,000,000 | 384,000 | OpenAI | ✓ (`low,high,max`) | ✗ |
 | `deepseek/deepseek-v4-flash-fast` | DeepSeek V4 Flash Fast | 1M | 65,536 | OpenAI | high, max | No |
@@ -40,6 +41,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `meta/muse-spark-1.2` | Muse Spark 1.2 | 1M | 65,536 | OpenAI | - | Yes |
 | `meta/muse-spark-1.2-contributor` | Muse Spark 1.2 Contributor | 1,048,576 | 131,072 | Responses | ✓ (`minimal,low,medium,high,xhigh`) | ✓ |
 | `stepfun/Step-3.7-Flash` | Step 3.7 Flash | 256K | 65,536 | OpenAI | - | Yes |
+| `stepfun/Step-5-Preview` | Step 5 Preview | 1M | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
 | `tencent/hy4-preview` | Tencent Hy4 Preview | 1M | 65,536 | OpenAI | - | No |
 | `xiaomi/mimo-v2.5-pro` | MiMo V2.5 Pro | 1,048,576 | 128,000 | OpenAI | - | ✗ |
 | `Qwen/Qwen3.7-Flash` | Qwen 3.7 Flash | 1M | 65,536 | OpenAI | - | Yes |
