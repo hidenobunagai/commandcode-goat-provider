@@ -62,7 +62,7 @@ The provider dynamically discovers available models from `GET https://api.comman
 
 | Model Family | Examples | Wire Protocol | Thinking / Reasoning | Vision |
 |---|---|---|---|---|
-| **Anthropic Claude** | `claude-sonnet-5`, `claude-sonnet-4-6`, `claude-opus-5`, `claude-haiku-4-5-20251001` | Anthropic `/messages` | Automatic | Supported |
+| **Anthropic Claude** | `claude-opus-5-5`, `claude-sonnet-5`, `claude-sonnet-4-6`, `claude-opus-5`, `claude-haiku-4-5-20251001` | Anthropic `/messages` | Automatic | Supported |
 | **DeepSeek** | `deepseek/deepseek-v4.1-flash`, `deepseek/deepseek-v4-pro`, `deepseek/deepseek-v4-flash`, `deepseek/deepseek-v4-flash-fast`, `deepseek/deepseek-v4-flash-vision-exp` | OpenAI `/chat/completions` | Configurable effort | Supported on V4.1 Flash & Vision |
 | **Moonshot Kimi** | `moonshotai/Kimi-K3`, `moonshotai/Kimi-K2.7-Code`, `moonshotai/Kimi-K2.6` | OpenAI `/chat/completions` | Configurable effort | Supported |
 | **Zhipu GLM** | `z-ai/glm-5.3-flashx`, `z-ai/glm-5.3-flash`, `zai-org/GLM-5.3`, `zai-org/GLM-5.2` | OpenAI `/chat/completions` | Configurable effort | Text & Tools |
@@ -71,7 +71,7 @@ The provider dynamically discovers available models from `GET https://api.comman
 | **Google Gemini** | `google/gemini-3.7-flash`, `google/gemini-3.6-flash`, `google/gemini-3.5-flash` | OpenAI `/chat/completions` | Provider default | Supported |
 | **xAI Grok** | `xai/grok-4.7`, `xai/grok-4.6`, `xai/grok-4.5` | OpenAI `/chat/completions` | Configurable effort | Supported |
 | **Meta Muse** | `meta/muse-spark-1.2`, `meta/muse-spark-1.2-contributor` | OpenAI `/chat/completions` | Configurable effort | Supported |
-| **Other Partners** | `stepfun/Step-5-Preview`, `stepfun/Step-3.7-Flash`, `tencent/hy4-preview`, `sakana/fugu-ultra`, `meituan/LongCat-2.0`, `nvidia/nemotron-3-ultra-550b-a55b` | OpenAI `/chat/completions` | Varied | Varied |
+| **Other Partners** | `xiaomi/mimo-v2.6-pro`, `xiaomi/mimo-v2.6-flash`, `stepfun/Step-5-Preview`, `stepfun/Step-3.7-Flash`, `tencent/hy4-preview`, `sakana/fugu-ultra`, `meituan/LongCat-2.0`, `nvidia/nemotron-3-ultra-550b-a55b` | OpenAI `/chat/completions` | Varied | Varied |
 
 ---
 

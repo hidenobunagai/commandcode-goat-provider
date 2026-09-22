@@ -43,6 +43,9 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `stepfun/Step-3.7-Flash` | Step 3.7 Flash | 256K | 65,536 | OpenAI | - | Yes |
 | `stepfun/Step-5-Preview` | Step 5 Preview | 1M | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
 | `tencent/hy4-preview` | Tencent Hy4 Preview | 1M | 65,536 | OpenAI | - | No |
+| `xiaomi/mimo-v2.6-pro` | MiMo V2.6 Pro | 1,048,576 | 128,000 | OpenAI | - | ✓ |
+| `xiaomi/mimo-v2.6-pro-ultraspeed` | MiMo V2.6 Pro UltraSpeed | 1,048,576 | 128,000 | OpenAI | - | ✓ |
+| `xiaomi/mimo-v2.6-flash` | MiMo V2.6 Flash | 1,048,576 | 128,000 | OpenAI | - | ✓ |
 | `xiaomi/mimo-v2.5-pro` | MiMo V2.5 Pro | 1,048,576 | 128,000 | OpenAI | - | ✗ |
 | `Qwen/Qwen3.7-Flash` | Qwen 3.7 Flash | 1M | 65,536 | OpenAI | - | Yes |
 | `stepfun/Step-3.5-Flash` | Step 3.5 Flash | 1,000,000 | 65,536 | OpenAI | - | Yes |
@@ -79,6 +82,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `claude-sonnet-5` | Claude Sonnet 5 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
 | `claude-sonnet-4-6` | Claude Sonnet 4.6 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
 | `claude-opus-5` | Claude Opus 5 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
+| `claude-opus-5-5` | Claude Opus 5.5 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
 | `claude-opus-4-8` | Claude Opus 4.8 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
 | `claude-haiku-4-5-20251001` | Claude Haiku 4.5 | 200K | 65,536 | Anthropic | - | Yes |
 | `gpt-5.6-terra` | GPT-5.6 Terra | 1.05M | 65,536 | OpenAI | low, medium, high, xhigh, max | Yes |

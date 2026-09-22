@@ -1,5 +1,18 @@
 # Change Log
 
+## [0.1.22] - 2026-09-22
+
+### Added
+
+- Catalog sync with the live provider API, which now serves 77 models; both catalogs gain the four new ids (`claude-opus-5-5`, `xiaomi/mimo-v2.6-pro`, `xiaomi/mimo-v2.6-pro-ultraspeed`, `xiaomi/mimo-v2.6-flash`):
+  - `claude-opus-5-5` — "Claude Opus 5.5", 1M context, Vision on (Anthropic's models overview: "All current models support text and image input"), protocol `anthropic` (`claude-*` id → `/provider/v1/messages`), efforts `low, medium, high, xhigh, max` with `defaultEffort: high` following the Opus family entries in this catalog (Anthropic's own default-effort table reads `medium` for Opus 5.5, but `defaultEffort` records Command Code's per-family choice, which the sibling Opus entries carry as `high`). Pricing $4 / $20 per 1M tokens — `commandcode.ai/models/claude-opus-5-5` and Anthropic's pricing table agree on it — with `tier: provider` / `label: Provider` for its "Available on Max and above" plan row. `intelligence` omitted: the model page reads "not yet scored". `maxTokens` stays at the family default 65,536.
+  - `xiaomi/mimo-v2.6-pro` — "MiMo V2.6 Pro", 1,048,576 context, Vision on (the model page calls it "flagship multimodal agentic coding"), protocol `openai`, no `efforts` (Xiaomi publishes no reasoning-level list for V2.6 and the V2.5 siblings ship without one, so no effort picker), $0.43 / $0.87 per 1M tokens, `tier: go` / `label: Go/GOAT` ("Available on Go and above"). `intelligence` omitted ("not yet scored").
+  - `xiaomi/mimo-v2.6-pro-ultraspeed` — "MiMo V2.6 Pro UltraSpeed", same 1,048,576 context, Vision on (it is billed as the "low-latency serving tier of MiMo V2.6 Pro", i.e. the same model behind a faster tier), protocol `openai`, no `efforts`, $4.35 / $8.70 per 1M tokens, `tier: goat` / `label: GOAT` ("Available on GOAT and above").
+  - `xiaomi/mimo-v2.6-flash` — "MiMo V2.6 Flash", 1,048,576 context, Vision on ("efficient multimodal agentic coding"), protocol `openai`, no `efforts`, $0.14 / $0.28 per 1M tokens, `tier: go` / `label: Go/GOAT`.
+  - The three MiMo entries use `maxTokens: 65536`, the value every DSH `CATALOG` entry already carries (the extension's `staticInfo` derives 131,072 for a non-Claude/Qwen/Kimi/Gemini id, which `docs/models.md` records in its max-output column). No `discount` values were invented — `commandcode.ai/models` shows no deal row for the four models.
+- This release carries the catalog change only: `main` was already at the v0.1.21 tag, with no unreleased commits from the 30-minute idle loop to fold in. The sibling DSH plugin ships the same catalog change as v0.1.11, whose bump additionally folds in its four idle commits (align the `@deepseek-ai/*` peer ranges with harness 0.1.6-alpha.2, declare the type-only `@deepseek-ai` imports with correct peer ranges, migrate the settings card to the `settings.models.provider-card` slot, and reduce the usage badge to the quota-only rendering with the auto-switch UI removed).
+- `tests/model-catalog.test.ts` pins `FALLBACK_MODELS` at 77 (was 73), and `docs/models.md` plus the `README.md` family tables carry the four ids — the README's Anthropic row gains `claude-opus-5-5` and its Other Partners row gains the two paid MiMo V2.6 ids (the Xiaomi family had no README row at all until now).
+
 ## [0.1.21] - 2026-09-21
 
 ### Added
