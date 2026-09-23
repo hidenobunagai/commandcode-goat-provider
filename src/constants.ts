@@ -287,13 +287,16 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["gpt-5.5", ["low", "medium", "high", "xhigh"]],
   ["google/gemini-3.6-flash", ["low", "medium", "high"]],
   ["sakana/fugu-ultra", ["high", "xhigh"]],
-  // Muse Spark: five-rung ladder probed 2026-09-23 on /provider/v1/chat/completions
-  // (low..max -> 200 with differentiated reasoning_tokens; minimal/ultra -> 400).
+  // Muse Spark: probed 2026-09-23 on /provider/v1/chat/completions (listed rungs
+  // -> 200 with differentiated reasoning_tokens; minimal/ultra/none -> 400).
+  // Contributor tier drops `max`: dev.meta.ai/docs/reasoning limits it to
+  // standard-tier muse-spark-1.3, and probing confirms contributor max is
+  // indistinguishable from xhigh (t=0, 4 pairs: mean rt 1071 vs 1086).
   ["meta/muse-spark-1.1", ["low", "medium", "high", "xhigh", "max"]],
   ["meta/muse-spark-1.2", ["low", "medium", "high", "xhigh", "max"]],
-  ["meta/muse-spark-1.2-contributor", ["low", "medium", "high", "xhigh", "max"]],
+  ["meta/muse-spark-1.2-contributor", ["low", "medium", "high", "xhigh"]],
   ["meta/muse-spark-1.3", ["low", "medium", "high", "xhigh", "max"]],
-  ["meta/muse-spark-1.3-contributor", ["low", "medium", "high", "xhigh", "max"]],
+  ["meta/muse-spark-1.3-contributor", ["low", "medium", "high", "xhigh"]],
 ]);
 const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["gpt-5.6-luna", "openai"],

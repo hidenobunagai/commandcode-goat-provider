@@ -88,13 +88,17 @@ test("provides every official catalog model as a selectable fallback", () => {
 });
 
 test("offers the effort picker for Muse Spark with the probed gateway ladder", () => {
-  // Probed 2026-09-23 on /provider/v1/chat/completions: low..max all 200 with
-  // differentiated reasoning_tokens; minimal/ultra rejected 400.
-  for (const id of [
-    "meta/muse-spark-1.3-contributor",
-    "meta/muse-spark-1.3",
-    "meta/muse-spark-1.1",
-  ]) {
+  // Probed 2026-09-23 on /provider/v1/chat/completions: listed rungs all 200
+  // with differentiated reasoning_tokens; minimal/ultra/none rejected 400.
+  // Contributor tier drops `max` (dev.meta.ai/docs/reasoning: standard-tier
+  // muse-spark-1.3 only; probing shows contributor max == xhigh in effect).
+  const withoutMax = ["meta/muse-spark-1.3-contributor", "meta/muse-spark-1.2-contributor"];
+  for (const id of withoutMax) {
+    const info = inferModelInfo({ id, name: id, context_length: 1_048_576 });
+    expect(info.supportsThinking).toBe(true);
+    expect(info.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh"]);
+  }
+  for (const id of ["meta/muse-spark-1.3", "meta/muse-spark-1.1"]) {
     const info = inferModelInfo({ id, name: id, context_length: 1_048_576 });
     expect(info.supportsThinking).toBe(true);
     expect(info.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);

@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.24] - 2026-09-23
+
+### Fixed
+
+- **Contributor-tier Muse Spark loses the `max` effort rung.** `meta/muse-spark-1.3-contributor` and `meta/muse-spark-1.2-contributor` now declare `low, medium, high, xhigh` in `EFFORTS_MAP` instead of adding `max`; the standard-tier ids (`1.1`, `1.2`, `1.3`) keep `max`. Meta's model docs (dev.meta.ai/docs/reasoning) state `"max"` = "Extended reasoning beyond xhigh. Standard-tier muse-spark-1.3 only; not available on Contributor-tier models", and live probing on 2026-09-23 confirms the split: with `temperature: 0` on the same prompt, contributor `max` is statistically indistinguishable from `xhigh` (4 pairs, mean reasoning_tokens 1071 vs 1086 — max wins only 2 of 4), while plain `muse-spark-1.3` shows a real `max` tier (mean 1218 vs 1074, max ≥ xhigh in 3/3 samples plus longer wall-clock). The gateway still answers 200 for contributor `max` (it clamps to xhigh instead of 400 — `none` is the only documented rung it rejects outright), so the rung was accepted but inert: offering it advertised a knob that did nothing. `docs/models.md` contributor rows carry the four-rung ladder. Sibling DSH plugin: `dsh-commandcode-goat-provider` 0.1.14.
+
 ## [0.1.23] - 2026-09-23
 
 ### Fixed

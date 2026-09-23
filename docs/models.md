@@ -37,9 +37,9 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `MiniMaxAI/MiniMax-M3` | MiniMax M3 | 1,000,000 | 131,072 | Anthropic | - | ✓ |
 | `xai/grok-4.5` | Grok 4.5 | 500K | 65,536 | OpenAI | low, medium, high | Yes |
 | `meta/muse-spark-1.3` | Muse Spark 1.3 | 1M | 65,536 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | Yes |
-| `meta/muse-spark-1.3-contributor` | Muse Spark 1.3 Contributor | 1,048,576 | 131,072 | Responses | ✓ (`low,medium,high,xhigh,max`) | ✓ |
+| `meta/muse-spark-1.3-contributor` | Muse Spark 1.3 Contributor | 1,048,576 | 131,072 | Responses | ✓ (`low,medium,high,xhigh`) | ✓ |
 | `meta/muse-spark-1.2` | Muse Spark 1.2 | 1M | 65,536 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | Yes |
-| `meta/muse-spark-1.2-contributor` | Muse Spark 1.2 Contributor | 1,048,576 | 131,072 | Responses | ✓ (`low,medium,high,xhigh,max`) | ✓ |
+| `meta/muse-spark-1.2-contributor` | Muse Spark 1.2 Contributor | 1,048,576 | 131,072 | Responses | ✓ (`low,medium,high,xhigh`) | ✓ |
 | `stepfun/Step-3.7-Flash` | Step 3.7 Flash | 256K | 65,536 | OpenAI | - | Yes |
 | `stepfun/Step-5-Preview` | Step 5 Preview | 1M | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
 | `tencent/hy4-preview` | Tencent Hy4 Preview | 1M | 65,536 | OpenAI | - | No |
