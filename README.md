@@ -70,7 +70,7 @@ The provider dynamically discovers available models from `GET https://api.comman
 | **Alibaba Qwen** | `Qwen/Qwen3.8-Omni-Flash`, `Qwen/Qwen3.8-Max`, `Qwen/Qwen3.8-27B`, `Qwen/Qwen3.7-Max`, `Qwen/Qwen3.7-Plus` | OpenAI `/chat/completions` | Configurable effort | Supported |
 | **Google Gemini** | `google/gemini-3.7-flash`, `google/gemini-3.6-flash`, `google/gemini-3.5-flash` | OpenAI `/chat/completions` | Provider default | Supported |
 | **xAI Grok** | `xai/grok-4.7`, `xai/grok-4.6`, `xai/grok-4.5` | OpenAI `/chat/completions` | Configurable effort | Supported |
-| **Meta Muse** | `meta/muse-spark-1.2`, `meta/muse-spark-1.2-contributor` | OpenAI `/chat/completions` | Configurable effort | Supported |
+| **Meta Muse** | `meta/muse-spark-1.3`, `meta/muse-spark-1.3-contributor`, `meta/muse-spark-1.2`, `meta/muse-spark-1.2-contributor` | OpenAI `/chat/completions` | Configurable effort | Supported |
 | **Other Partners** | `xiaomi/mimo-v2.6-pro`, `xiaomi/mimo-v2.6-flash`, `stepfun/Step-5-Preview`, `stepfun/Step-3.7-Flash`, `tencent/hy4-preview`, `sakana/fugu-ultra`, `meituan/LongCat-2.0`, `nvidia/nemotron-3-ultra-550b-a55b` | OpenAI `/chat/completions` | Varied | Varied |
 
 ---

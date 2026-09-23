@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.1.23] - 2026-09-23
+
+### Fixed
+
+- **Muse Spark models now offer the Thinking Effort picker.** All five ids in `EFFORTS_MAP` (`meta/muse-spark-1.1`, `-1.2`, `-1.2-contributor`, `-1.3`, `-1.3-contributor`) gain the five-rung ladder `low, medium, high, xhigh, max`, mirroring the DSH `CATALOG` entries shipped as `dsh-commandcode-goat-provider` 0.1.13. The ladder was probed live against `POST https://api.commandcode.ai/provider/v1/chat/completions` on 2026-09-23 with the account key: every rung of `low..max` returns HTTP 200 and `completion_tokens_details.reasoning_tokens` differentiates by effort (`muse-spark-1.3-contributor`: 450 at `low` → 971 at `max`; plain `muse-spark-1.3`: 382 → 502; `1.2`: 626 → 829; `1.2-contributor`: 573 → 690; `1.1`: 406 → 829), while `minimal` and `ultra` are rejected 400 with `expected one of "low"|"medium"|"high"|"xhigh"|"max"` — the gateway enum is exactly this ladder, and `/provider/v1/models` advertises `supported_endpoints: ["/chat/completions", "/responses"]` for all five ids (the extension keeps routing them `openai` via `PROTOCOL_MAP`).
+- Before this, the ids were absent from `EFFORTS_MAP`, so `supportsThinking` was false: `provider.ts` dropped every `reasoningEffort` ("Dropping reasoningEffort ... for non-thinking model"), no enum appeared in the model configuration, and the README family row's "Configurable effort" claim did not hold. `commandcode.ai/models` documents the contributor variants as thinking-capable and the upstream honors the parameter — the omission was conservative curation, now replaced by measurement. Same omission is fixed in the sibling DSH plugin (0.1.13), which previously showed no effort picker and dropped the effort on failover (`modelSupportsEffort()` returned false).
+- `docs/models.md`: the five Muse Spark rows carry the probed ladder. The contributor rows previously read `minimal,low,medium,high,xhigh` (the ladder a different gateway expects on `/responses`) and the plain rows read `-`; both disagreed with Command Code's own `/provider/v1/chat/completions`.
+- `README.md`: the Meta Muse row lists the 1.3 pair alongside the 1.2 pair.
+- `tests/model-catalog.test.ts` pins `supportsThinking` and the five-rung ladder for contributor, plain and 1.1 ids.
+
 ## [0.1.22] - 2026-09-22
 
 ### Added

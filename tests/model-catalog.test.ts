@@ -86,3 +86,17 @@ test("provides every official catalog model as a selectable fallback", () => {
   expect(FALLBACK_MODELS.length).toBe(77);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
+
+test("offers the effort picker for Muse Spark with the probed gateway ladder", () => {
+  // Probed 2026-09-23 on /provider/v1/chat/completions: low..max all 200 with
+  // differentiated reasoning_tokens; minimal/ultra rejected 400.
+  for (const id of [
+    "meta/muse-spark-1.3-contributor",
+    "meta/muse-spark-1.3",
+    "meta/muse-spark-1.1",
+  ]) {
+    const info = inferModelInfo({ id, name: id, context_length: 1_048_576 });
+    expect(info.supportsThinking).toBe(true);
+    expect(info.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
+  }
+});

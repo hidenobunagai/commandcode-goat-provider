@@ -287,6 +287,13 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["gpt-5.5", ["low", "medium", "high", "xhigh"]],
   ["google/gemini-3.6-flash", ["low", "medium", "high"]],
   ["sakana/fugu-ultra", ["high", "xhigh"]],
+  // Muse Spark: five-rung ladder probed 2026-09-23 on /provider/v1/chat/completions
+  // (low..max -> 200 with differentiated reasoning_tokens; minimal/ultra -> 400).
+  ["meta/muse-spark-1.1", ["low", "medium", "high", "xhigh", "max"]],
+  ["meta/muse-spark-1.2", ["low", "medium", "high", "xhigh", "max"]],
+  ["meta/muse-spark-1.2-contributor", ["low", "medium", "high", "xhigh", "max"]],
+  ["meta/muse-spark-1.3", ["low", "medium", "high", "xhigh", "max"]],
+  ["meta/muse-spark-1.3-contributor", ["low", "medium", "high", "xhigh", "max"]],
 ]);
 const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["gpt-5.6-luna", "openai"],

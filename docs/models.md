@@ -36,10 +36,10 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `zai-org/GLM-5.3` | GLM-5.3 | 1,000,000 | 131,072 | OpenAI | ✓ (`low,high,max`) | ✗ |
 | `MiniMaxAI/MiniMax-M3` | MiniMax M3 | 1,000,000 | 131,072 | Anthropic | - | ✓ |
 | `xai/grok-4.5` | Grok 4.5 | 500K | 65,536 | OpenAI | low, medium, high | Yes |
-| `meta/muse-spark-1.3` | Muse Spark 1.3 | 1M | 65,536 | OpenAI | - | Yes |
-| `meta/muse-spark-1.3-contributor` | Muse Spark 1.3 Contributor | 1,048,576 | 131,072 | Responses | ✓ (`minimal,low,medium,high,xhigh`) | ✓ |
-| `meta/muse-spark-1.2` | Muse Spark 1.2 | 1M | 65,536 | OpenAI | - | Yes |
-| `meta/muse-spark-1.2-contributor` | Muse Spark 1.2 Contributor | 1,048,576 | 131,072 | Responses | ✓ (`minimal,low,medium,high,xhigh`) | ✓ |
+| `meta/muse-spark-1.3` | Muse Spark 1.3 | 1M | 65,536 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | Yes |
+| `meta/muse-spark-1.3-contributor` | Muse Spark 1.3 Contributor | 1,048,576 | 131,072 | Responses | ✓ (`low,medium,high,xhigh,max`) | ✓ |
+| `meta/muse-spark-1.2` | Muse Spark 1.2 | 1M | 65,536 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | Yes |
+| `meta/muse-spark-1.2-contributor` | Muse Spark 1.2 Contributor | 1,048,576 | 131,072 | Responses | ✓ (`low,medium,high,xhigh,max`) | ✓ |
 | `stepfun/Step-3.7-Flash` | Step 3.7 Flash | 256K | 65,536 | OpenAI | - | Yes |
 | `stepfun/Step-5-Preview` | Step 5 Preview | 1M | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
 | `tencent/hy4-preview` | Tencent Hy4 Preview | 1M | 65,536 | OpenAI | - | No |
@@ -78,7 +78,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `gpt-5.3-codex` | GPT-5.3 Codex | 400K | 65,536 | OpenAI | low, medium, high, xhigh | Yes |
 | `gpt-5.4` | GPT-5.4 | 400K | 65,536 | OpenAI | low, medium, high, xhigh | Yes |
 | `gpt-5.4-mini` | GPT-5.4 Mini | 400K | 65,536 | OpenAI | low, medium, high | Yes |
-| `meta/muse-spark-1.1` | Muse Spark 1.1 | 1M | 65,536 | OpenAI | - | Yes |
+| `meta/muse-spark-1.1` | Muse Spark 1.1 | 1M | 65,536 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | Yes |
 | `claude-sonnet-5` | Claude Sonnet 5 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
 | `claude-sonnet-4-6` | Claude Sonnet 4.6 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
 | `claude-opus-5` | Claude Opus 5 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
