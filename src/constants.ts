@@ -105,6 +105,9 @@ export const REASONING_EFFORT_ORDER: readonly ReasoningEffort[] = [
 ];
 
 const OFFICIAL_MODELS: Array<[string, string, number]> = [
+  ["gpt-6-astra", "GPT-6 Astra", 1050000],
+  ["gpt-6-sol", "GPT-6 Sol", 1050000],
+  ["gpt-6-luna", "GPT-6 Luna", 1050000],
   ["gpt-5.6-luna", "GPT-5.6 Luna", 1050000],
   ["gpt-5.6-sol", "GPT-5.6 Sol", 1050000],
   ["google/gemini-3.8-flash", "Gemini 3.8 Flash", 1000000],
@@ -188,6 +191,9 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
 const VISION_SET = new Set([
   "gpt-5.6-luna",
   "gpt-5.6-sol",
+  "gpt-6-astra",
+  "gpt-6-sol",
+  "gpt-6-luna",
   "google/gemini-3.8-flash",
   "google/gemini-3.7-flash",
   "xai/grok-4.6",
@@ -249,6 +255,11 @@ const VISION_SET = new Set([
 const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["gpt-5.6-luna", ["low", "medium", "high", "xhigh", "max"]],
   ["gpt-5.6-sol", ["low", "medium", "high", "xhigh", "max"]],
+  // GPT-6: probed 2026-09-23 — same five-rung gateway enum (minimal -> 400),
+  // and effort differentiates on a hard problem (max ~4.5-5x none's rt, t=0).
+  ["gpt-6-astra", ["low", "medium", "high", "xhigh", "max"]],
+  ["gpt-6-sol", ["low", "medium", "high", "xhigh", "max"]],
+  ["gpt-6-luna", ["low", "medium", "high", "xhigh", "max"]],
   ["google/gemini-3.8-flash", ["low", "medium", "high"]],
   ["google/gemini-3.7-flash", ["low", "medium", "high"]],
   ["xai/grok-4.6", ["low", "medium", "high", "xhigh"]],
@@ -301,6 +312,9 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
 const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["gpt-5.6-luna", "openai"],
   ["gpt-5.6-sol", "openai"],
+  ["gpt-6-astra", "openai"],
+  ["gpt-6-sol", "openai"],
+  ["gpt-6-luna", "openai"],
   ["google/gemini-3.8-flash", "openai"],
   ["google/gemini-3.7-flash", "openai"],
   ["xai/grok-4.6", "openai"],

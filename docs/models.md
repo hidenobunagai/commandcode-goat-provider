@@ -14,6 +14,9 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 
 | Model ID | Display Name | Context Window | Max Output | Wire Protocol | Thinking | Vision |
 |---|---|---|---|---|---|---|
+| `gpt-6-astra` | GPT-6 Astra | 1,050,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
+| `gpt-6-sol` | GPT-6 Sol | 1,050,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
+| `gpt-6-luna` | GPT-6 Luna | 1,050,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
 | `gpt-5.6-luna` | GPT-5.6 Luna | 1,050,000 | 128,000 | Responses | ✓ (`low,medium,high,xhigh,max`) | ✓ |
 | `gpt-5.6-sol` | GPT-5.6 Sol | 1.05M | 65,536 | OpenAI | low, medium, high, xhigh, max | Yes |
 | `google/gemini-3.8-flash` | Gemini 3.8 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |

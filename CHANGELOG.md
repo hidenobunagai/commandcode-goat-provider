@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.1.25] - 2026-09-23
+
+### Added
+
+- **Catalog sync: the GPT-6 trio joins both catalogs** (`gpt-6-astra`, `gpt-6-sol`, `gpt-6-luna`), closing the NEW drift `check:models` had been flagging (live API 80 models vs 77 in each catalog).
+  - All three: context 1,050,000 (API `context_length`), protocol `openai` (`supported_endpoints: ["/chat/completions", "/responses"]` — both endpoints were probed 200 on 2026-09-23; the extension keeps routing chat/completions), vision on (1×1 PNG accepted with a content answer on each model), efforts `low, medium, high, xhigh, max` with `defaultEffort: medium` in the DSH `CATALOG`. The ladder is probed, not guessed: `minimal` → 400 (`expected one of "low"|"medium"|"high"|"xhigh"|"max"`), every listed rung → 200, and effort **differentiates** on a hard problem at `temperature: 0` (reasoning_tokens none → max: astra 408 → 2070, sol 455 → 2047, luna 963–1257 → 2588–3291; the trivial "primes under 200" prompt saturates near 35 rt for every rung, so a hard problem is what proves the knob). `max_tokens: 262144` is accepted gateway-wide; the DSH entries keep the house `maxTokens: 65536` convention every sibling carries, and `docs/models.md` records the extension-derived 131,072.
+  - `gpt-6-astra` — intelligence 52.7 (#3 of 67; coding 76.9 #4 of 54), $10 / $50 per 1M (cache read $1), tier `provider` / label `Provider` ("Available on Max and above"), released 2026-09-03.
+  - `gpt-6-sol` — intelligence 47.5 (#8 of 67), $2 / $10 (cache read $0.20), tier `pro` / label `Pro` ("Available on Pro and above"), released 2026-09-22.
+  - `gpt-6-luna` — intelligence 37.3 (#31 of 67), $0.10 / $0.50 (cache read $0.01; agent-loop effective $0.04/M in; the >272K long-context band doubles but the catalog stores the standard band like every sibling), tier `go` / label `Go/GOAT` ("Available on Go and above"), released 2026-09-22. On the GOAT plan only Luna is servable — Sol/Astra carry their `pro`/`provider` labels so the picker shows the gate. No discount values were invented (the model pages show no deal row).
+  - `tests/model-catalog.test.ts` pins `FALLBACK_MODELS` at 80 and `docs/models.md` gains the three rows. README's family table has no OpenAI/GPT row (gpt-5.x was never listed there), so it stays untouched. Sibling DSH plugin ships the same catalog as 0.1.15.
+
 ## [0.1.24] - 2026-09-23
 
 ### Fixed
