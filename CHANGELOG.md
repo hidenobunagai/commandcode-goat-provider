@@ -1,5 +1,37 @@
 # Change Log
 
+## [0.1.26] - 2026-09-24
+
+Roll-up release: the first published version since v0.1.22. The three commits below had already
+carried their own entries and bumped `package.json` through 0.1.23–0.1.25 on `main`, but were never
+tagged, so nothing reached the Marketplace. This version folds all three into one tag; the detailed
+per-commit notes stay in their sections below.
+
+### Added
+
+- **Muse Spark gets the Thinking Effort picker** (`3b680c0`, entry [0.1.23]): all five `meta/muse-spark-*`
+  ids join `EFFORTS_MAP` with the five-rung ladder `low, medium, high, xhigh, max`, probed live against
+  `/provider/v1/chat/completions` (every rung 200 with `reasoning_tokens` differentiating by effort;
+  `minimal`/`ultra` rejected 400). Before this, `supportsThinking` was false and the extension silently
+  dropped `reasoningEffort`.
+- **Catalog gains the GPT-6 trio** (`37e18b7`, entry [0.1.25]): `gpt-6-astra` (Provider tier, $10/$50),
+  `gpt-6-sol` (Pro, $2/$10) and `gpt-6-luna` (Go, $0.10/$0.50), all 1,050,000 context with vision on and
+  the probed `low..max` ladder — closing the NEW drift `check:models` flagged (live 80 models vs 77 in
+  each catalog). `tests/model-catalog.test.ts` pins `FALLBACK_MODELS` at 80; `docs/models.md` carries the
+  three rows.
+
+### Fixed
+
+- **Contributor-tier Muse Spark loses the inert `max` rung** (`e601cdc`, entry [0.1.24]):
+  `meta/muse-spark-1.2-contributor` / `-1.3-contributor` now declare `low, medium, high, xhigh`. Meta's
+  docs reserve `max` for standard tier, and live probing confirmed the gateway clamps contributor `max`
+  to `xhigh` (4 pairs, mean reasoning_tokens 1071 vs 1086) — the rung answered 200 but did nothing, so
+  offering it advertised a dead knob. Standard-tier ids (`1.1`/`1.2`/`1.3`) keep `max`.
+
+No other changes ride this release: `package.json` moves 0.1.25 → 0.1.26 purely so the tag matches the
+version the Marketplace accepts. Local gate before tagging: `bun install --frozen-lockfile`, `lint`
+(0 errors), `compile`, `test -- --runInBand` (14 suites / 218 tests).
+
 ## [0.1.25] - 2026-09-23
 
 ### Added
