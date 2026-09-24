@@ -1,5 +1,37 @@
 # Change Log
 
+## [0.1.27] - 2026-09-24
+
+### Added
+
+- **Catalog gains Space Bunny Alpha** (`stealth/space-bunny-alpha`, "Space Bunny Alpha"), closing the NEW
+  drift `check:models` flagged (live API 81 models vs 80 in each catalog). Capabilities curated from
+  commandcode.ai, not guessed: context 1,000,000 straight from the API `context_length`; protocol `openai`
+  (the id is not `claude-*` and the API advertises `/chat/completions` only); vision on — the pricing rows
+  on commandcode.ai declare `caps: { text: true, vision: true, reasoning: true }`. `EFFORTS_MAP` is
+  deliberately left empty: the site publishes `reasoning: true` but no effort ladder for this stealth
+  preview, so the model ships without the Thinking UI rather than with an invented one. `FALLBACK_MODELS`
+  pinned at 81; `docs/models.md` gains the row with the extension-derived 131,072 max output. Sibling DSH
+  plugin `dsh-commandcode-goat-provider` 0.1.16 carries the fuller record: tier `free` / label `Free` /
+  `inputPrice`-`outputPrice` `'free'` (the 100% `space-bunny-alpha-free` deal — $0.00/M in, out and cache
+  reads while the stealth preview lasts), `maxTokens: 65536`, no `intelligence` ("not yet scored"), no
+  `latest` flag.
+
+### Fixed
+
+- **`stepfun/Step-3.5-Flash` context window 1,000,000 → 262,144** in both catalogs, matching the live API
+  (`context_length: 262144`). The static 1M value was stale; the API value is authoritative.
+
+No other changes ride this release: `package.json` moves 0.1.26 → 0.1.27 so the tag matches the version the
+Marketplace accepts, and `main` carried no unreleased commits when this was cut (HEAD was the `v0.1.26`
+tag), so nothing else is folded in. The sibling plugin's 0.1.15 → 0.1.16 bump, by contrast, does fold two
+idle-improvement commits already on its `main` — `refactor(usage): remove Go/GOAT failover entirely —
+quota badge reads GOAT only` and `fix(badge): portal the quota panel with viewport clamping (mobile
+left-clip)` — into the same release as its catalog change (this repo keeps such notes here; that repo has
+no CHANGELOG, so its commit message carries them). Local gate before tagging:
+`lint` (0 errors, 2 pre-existing `src/api.ts` any-warnings), `compile`, `test -- --runInBand`
+(14 suites / 218 tests), `check-changelog`, and `check:models` clean (81 live / 81 VS Code / 81 DSH).
+
 ## [0.1.26] - 2026-09-24
 
 Roll-up release: the first published version since v0.1.22. The three commits below had already

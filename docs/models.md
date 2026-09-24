@@ -51,7 +51,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `xiaomi/mimo-v2.6-flash` | MiMo V2.6 Flash | 1,048,576 | 128,000 | OpenAI | - | ✓ |
 | `xiaomi/mimo-v2.5-pro` | MiMo V2.5 Pro | 1,048,576 | 128,000 | OpenAI | - | ✗ |
 | `Qwen/Qwen3.7-Flash` | Qwen 3.7 Flash | 1M | 65,536 | OpenAI | - | Yes |
-| `stepfun/Step-3.5-Flash` | Step 3.5 Flash | 1,000,000 | 65,536 | OpenAI | - | Yes |
+| `stepfun/Step-3.5-Flash` | Step 3.5 Flash | 262,144 | 65,536 | OpenAI | - | Yes |
 | `xiaomi/mimo-v2.5` | MiMo V2.5 | 1,000,000 | 128,000 | OpenAI | - | ✓ |
 | `tencent/hy3-paid` | Tencent Hy3 | 262,144 | 65,536 | OpenAI | - | No |
 | `Qwen/Qwen3.7-Plus` | Qwen 3.7 Plus | 1M | 65,536 | OpenAI | - | Yes |
@@ -94,3 +94,4 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `sakana/fugu-ultra` | Fugu Ultra | 1M | 65,536 | OpenAI | high, xhigh | Yes |
 | `meituan/LongCat-2.0` | LongCat 2.0 | 1,000,000 | 131,072 | OpenAI | - | ✗ |
 | `inclusionai/ling-3.0-flash-sante:free` | Ling 3.0 Flash Sante | 262,144 | 65,536 | OpenAI | - | No |
+| `stealth/space-bunny-alpha` | Space Bunny Alpha | 1,000,000 | 131,072 | OpenAI | - | ✓ |

@@ -142,7 +142,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["xiaomi/mimo-v2.6-flash", "MiMo V2.6 Flash", 1048576],
   ["xiaomi/mimo-v2.5-pro", "MiMo V2.5 Pro", 1000000],
   ["Qwen/Qwen3.7-Flash", "Qwen 3.7 Flash", 1000000],
-  ["stepfun/Step-3.5-Flash", "Step 3.5 Flash", 1000000],
+  ["stepfun/Step-3.5-Flash", "Step 3.5 Flash", 262144],
   ["xiaomi/mimo-v2.5", "MiMo V2.5", 1000000],
   ["tencent/hy3-paid", "Tencent Hy3", 262144],
   ["Qwen/Qwen3.7-Plus", "Qwen 3.7 Plus", 1000000],
@@ -164,6 +164,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["deepseek/deepseek-v4-flash-vision-exp", "DeepSeek V4 Flash Vision (exp)", 1000000],
   ["poolside/laguna-s-2.1-free", "Laguna S 2.1", 256000],
   ["inclusionai/ling-3.0-flash-sante:free", "Ling 3.0 Flash Sante", 262144],
+  ["stealth/space-bunny-alpha", "Space Bunny Alpha", 1000000],
   ["claude-fable-5-1", "Claude Fable 5.1", 1000000],
   ["claude-fable-5", "Claude Fable 5", 1000000],
   ["claude-opus-4-7", "Claude Opus 4.7", 1000000],
@@ -251,6 +252,7 @@ const VISION_SET = new Set([
   "gpt-5.5",
   "google/gemini-3.6-flash",
   "sakana/fugu-ultra",
+  "stealth/space-bunny-alpha",
 ]);
 const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["gpt-5.6-luna", ["low", "medium", "high", "xhigh", "max"]],
@@ -390,6 +392,7 @@ const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["sakana/fugu-ultra", "openai"],
   ["meituan/LongCat-2.0", "openai"],
   ["inclusionai/ling-3.0-flash-sante:free", "openai"],
+  ["stealth/space-bunny-alpha", "openai"],
 ]);
 const vision = (id: string) => VISION_SET.has(id);
 const thinking = (id: string) => EFFORTS_MAP.has(id);
