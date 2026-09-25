@@ -310,6 +310,9 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["meta/muse-spark-1.2-contributor", ["low", "medium", "high", "xhigh"]],
   ["meta/muse-spark-1.3", ["low", "medium", "high", "xhigh", "max"]],
   ["meta/muse-spark-1.3-contributor", ["low", "medium", "high", "xhigh"]],
+  // Space Bunny Alpha: probed 2026-09-25 on /provider/v1/chat/completions (low..max -> 200,
+  // unknown -> 400). Streams reasoning in delta.reasoning rather than delta.reasoning_content.
+  ["stealth/space-bunny-alpha", ["low", "medium", "high", "xhigh", "max"]],
 ]);
 const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["gpt-5.6-luna", "openai"],

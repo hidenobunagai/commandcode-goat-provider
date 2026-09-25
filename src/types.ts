@@ -56,6 +56,7 @@ export interface OcGoStreamChoice {
     role?: string;
     content?: string;
     reasoning_content?: string;
+    reasoning?: string;
     tool_calls?: OcGoToolCall[];
   };
   finish_reason: string | null;

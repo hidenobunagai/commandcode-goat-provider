@@ -168,4 +168,78 @@ describe("processOpenAIStream", () => {
     expect(toolCalls[0].name).toBe("read_file");
     expect(toolCalls[0].input).toEqual({ path: "README.md" });
   });
+
+  it("handles reasoning stream using delta.reasoning fallback", async () => {
+    const sseBody = [
+      'data: {"id":"cc-3","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"role":"assistant","content":"","reasoning":"thinking step 1"},"finish_reason":null}]}',
+      "",
+      'data: {"id":"cc-3","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"final answer"},"finish_reason":"stop"}],"usage":{"prompt_tokens":10,"completion_tokens":5,"total_tokens":15}}',
+      "",
+      "data: [DONE]",
+      "",
+    ].join("\n");
+
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(encoder.encode(sseBody));
+        controller.close();
+      },
+    });
+
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      body: stream,
+    } as any);
+
+    const reportedParts: vscode.LanguageModelResponsePart[] = [];
+    const progress: vscode.Progress<vscode.LanguageModelResponsePart> = {
+      report: (part) => reportedParts.push(part),
+    };
+
+    const modelInfo: CommandCodeModelInfo = {
+      id: "stealth/space-bunny-alpha",
+      name: "Space Bunny Alpha",
+      displayName: "Space Bunny Alpha",
+      contextWindow: 1000000,
+      maxOutput: 131072,
+      supportsTools: true,
+      supportsVision: true,
+      supportsThinking: true,
+      apiFormat: "openai",
+      isUserSelectable: true,
+    };
+
+    const messages = [
+      {
+        role: vscode.LanguageModelChatMessageRole.User,
+        content: [new vscode.LanguageModelTextPart("Solve this")],
+      },
+    ];
+
+    const token = new vscode.CancellationTokenSource().token;
+    const abortController = new AbortController();
+
+    await processOpenAIStream(
+      { id: modelInfo.id, modelInfo, maxOutputTokens: 131072 },
+      messages as any,
+      { tools: [] } as any,
+      "test-key",
+      4096,
+      undefined,
+      undefined,
+      [modelInfo],
+      "test-agent",
+      progress,
+      token,
+      abortController,
+    );
+
+    const textParts = reportedParts.filter(
+      (part): part is vscode.LanguageModelTextPart => part instanceof vscode.LanguageModelTextPart,
+    );
+    const combinedText = textParts.map((p) => p.value).join("");
+    expect(combinedText).toContain("thinking step 1");
+    expect(combinedText).toContain("final answer");
+  });
 });

@@ -104,3 +104,15 @@ test("offers the effort picker for Muse Spark with the probed gateway ladder", (
     expect(info.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
   }
 });
+
+test("offers the effort picker for Space Bunny Alpha with probed reasoning ladder", () => {
+  // Probed 2026-09-25 on /provider/v1/chat/completions: low..max all 200,
+  // unknown value rejected 400. Reasoning streamed in delta.reasoning.
+  const info = inferModelInfo({
+    id: "stealth/space-bunny-alpha",
+    name: "Space Bunny Alpha",
+    context_length: 1_000_000,
+  });
+  expect(info.supportsThinking).toBe(true);
+  expect(info.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
+});
