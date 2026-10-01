@@ -98,6 +98,10 @@ $REPORT
 やること:
 1. 上記の差分が実在するか確認し、実在しなければ何も変更せず、その理由を1段落で報告して終了。
 2. 新モデルがあれば capability（vision / thinking / protocol / 価格 / tier）を commandcode.ai の情報から確認して両カタログへ反映。
+   thinking effort は手順書の「Thinking efforts」に従う。EFFORTS MISMATCH / UNVERIFIED の行と新しい reasoning モデルは、
+   開発元の API ドキュメントを web_search / web_fetch で調べ、scripts/probe-efforts.ts で既定の思考の有無と off 可否を確かめてから
+   docs/effort-decisions.json に根拠つきで記録し、DSH CATALOG と EFFORTS_MAP に反映する。わからないからといって effort を外さないこと。
+   最後に bun run check:models を再実行し、EFFORTS の2セクションが空になったことを確認する。
    確認できない項目は推測せず保守的デフォルトにし、判断できなかった点を最終報告に明記。
 3. 各リポジトリで test / lint / compile を実行し、通ってから version bump・CHANGELOG 更新・commit・push・tag push。
    CHANGELOG にはカタログ更新の要点を書く。同じ版に未リリースのコミット（30 分のアイドル自動改善の分）が

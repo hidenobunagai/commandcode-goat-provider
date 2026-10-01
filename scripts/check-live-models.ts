@@ -10,7 +10,8 @@
  *
  * Exit codes:
  *   0  no drift
- *   2  drift detected (new / removed / renamed / retuned models) — agent run warranted
+ *   2  drift detected (new / removed / renamed / retuned models, or thinking efforts
+ *      not backed by evidence — see scripts/effort-evidence.ts) — agent run warranted
  *   1  internal error (API unreachable, catalog unreadable, malformed entry)
  *
  * Usage:
@@ -30,6 +31,13 @@ import {
   type ApiModel,
   type ModelDiff,
 } from "./model-catalog";
+import {
+  compareEfforts,
+  findPiDataDir,
+  loadDecisions,
+  loadPiData,
+  type EffortDiff,
+} from "./effort-evidence";
 
 const API_URL = "https://api.commandcode.ai/provider/v1/models";
 const DEFAULT_DSH_REPO = path.join(
@@ -38,6 +46,7 @@ const DEFAULT_DSH_REPO = path.join(
 );
 const VSCE_REPO = process.cwd();
 const VSCE_FILE = path.join(VSCE_REPO, "src/constants.ts");
+const DECISIONS_FILE = path.join(VSCE_REPO, "docs/effort-decisions.json");
 
 const argv = process.argv.slice(2);
 const JSON_OUT = argv.includes("--json");
@@ -57,6 +66,9 @@ interface Report {
   changedModels: ModelDiff[];
   missingFromDsh: ModelDiff[];
   capabilityModels: ModelDiff[];
+  effortMismatched: EffortDiff[];
+  effortUnverified: EffortDiff[];
+  effortError?: string;
   drift: boolean;
 }
 
@@ -112,6 +124,7 @@ function writeText(report: Report): void {
     `   DSH catalog:     ${report.dsh.count ?? "?"} models (v${report.dsh.version ?? "?"}) ${report.dsh.path}`,
   );
 
+  if (report.effortError) console.log(`⚠️  effort check skipped: ${report.effortError}`);
   if (!report.drift) {
     console.log("✅ no catalog drift");
     return;
@@ -121,7 +134,7 @@ function writeText(report: Report): void {
   console.log("DRIFT DETECTED");
   console.log(line);
 
-  const section = (title: string, items: ModelDiff[], render: (m: ModelDiff) => string) => {
+  const section = <T>(title: string, items: T[], render: (m: T) => string) => {
     if (items.length === 0) return;
     console.log(`\n${title} (${items.length})`);
     for (const item of items) console.log(`  - ${render(item)}`);
@@ -152,6 +165,18 @@ function writeText(report: Report): void {
     report.capabilityModels,
     (m) => `${m.id}  ${m.changed.join("; ")}`,
   );
+  const effortLine = (m: EffortDiff) =>
+    `${m.id}  catalog=[${m.catalog.join(",")}] evidence=[${m.evidence.efforts.join(",")}] (${m.evidence.strength}: ${m.evidence.source})`;
+  section(
+    "EFFORTS MISMATCH — DSH CATALOG disagrees with a recorded decision or explicit pi-ai map",
+    report.effortMismatched,
+    effortLine,
+  );
+  section(
+    "EFFORTS UNVERIFIED — no decision and no explicit pi-ai map; research, then record a decision",
+    report.effortUnverified,
+    effortLine,
+  );
 
   console.log(`\n${line}`);
   console.log("Next: follow docs/model-sync.md to update both catalogs and publish.");
@@ -173,6 +198,8 @@ const report: Report = {
   changedModels: [],
   missingFromDsh: [],
   capabilityModels: [],
+  effortMismatched: [],
+  effortUnverified: [],
   drift: false,
 };
 
@@ -194,10 +221,22 @@ const dsh = parseOrDie(DSH_FILE, () => parseDshCatalog(dshSource));
 report.vscode.count = vscode.size;
 report.dsh.count = dsh.size;
 
+const dshCapabilities = parseOrDie(DSH_FILE, () => parseDshCapabilities(dshSource));
 const capabilities = compareCapabilities(
   parseOrDie(VSCE_FILE, () => parseVsceCapabilities(vsceSource)),
-  parseOrDie(DSH_FILE, () => parseDshCapabilities(dshSource)),
+  dshCapabilities,
 );
+
+// A missing Pi install only disables this section; it must not hide the rest of the gate.
+const piDataDir = findPiDataDir();
+if (piDataDir) {
+  const decisions = parseOrDie(DECISIONS_FILE, () => loadDecisions(DECISIONS_FILE));
+  const efforts = compareEfforts(dshCapabilities, loadPiData(piDataDir), decisions);
+  report.effortMismatched = efforts.mismatched;
+  report.effortUnverified = efforts.unverified;
+} else {
+  report.effortError = "pi-ai provider data not found (install Pi or set PI_AI_DATA_DIR)";
+}
 Object.assign(report, compare(live, vscode, dsh));
 report.capabilityModels = capabilities.filter((m) => !report.newModels.some((n) => n.id === m.id));
 report.drift =
@@ -205,7 +244,9 @@ report.drift =
   report.changedModels.length > 0 ||
   report.missingFromDsh.length > 0 ||
   report.removedModels.length > 0 ||
-  report.capabilityModels.length > 0;
+  report.capabilityModels.length > 0 ||
+  report.effortMismatched.length > 0 ||
+  report.effortUnverified.length > 0;
 
 if (JSON_OUT) console.log(JSON.stringify(report, null, 2));
 else writeText(report);

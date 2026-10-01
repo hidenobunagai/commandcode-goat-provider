@@ -1,0 +1,7 @@
+{
+  "xiaomi/mimo-v2.6-flash": {
+    "efforts": ["low", "medium", "high"],
+    "source": "Owner's manual curation (DSH plugin commit df6c41d, 2026-09-25: align mimo-v2.6-flash efforts to low, medium, high); pi-ai xiaomi:mimo-v2.6-flash has reasoning: true with no map (generic low..high); probe 2026-10-02: reasons by default, off rejected",
+    "decided": "2026-10-02"
+  }
+}

@@ -32,6 +32,11 @@ Sections worth acting on:
   consumers), so the capability data is copied rather than imported; this section is the machine check that
   keeps the copy honest. It compares `modalities`/`efforts`/`protocol` against vision/efforts/protocol and
   must stay empty.
+- **EFFORTS MISMATCH** — the DSH `CATALOG` ladder disagrees with a recorded decision or with an explicit
+  pi-ai `thinkingLevelMap` → fix the catalog, or (if research shows pi-ai is wrong for Command Code) record a
+  decision that says why. See "Thinking efforts" below.
+- **EFFORTS UNVERIFIED** — no recorded decision and no explicit pi-ai map → research the model and record a
+  decision. This is how every row ends up backed by evidence; once recorded, the row stops being reported.
 
 A clean run across all five sections is the expected steady state: two independent repositories consuming one
 live API, with no drift between them.
@@ -45,13 +50,53 @@ when the listing is ambiguous:
 |---|---|
 | `protocol` | `claude-*` ids → `anthropic` (`/provider/v1/messages`); everything else → `openai` |
 | `modalities` (Vision) | `VISION_SET` in the extension + `modalities` in the DSH entry |
-| `efforts` (Thinking) | Vendor reasoning levels, e.g. DeepSeek → `high, max`; drop the model from Thinking entirely when unknown |
+| `efforts` (Thinking) | See "Thinking efforts" below — never leave a reasoning model without a researched ladder |
 | `maxTokens` | Family default used in `staticInfo` (Claude/Qwen/Kimi/Gemini → 65536, others → 131072) unless known otherwise |
 | `name` / `contextWindow` | Authoritative value from the API response |
 | pricing / tier / intelligence | DSH `CATALOG` only; skip when not published — never invent numbers |
 
 If a capability cannot be confirmed, leave it out (text-only, no reasoning UI) and state the limitation in
 the final report and commit message. Shipping a wrong capability flag is worse than shipping none.
+Thinking efforts are the exception: research them as below instead of dropping them.
+
+### Thinking efforts
+
+The gateway cannot tell you a model's ladder: `/provider/v1/models` has no capability data, and
+`/provider/v1/chat/completions` accepts `low|medium|high|xhigh|max` for every model (only `off` is checked per
+model). `scripts/effort-evidence.ts` resolves the ladder in this order, and the gate reports rows that do not
+match it:
+
+1. **`docs/effort-decisions.json`** — researched decisions. Always wins.
+2. **pi-ai explicit `thinkingLevelMap`** (Pi's `dist/providers/data/*.json`): the vendor's own provider file
+   first, then aggregators (openrouter, opencode, …). The ladder is pi-ai's supported levels ∩ the gateway rungs.
+3. **pi-ai `reasoning: true` with no map** is only pi-ai's generic default (low/medium/high) → UNVERIFIED.
+
+For every NEW reasoning model and every EFFORTS row, research before deciding:
+
+- Read the vendor's API docs for the model (`web_search` → `web_fetch`): which `reasoning_effort` values exist,
+  whether thinking can be disabled. Also check `commandcode.ai/models` and the pi-ai entry the gate printed.
+- `bun scripts/probe-efforts.ts <id>` confirms whether the model reasons by default and whether `off` works.
+  Its per-rung token counts are too noisy to choose rungs from.
+- Map vendor values onto gateway rungs (`low, medium, high, xhigh, max`); drop rungs the vendor does not offer.
+  A non-reasoning model gets no `efforts`.
+- If the explicit pi-ai map is wrong for Command Code (vendor docs say otherwise), the decision overrides it.
+
+Record every researched result in `docs/effort-decisions.json` (this repo), keyed by the Command Code id:
+
+```json
+{
+  "xiaomi/mimo-v2.6-flash": {
+    "efforts": ["low", "medium", "high"],
+    "source": "Xiaomi MiMo API docs <url>: reasoning_effort low|medium|high; probe 2026-10-02: reasons by default, off rejected",
+    "decided": "2026-10-02"
+  }
+}
+```
+
+Then apply the same ladder to the DSH `CATALOG` (`efforts`, plus `defaultEffort` when the vendor documents one)
+and to the extension's `EFFORTS_MAP`. Re-run `bun run check:models`: both EFFORTS sections must be empty.
+When research truly finds nothing, record `"efforts": []` with what was searched, so the row is not re-researched
+daily — and say so in the final report.
 Keep vendor-id quirks in mind: ids containing `:` are sent verbatim
 (`resolveApiModelId` handles this — do not "fix" it).
 
