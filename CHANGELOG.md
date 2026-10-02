@@ -1,5 +1,61 @@
 # Change Log
 
+## [0.1.28] - 2026-10-02
+
+### Added
+
+- **Catalog reaches 85 models** — four NEW ids from the live API, curated from commandcode.ai (never
+  guessed): `claude-sonnet-5-5` ("Claude Sonnet 5.5", 1M ctx, GOAT tier, intelligence 56.0, anthropic
+  protocol, vision on, `low..max` efforts from the pi-ai anthropic explicit map);
+  `gpt-6.1-sol` ("GPT-6.1 Sol", 1.05M ctx, Pro tier $2/$10, vision on, `low..max` — probed live:
+  thinks by default, `off` rejected); `deepseek/deepseek-v4.1-flash-fast` (1M ctx, Go tier $0.16/$0.58,
+  vision on, `low,high,max` from the DeepSeek vendor docs plus the pi-ai baseten explicit map);
+  `inclusionai/ling-3.1-flash:free` ("Ling 3.1 Flash", 262,144 ctx, free tier — text-only with no
+  effort picker, because commandcode.ai shows no Reasons badge and Ling publishes no effort ladder).
+  `FALLBACK_MODELS` pinned at 85.
+- **Every thinking ladder is now researched, not copied** — `docs/effort-decisions.json` gains 51 new
+  entries (52 total), each with vendor docs, pi-ai source and live-probe evidence, closing both
+  EFFORTS sections of `check:models` (15 MISMATCH + 29 UNVERIFIED → 0). Highlights: Kimi K3
+  `low,high,max` (vendor docs, default max); DeepSeek V4.1 family `low,high,max` (vendor docs —
+  `low` aliases the default `high` on V4, so V4 Flash/Fast stay `high,max`); Qwen 3.8 family
+  `low,medium,high,xhigh` (the old `high`-less ladder came from a stale `high: null` map entry);
+  Kimi K2.6/K2.7-Code `low,high,xhigh` (the Moonshot route rejects `medium` 400 — probed);
+  MiniMax M3/M2.5/M2.7, Qwen 3.6/3.7 line, LongCat 2.0, Step, Tencent Hy, Inkling pair, Nemotron
+  (`medium,high`), GLM-5.2-Fast (`high,max`) gain pickers; GLM-5/GLM-5.1, Kimi K2.5, Ling pair,
+  Laguna, Haiku 4.5 stay picker-less (no Reasons badge and no vendor effort parameter — probed).
+  The DSH `CATALOG` and the extension `EFFORTS_MAP` carry the same ladders; `defaultEffort`
+  follows the vendor default where documented (Kimi K3 `max`, DeepSeek V4 family `high`).
+- **MiMo V2.6 Flash effort support lands in the extension** — `xiaomi/mimo-v2.6-flash`
+  `low,medium,high` (owner-curated, recorded decision) plus vision-flag fixes from the same
+  research pass (`K2.7-Code-Highspeed` and `Qwen3.7-Max` gain vision; `Step-3.5-Flash`,
+  `mimo-v2.5-pro`, `LongCat-2.0`, `hy3-paid` lose the vision flag they never had).
+
+### Removed
+
+- **`stealth/pixel-canary` retired** — the stealth preview ended September 30th (gateway now answers
+  403, live API no longer serves the id), so the row is dropped from both catalogs per the REMOVED
+  rule. Its 2026-09-28 `low..max` probe evidence stays in git history.
+
+### Fixed
+
+- **Muse Spark standard tier keeps `max`** — pi-ai's `max: null` entries for 1.1/1.2 are stale
+  (predate the max-tier offering); the 2026-09-23 live probe (every rung 200 with differentiating
+  reasoning_tokens) stands, so the five-rung ladder is recorded as a decision instead of dropped.
+- **Claude Sonnet 4.6 keeps `low..max`** — pi-ai's `{max: max}` vendor-file stub is not the real
+  ladder; Anthropic thinking-effort docs plus the sibling Claude rows back the full ladder.
+
+No other changes ride this release: `main` carried one unreleased commit when this was cut
+(`da2cd49 feat(model-sync): gate and research thinking efforts, not only model ids` — the
+EFFORTS MISMATCH / UNVERIFIED gate, `scripts/effort-evidence.ts`, `scripts/probe-efforts.ts` and
+`docs/model-sync.md` research loop behind this very sync) plus one idle-improvement commit
+(`d7e30f2 feat(catalog): enable thinking effort for Space Bunny Alpha` — stream-repair for the
+`delta.reasoning` shape). Sibling DSH plugin `dsh-commandcode-goat-provider` 0.1.17 → 0.1.18
+carries the same catalog change plus two already-on-`main` commits (`638813c fix(catalog): drop
+manual mimo-v2.6-flash alias` and `d7907c2 fix: align peerDeps with DSH 0.2.0-rc.1`). Local gates
+before tagging: `lint` (0 errors, 2 pre-existing `src/api.ts` any-warnings), `compile`,
+`test -- --runInBand` (15 suites / 229 tests), `check-changelog`, and `check:models` clean
+(85 live / 85 VS Code / 85 DSH, both EFFORTS sections empty).
+
 ## [0.1.27] - 2026-09-24
 
 ### Added

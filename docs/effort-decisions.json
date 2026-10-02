@@ -1,7 +1,450 @@
 {
   "xiaomi/mimo-v2.6-flash": {
-    "efforts": ["low", "medium", "high"],
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
     "source": "Owner's manual curation (DSH plugin commit df6c41d, 2026-09-25: align mimo-v2.6-flash efforts to low, medium, high); pi-ai xiaomi:mimo-v2.6-flash has reasoning: true with no map (generic low..high); probe 2026-10-02: reasons by default, off rejected",
+    "decided": "2026-10-02"
+  },
+  "claude-sonnet-5-5": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "pi-ai anthropic:claude-sonnet-5-5 explicit thinkingLevelMap off:null minimal:null low..max (all five rungs); commandcode.ai/models/claude-sonnet-5-5: Reasons badge on, GOAT tier; protocol anthropic (claude-* rule, live API supported_endpoints /messages only)",
+    "decided": "2026-10-02"
+  },
+  "gpt-6.1-sol": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "pi-ai openai:gpt-6.1-sol explicit thinkingLevelMap off:null + low..max (all five rungs); probe 2026-10-02: thinks by default (reasoning=86), off rejected 400; commandcode.ai/models/gpt-6-1-sol: Reasons badge on, Max tier; protocol openai; sibling GPT-6 trio all low..max",
+    "decided": "2026-10-02"
+  },
+  "deepseek/deepseek-v4.1-flash-fast": {
+    "efforts": [
+      "low",
+      "high",
+      "max"
+    ],
+    "source": "DeepSeek API docs (api-docs.deepseek.com/guides/thinking_mode): reasoning_effort low/high/max, default high, gateway minimal/low->low medium/high/xhigh->high ultra/max->max, so reachable gateway ladder is low,high,max; pi-ai baseten explicit map (off:none, low, high, max) confirms vendor ladder; probe 2026-10-02: thinks by default (reasoning=386), off accepted; commandcode.ai/models/deepseek-v4-1-flash-fast: Reasons+Image badges on, Go tier",
+    "decided": "2026-10-02"
+  },
+  "inclusionai/ling-3.1-flash:free": {
+    "efforts": [],
+    "source": "commandcode.ai/models/ling-3-1-flash-free: no Reasons badge (Text input/output only), free tier; probe 2026-10-02: reasoning tokens present by default (160) and off rejected, but the badge is the curated capability source and the sibling ling-3.0-flash-sante:free is also text-only without efforts; pi-ai has no explicit map (vercel-ai-gateway reasoning:true, map null = generic default). Non-reasoning model per playbook rule (leave vision/efforts out when unconfirmed). Revisit if the badge gains a Reasons icon.",
+    "decided": "2026-10-02"
+  },
+  "deepseek/deepseek-v4-flash": {
+    "efforts": [
+      "high",
+      "max"
+    ],
+    "source": "Kept catalog ladder high,max. DeepSeek API docs (api-docs.deepseek.com/guides/thinking_mode): vendor ladder is low/high/max with gateway mapping minimal/low->low, medium/high/xhigh->high, ultra/max->max; low maps to the same actual effort as the default high, so the picker keeps only the meaningfully distinct high,max (same as deepseek-v4-pro and the 0.1.4 curation commit a26df47). pi-ai openrouter's xhigh rung is the gateway's undifferentiated alias for high, not a distinct effort. Probe 2026-10-02: thinks by default, off accepted.",
+    "decided": "2026-10-02"
+  },
+  "deepseek/deepseek-v4.1-flash": {
+    "efforts": [
+      "low",
+      "high",
+      "max"
+    ],
+    "source": "Corrected high,max -> low,high,max. DeepSeek API docs (api-docs.deepseek.com/guides/thinking_mode): reasoning_effort low/high/max, gateway minimal/low->low medium/high/xhigh->high ultra/max->max; unlike V4 Flash the commandcode.ai badge set and the 2026-09-10 curation (fc5fabe, Go/GOAT reasoning+vision) treat V4.1 as the fuller ladder, and pi-ai openrouter explicit map lists low,high,max. Probe 2026-10-02: thinks by default, off accepted.",
+    "decided": "2026-10-02"
+  },
+  "moonshotai/Kimi-K3": {
+    "efforts": [
+      "low",
+      "high",
+      "max"
+    ],
+    "source": "Corrected (no efforts) -> low,high,max. Kimi API docs (platform.kimi.ai/docs/guide/use-reasoning-effort): kimi-k3 reasoning_effort supports low/high/max, default max, always reasons; pi-ai moonshotai:kimi-k3 explicit map (off:null, low, high, max) matches. Probe 2026-10-02: thinks by default (reasoning=21), off rejected 400. commandcode.ai/models/kimi-k3: Reasons badge on.",
+    "decided": "2026-10-02"
+  },
+  "Qwen/Qwen3.8-Max-0902": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh"
+    ],
+    "source": "Corrected low,medium,xhigh -> low,medium,high,xhigh. The sibling Qwen3.8 rows (Max/Flash/27B/Omni-Flash) were curated as low,medium,xhigh from an older qwen-token-plan map whose high:null is a data-entry error: the Maxim AI / Alibaba hybrid-thinking docs expose low/medium/high across the Qwen3.5/3.6/3.7 line and pi-ai openrouter:qwen/qwen3.8-max-0902 explicit map lists low,medium,high,xhigh. Probe 2026-10-02: thinks by default (reasoning=53 on 0902; 29 on Max-0902 variant check), off rejected. All five Qwen3.8 rows aligned to low,medium,high,xhigh.",
+    "decided": "2026-10-02"
+  },
+  "meta/muse-spark-1.2": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "Kept catalog ladder low..max. Probed 2026-09-23 on /provider/v1/chat/completions: every rung low..max returns 200 with reasoning_tokens differentiating by effort (1.2: 626->829); minimal/ultra rejected 400. The 0.1.23 curation (3b680c0) and 0.1.24 fix (e601cdc, contributor tier drops max) already encode this; pi-ai meta:muse-spark-1.2's max:null entry is stale (predates the max-tier offering). Standard tier keeps max.",
+    "decided": "2026-10-02"
+  },
+  "stepfun/Step-3.7-Flash": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high. pi-ai openrouter:stepfun/step-3.7-flash explicit map (low,medium,high); commandcode.ai/models/step-3-7-flash: Reasons badge on; probe 2026-10-02: thinks by default (reasoning=68), off rejected 400.",
+    "decided": "2026-10-02"
+  },
+  "tencent/hy4-preview": {
+    "efforts": [
+      "low",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,high. pi-ai openrouter:tencent/hy4-preview explicit map (off:none, low, high); commandcode.ai/models/hy4-preview: Reasons badge on, Go tier; probe 2026-10-02: thinks by default (reasoning=65), off rejected 400.",
+    "decided": "2026-10-02"
+  },
+  "nvidia/nemotron-3-ultra-550b-a55b": {
+    "efforts": [
+      "medium",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> medium,high. pi-ai openrouter:nvidia/nemotron-3-ultra-550b-a55b explicit map (off:none, medium, high); commandcode.ai/models/nemotron-3-ultra-550b-a55b: Reasons badge on; probe 2026-10-02: default omitted reasoning=0 but high rung reasoning=110 with hard prompt, off rejected — reasoning model.",
+    "decided": "2026-10-02"
+  },
+  "thinkingmachines/inkling": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "max"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high,max. pi-ai openrouter:thinkingmachines/inkling explicit map (off:none, minimal:minimal, low..high, max); commandcode.ai/models/inkling: Reasons+Image badges on; probe 2026-10-02: gateway 400 'No available providers match the only filter: baseten' on omitted, off rejected — the ladder comes from the vendor map, not the probe.",
+    "decided": "2026-10-02"
+  },
+  "thinkingmachines/inkling-small": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "max"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high,max. pi-ai openrouter:thinkingmachines/inkling-small explicit map (off:none, minimal:minimal, low..high, max) — same ladder as inkling; commandcode.ai/models/inkling-small: Reasons+Image badges on; probe 2026-10-02: gateway 400 baseten-only on omitted, off rejected — ladder from the vendor map.",
+    "decided": "2026-10-02"
+  },
+  "deepseek/deepseek-v4-flash-vision-exp": {
+    "efforts": [
+      "low",
+      "high",
+      "max"
+    ],
+    "source": "Corrected high,max -> low,high,max. Same V4-family vendor ladder as deepseek-v4.1-flash (DeepSeek API docs: reasoning_effort low/high/max); pi-ai openrouter explicit map lists low,high,max; commandcode.ai: Reasons+Image badges on. Probe 2026-10-02: thinks by default (reasoning=19), off accepted.",
+    "decided": "2026-10-02"
+  },
+  "gpt-5.4-mini": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh"
+    ],
+    "source": "Corrected low,medium,high -> low,medium,high,xhigh. pi-ai openai:gpt-5.4-mini explicit map (off:none, low,medium,high,xhigh, max:null) matches the OpenAI Responses-API xhigh rung; sibling gpt-5.4/gpt-5.3-codex rows already carry xhigh. Probe 2026-10-02: off rejected (cannot turn thinking off) — reasoning model.",
+    "decided": "2026-10-02"
+  },
+  "meta/muse-spark-1.1": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "Kept catalog ladder low..max. Same 2026-09-23 live probe as meta/muse-spark-1.2 (every rung 200 with differentiating reasoning_tokens 406->829; minimal/ultra 400); pi-ai meta:muse-spark-1.1's max:null entry is stale, same as 1.2. Standard tier keeps max.",
+    "decided": "2026-10-02"
+  },
+  "claude-sonnet-4-6": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "Kept catalog ladder low..max. pi-ai anthropic:claude-sonnet-4-6's map {max:max} is a vendor-file stub (xhigh/max-only pattern the file also uses for sonnet-5), not the real ladder: Anthropic's thinking-effort docs expose low/medium/high plus max, and the sibling claude-sonnet-5/claude-opus rows ship low..max. commandcode.ai/models/claude-sonnet-4-6: Reasons badge on. Claude ids skip the gateway probe (anthropic protocol).",
+    "decided": "2026-10-02"
+  },
+  "sakana/fugu-ultra": {
+    "efforts": [
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "Corrected high,xhigh -> high,xhigh,max. pi-ai openrouter:sakana/fugu-ultra explicit map (high,xhigh,max); commandcode.ai/models/fugu-ultra: Reasons+Image badges on; probe 2026-10-02: thinks by default (reasoning=17), off rejected 400.",
+    "decided": "2026-10-02"
+  },
+  "deepseek/deepseek-v4-flash-fast": {
+    "efforts": [
+      "high",
+      "max"
+    ],
+    "source": "Kept catalog ladder high,max (V4-family rule: low aliases the default high; see deepseek/deepseek-v4-flash entry). Probe 2026-10-02: thinks by default (reasoning=15), off rejected on the replay (200 with reasoning=0 on the first run — accepts the off parameter). No pi-ai entry for the -fast id; vendor docs (api-docs.deepseek.com/guides/thinking_mode) are the ladder source.",
+    "decided": "2026-10-02"
+  },
+  "moonshotai/Kimi-K2.7-Code": {
+    "efforts": [
+      "low",
+      "high",
+      "xhigh"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high,xhigh. Kimi API docs (platform.kimi.ai/docs/guide/use-thinking-models): kimi-k2.7-code thinking is always on, reasoning_effort not supported (only thinking.type enabled) — so the gateway rungs are the picker surface, not vendor levels. Live rung check 2026-10-02: low/medium/high/xhigh all 200 (reasoning 242/204/199/194), max rejected 400 ('must be one of none,minimal,low,medium,high,xhigh'). Probe: thinks by default (reasoning=491), off rejected. commandcode.ai/models/kimi-k2-7-code: Reasons badge on.; rung re-check 2026-10-02: low/high/xhigh all 200, medium rejected 400 'invalid moonshotai provider options', max rejected 400 on K2.7-Code (200 on Highspeed route), off rejected — the Moonshot route exposes low,high,xhigh",
+    "decided": "2026-10-02"
+  },
+  "Qwen/Qwen3.8-Omni-Flash": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh"
+    ],
+    "source": "Corrected low,medium,xhigh -> low,medium,high,xhigh (same Qwen3.8 high:null data-entry fix as Qwen3.8-Max-0902). commandcode.ai/models/qwen3-8-omni-flash: Reasons badge on; probe 2026-10-02: thinks by default (reasoning=53/31), off rejected.",
+    "decided": "2026-10-02"
+  },
+  "MiniMaxAI/MiniMax-M3": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high. commandcode.ai/models/minimax-m3: Reasons+Image badges on (the only MiniMax row with a Reasons badge); probe 2026-10-02: omitted reasoning=0 but high rung reasoning=408 on the hard-prompt confirm, off rejected — reasoning model. pi-ai vendor file (minimax:MiniMax-M3) has reasoning:true with no map (generic default). Conservative default ladder low,medium,high: vendor docs publish no rung list.",
+    "decided": "2026-10-02"
+  },
+  "stepfun/Step-5-Preview": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Kept catalog ladder low,medium,high. No pi-ai entry; commandcode.ai/models/step-5-preview: '600B sparse-MoE agentic coding', Reasons badge on, Go tier; probe 2026-10-02: thinks by default (reasoning=138/42), off rejected 400 — reasoning model. Full probe: low..max all 200 but per-rung token counts noisy (86/80/85/110/98), so the ladder stays the curated low,medium,high.",
+    "decided": "2026-10-02"
+  },
+  "xiaomi/mimo-v2.6-pro": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high. Xiaomi MiMo API docs (mimo.mi.com/docs API: reasoning.effort controls inference, none closes thinking) + owner's mimo-v2.6-flash curation (df6c41d low,medium,high, recorded 2026-10-02); commandcode.ai/models/mimo-v2-6-pro: flagship multimodal agentic coding, Go tier, Reasons implied by Long-context-reasoning 86.3 benchmark; probe 2026-10-02: thinks by default (reasoning=36), off rejected. pi-ai xiaomi file has reasoning:true with no map.",
+    "decided": "2026-10-02"
+  },
+  "xiaomi/mimo-v2.6-pro-ultraspeed": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high. Same-model low-latency serving tier of mimo-v2.6-pro (commandcode.ai/models/mimo-v2-6-pro-ultraspeed), same ladder as Pro; probe 2026-10-02: thinks by default (reasoning=11), off rejected. pi-ai xiaomi file has reasoning:true with no map.",
+    "decided": "2026-10-02"
+  },
+  "xiaomi/mimo-v2.5-pro": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high. Same MiMo family ladder (reasoning.effort none closes thinking; low/medium/high the documented rungs); commandcode.ai/models/mimo-v2-5-pro (Reasons implied by agentic-coding benchmarks); probe 2026-10-02: thinks by default (weak signal reasoning=3, confirm 47), off rejected. pi-ai xiaomi file has reasoning:true with no map.",
+    "decided": "2026-10-02"
+  },
+  "meituan/LongCat-2.0": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high. commandcode.ai/models/longcat-2-0: Reasons badge on (text-only); probe 2026-10-02: thinks by default (reasoning=65), off rejected 400. pi-ai openrouter:meituan/longcat-2.0 has reasoning:true with no map (generic default). Conservative default ladder: vendor publishes no rung list.",
+    "decided": "2026-10-02"
+  },
+  "Qwen/Qwen3.7-Flash": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high. commandcode.ai/models/qwen3-7-flash: Reasons+Image badges on; probe 2026-10-02: thinks by default (reasoning=188), off rejected. pi-ai openrouter:qwen/qwen3.7-flash has reasoning:true with no map. Conservative default ladder: vendor publishes no Qwen3.7 rung list.",
+    "decided": "2026-10-02"
+  },
+  "stepfun/Step-3.5-Flash": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high. commandcode.ai/models/step-3-5-flash: 'fast sparse-MoE agentic reasoning', Reasons badge on (text-only); probe 2026-10-02: thinks by default (reasoning=11), off rejected. pi-ai openrouter:stepfun/step-3.5-flash map is {off:null} only (says nothing about rungs). Sibling Step-3.7-Flash/Step-5-Preview share low,medium,high.",
+    "decided": "2026-10-02"
+  },
+  "xiaomi/mimo-v2.5": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high. Same MiMo family ladder as mimo-v2.6-flash (owner-curated low,medium,high); commandcode.ai/models/mimo-v2-5: Image badge on; probe 2026-10-02: thinks by default (reasoning=11), off rejected. pi-ai xiaomi file has reasoning:true with no map.",
+    "decided": "2026-10-02"
+  },
+  "tencent/hy3-paid": {
+    "efforts": [
+      "low",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,high. commandcode.ai/models/tencent-hy3: 'sparse-MoE reasoning & agentic tool use', Reasons badge on (text-only), Go tier; probe 2026-10-02: thinks by default (reasoning=1344/51/47), off rejected. No pi-ai entry. Sibling hy4-preview's explicit map (low,high) is the closest vendor evidence; Tencent publishes no Hy rung list.",
+    "decided": "2026-10-02"
+  },
+  "Qwen/Qwen3.7-Plus": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high. commandcode.ai/models/qwen3-7-plus: Reasons+Image badges on; probe 2026-10-02: thinks by default (reasoning=189), off rejected. pi-ai qwen-token-plan:qwen3.7-plus has reasoning:true with no map. Conservative default ladder.",
+    "decided": "2026-10-02"
+  },
+  "Qwen/Qwen3.6-Plus": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high. commandcode.ai/models/qwen3-6-plus: Reasons+Image badges on; probe 2026-10-02: thinks by default (reasoning=391), off rejected. pi-ai qwen-token-plan:qwen3.6-plus has reasoning:true with no map. Conservative default ladder.",
+    "decided": "2026-10-02"
+  },
+  "moonshotai/Kimi-K2.5": {
+    "efforts": [],
+    "source": "Kept catalog empty (no efforts). Kimi API docs (platform.kimi.ai/docs/guide/use-thinking-models): kimi-k2.6 thinking is on by default and can be disabled, but K2.5 is not listed as a thinking model on that page; commandcode.ai/models/kimi-k2-5: NO Reasons badge (Text+Image only); probe 2026-10-02: omitted reasoning=0 and high rung reasoning=0 even on the hard confirm prompt, off rejected. Non-reasoning model. pi-ai moonshotai:kimi-k2.5 reasoning:true with no map is the generic default, contradicted by the badge + probe.",
+    "decided": "2026-10-02"
+  },
+  "zai-org/GLM-5": {
+    "efforts": [],
+    "source": "Kept catalog empty (no efforts). Z.AI docs (docs.z.ai/guides/capabilities/thinking): deep thinking covers GLM-4.5/4.6/4.7/5/5.1/5.2/5.3, but reasoning_effort control is 'only supported by GLM-5.2 and above' — GLM-5 has no effort parameter; commandcode.ai/models/glm-5: NO Reasons badge (Text only); probe 2026-10-02: omitted reasoning=0 and high rung reasoning=0 on the hard confirm prompt, off rejected. No picker without a vendor effort parameter. pi-ai qwen-token-plan:glm-5 map (high,max) is aggregator metadata, not vendor evidence.",
+    "decided": "2026-10-02"
+  },
+  "Qwen/Qwen3.6-Max-Preview": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high. commandcode.ai/models/qwen3-6-max-preview: Reasons badge on (text-only); probe 2026-10-02: thinks by default (reasoning=230), off rejected. pi-ai openrouter:qwen/qwen3.6-max-preview has reasoning:true with no map. Conservative default ladder.",
+    "decided": "2026-10-02"
+  },
+  "zai-org/GLM-5.1": {
+    "efforts": [],
+    "source": "Kept catalog empty (no efforts). Z.AI docs (docs.z.ai/guides/capabilities/thinking): reasoning_effort 'only supported by GLM-5.2 and above' — GLM-5.1 has thinking.type enabled/disabled but no effort parameter; commandcode.ai/models/glm-5-1: NO Reasons badge (Text only). Probe 2026-10-02 showed reasoning tokens (26) by default, but without a vendor effort parameter there is nothing for the picker to send — same rule as GLM-5. Revisit if Z.AI documents an effort parameter for 5.1.",
+    "decided": "2026-10-02"
+  },
+  "moonshotai/Kimi-K2.6": {
+    "efforts": [
+      "low",
+      "high",
+      "xhigh"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high,xhigh. Kimi API docs: kimi-k2.6 thinking is on by default and can be disabled, but reasoning_effort is not supported (K3-only) — the gateway rungs are the picker surface. Live rung check 2026-10-02: max AND xhigh both 200 (not only max), thinking.type disabled is the vendor off-switch; probe: thinks by default (reasoning=156), gateway off rejected (gateway-level off unsupported for Kimi). Same rule as K2.7-Code (max rejected there, accepted here) — kept xhigh because the gateway accepts it. commandcode.ai/models/kimi-k2-6: Text+Image, no Reasons badge, but the vendor docs confirm thinking on by default.; rung re-check 2026-10-02: low/high/xhigh all 200, medium rejected 400 'invalid moonshotai provider options', max rejected 400 on K2.7-Code (200 on Highspeed route), off rejected — the Moonshot route exposes low,high,xhigh",
+    "decided": "2026-10-02"
+  },
+  "moonshotai/Kimi-K2.7-Code-Highspeed": {
+    "efforts": [
+      "low",
+      "high",
+      "xhigh"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high,xhigh. Kimi API docs (platform.kimi.ai/docs/guide/use-thinking-models): kimi-k2.7-code-highspeed is the same model as kimi-k2.7-code with identical thinking behavior (always on, Preserved Thinking always on) — same ladder as the K2.7-Code entry. Live rung check 2026-10-02: max 200 on Highspeed (gateway route differs from the base id where max is 400); probe: thinks by default (reasoning=86), off rejected.; rung re-check 2026-10-02: low/high/xhigh all 200, medium rejected 400 'invalid moonshotai provider options', max rejected 400 on K2.7-Code (200 on Highspeed route), off rejected — the Moonshot route exposes low,high,xhigh",
+    "decided": "2026-10-02"
+  },
+  "Qwen/Qwen3.7-Max": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high. commandcode.ai/models/qwen3-7-max: Reasons badge on (text-only); probe 2026-10-02: thinks by default (reasoning=178), off rejected. pi-ai qwen-token-plan:qwen3.7-max has reasoning:true with no map. Conservative default ladder.",
+    "decided": "2026-10-02"
+  },
+  "zai-org/GLM-5.2-Fast": {
+    "efforts": [
+      "high",
+      "max"
+    ],
+    "source": "Corrected (no efforts) -> high,max. Z.AI docs (docs.z.ai/guides/capabilities/thinking): GLM-5.2 supports reasoning_effort max (default)/xhigh/high/medium/low/minimal/none, with low/medium mapped to high and xhigh mapped to max — reachable distinct efforts are high,max; sibling zai-org/GLM-5.2 row already carries high,max. pi-ai baseten explicit map (off:none, high, max) confirms. Probe 2026-10-02: thinks by default (reasoning=88), off rejected (GLM-5.2-Fast serving never exposes the none mapping).",
+    "decided": "2026-10-02"
+  },
+  "MiniMaxAI/MiniMax-M2.5": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high. commandcode.ai/models/minimax-m2-5: Text only, no Reasons badge — but probe 2026-10-02: thinks by default (reasoning=47), off rejected; MiniMax platform docs (platform.minimax.io) document thinking on the chat/responses APIs. pi-ai opencode:minimax-m2.5 has reasoning:true with no map. Conservative default ladder: vendor publishes no rung list.",
+    "decided": "2026-10-02"
+  },
+  "MiniMaxAI/MiniMax-M2.7": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Corrected (no efforts) -> low,medium,high. Same MiniMax family default as M2.5/M3; probe 2026-10-02: omitted 400 'No available providers match the only filter' (route flake, also seen on inkling/laguna) but off rejected with the standard thinking message — reasoning model. pi-ai minimax:MiniMax-M2.7 has reasoning:true with no map. Conservative default ladder.",
+    "decided": "2026-10-02"
+  },
+  "inclusionai/ling-3.0-flash-sante:free": {
+    "efforts": [],
+    "source": "Kept catalog empty (no efforts). commandcode.ai/models/ling-3-0-flash-sante-free: NO Reasons badge (Text only), free tier — same badge state as ling-3.1-flash; probe shows reasoning tokens by default (115/62) with off rejected, but the badge is the curated capability source and Ling publishes no effort ladder. Same rule as ling-3.1-flash:free. Revisit if the badge gains a Reasons icon.",
+    "decided": "2026-10-02"
+  },
+  "poolside/laguna-s-2.1-free": {
+    "efforts": [],
+    "source": "Kept catalog empty (no efforts). commandcode.ai/models/laguna-s-2-1-free: NO Reasons badge (Text only), free tier; probe 2026-10-02: omitted reasoning=0 on retry (429 upstream flake on first run), off rejected — does not reason. pi-ai vercel-ai-gateway:poolside/laguna-s-2.1-free reasoning:true with no map is the generic default, contradicted by badge + probe. Non-reasoning model.",
+    "decided": "2026-10-02"
+  },
+  "stealth/pixel-canary": {
+    "efforts": [],
+    "source": "Catalog row REMOVED 2026-10-02, not re-laddered. Live API no longer serves stealth/pixel-canary (85 models, pixel-canary absent) and the gateway answers 403 'Pixel Canary is no longer available. The stealth preview ended on September 30th.' Dead ids are dropped per playbook section 1 (REMOVED). The 0.1.17 low..max ladder was live-probed 2026-09-28 while the preview ran; that evidence is preserved in git history.",
+    "decided": "2026-10-02"
+  },
+  "claude-haiku-4-5-20251001": {
+    "efforts": [],
+    "source": "Kept catalog empty (no efforts). commandcode.ai/models/claude-haiku-4-5: NO Reasons badge (Text+Image only) — Haiku is the non-thinking Claude tier; pi-ai anthropic:claude-haiku-4-5-20251001 has reasoning:true with no map (generic default). Claude ids skip the gateway probe (anthropic protocol). Non-reasoning model per badge. Revisit if a Reasons badge appears.",
+    "decided": "2026-10-02"
+  },
+  "Qwen/Qwen3.8-Max": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh"
+    ],
+    "source": "Corrected low,medium,xhigh -> low,medium,high,xhigh (same Qwen3.8 high:null data-entry fix as Qwen3.8-Max-0902/Omni-Flash: pi-ai openrouter:qwen/qwen3.8-max-0902 explicit map lists low,medium,high,xhigh; Alibaba hybrid-thinking docs expose low/medium/high across the Qwen3 line). Probe 2026-10-02 on 0902: thinks by default, off rejected; family ladder applied to all five Qwen3.8 rows.",
+    "decided": "2026-10-02"
+  },
+  "Qwen/Qwen3.8-Flash": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh"
+    ],
+    "source": "Corrected low,medium,xhigh -> low,medium,high,xhigh (same Qwen3.8 high:null data-entry fix as Qwen3.8-Max-0902/Omni-Flash: pi-ai openrouter:qwen/qwen3.8-max-0902 explicit map lists low,medium,high,xhigh; Alibaba hybrid-thinking docs expose low/medium/high across the Qwen3 line). Probe 2026-10-02 on 0902: thinks by default, off rejected; family ladder applied to all five Qwen3.8 rows.",
+    "decided": "2026-10-02"
+  },
+  "Qwen/Qwen3.8-27B": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh"
+    ],
+    "source": "Corrected low,medium,xhigh -> low,medium,high,xhigh (same Qwen3.8 high:null data-entry fix as Qwen3.8-Max-0902/Omni-Flash: pi-ai openrouter:qwen/qwen3.8-max-0902 explicit map lists low,medium,high,xhigh; Alibaba hybrid-thinking docs expose low/medium/high across the Qwen3 line). Probe 2026-10-02 on 0902: thinks by default, off rejected; family ladder applied to all five Qwen3.8 rows.",
     "decided": "2026-10-02"
   }
 }
