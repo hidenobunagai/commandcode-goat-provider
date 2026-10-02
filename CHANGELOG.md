@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.1.29] - 2026-10-02
+
+### Fixed
+
+- **Clear OSV scan with dependency bumps** — `bun.lock` only, no code changes:
+  `brace-expansion` 5.0.9 → 5.0.12 (plus nested 1.1.18 → 1.1.21 via minimatch),
+  `fast-uri` 3.1.6 → 3.1.8, `markdown-it` 14.3.0 → 14.3.2, `undici` 7.29.0 → 7.29.1
+  (`c57a6e7 fix(deps): bump brace-expansion/fast-uri/markdown-it/undici to clear OSV scan`).
+  Local gates before tagging: `lint` (0 errors, 2 pre-existing `src/api.ts` any-warnings),
+  `compile`, `test -- --runInBand` (15 suites / 229 tests), `check-changelog` clean.
+
 ## [0.1.28] - 2026-10-02
 
 ### Added
