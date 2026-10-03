@@ -234,11 +234,23 @@ export function compareCapabilities(
   return diffs;
 }
 
+export interface CompareOptions {
+  /**
+   * Cross-check the DSH `CATALOG` as well. Set to `false` when that repo is not on disk
+   * (DSH retired): the VS Code tables are then the only catalog, so the DSH-only sections
+   * (`missingFromDsh`, DSH-side context/name drift) are skipped instead of reported as drift.
+   * Defaults to `true`.
+   */
+  crossCheckDsh?: boolean;
+}
+
 export function compare(
   live: ApiModel[],
   vscode: Map<string, ModelEntry>,
   dsh: Map<string, ModelEntry>,
+  options: CompareOptions = {},
 ): CatalogComparison {
+  const crossCheckDsh = options.crossCheckDsh ?? true;
   const liveById = new Map(live.map((m) => [m.id, m]));
   const newModels: ModelDiff[] = [];
   const changedModels: ModelDiff[] = [];
@@ -270,9 +282,9 @@ export function compare(
         changed.push(`${label} name "${entry.name}" → "${api.name}"`);
     };
     side("VS Code", vs);
-    if (ds) side("DSH", ds);
+    if (crossCheckDsh && ds) side("DSH", ds);
     if (changed.length > 0) changedModels.push({ id, vscode: vs, dsh: ds, changed });
-    else if (!ds)
+    else if (crossCheckDsh && !ds)
       missingFromDsh.push({
         id,
         vscode: vs,

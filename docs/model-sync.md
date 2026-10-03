@@ -1,12 +1,18 @@
 # Model Catalog Sync & Release Playbook
 
-Procedure for the daily model-catalog sync (`scripts/daily-model-watch.sh` → DSH headless agent run)
-and for the same work done by hand. Both catalogs must stay in sync:
+Procedure for the daily model-catalog sync (`scripts/daily-model-watch.sh` → Pi agent run)
+and for the same work done by hand. While the DSH plugin checkout exists, both catalogs must stay
+in sync:
 
 | Repo | File | Role |
 |---|---|---|
 | `~/projects/commandcode-goat-dsh-provider` | `src/catalog/data.ts` (`CATALOG`) | Upstream truth: id, name, contextWindow, maxTokens, protocol, modalities, efforts, pricing, tier |
 | `~/projects/commandcode-goat-provider` (this repo) | `src/constants.ts` (`OFFICIAL_MODELS`, `VISION_SET`, `EFFORTS_MAP`, `PROTOCOL_MAP`) | VS Code extension: derived capability tables + `docs/models.md` |
+
+The DSH repo is retired (2026-10-03) and its checkout may disappear at any time: the gate then keeps
+running with `src/constants.ts` as the only catalog and prints a `⚠️ DSH catalog` warning, skipping the two
+DSH cross-checks (`MISSING FROM DSH`, `CAPABILITY`). A missing DSH catalog is not an error and must never
+stop the daily auto-update.
 
 `GET https://api.commandcode.ai/provider/v1/models` (public, no auth) is the discovery source, but it
 returns **only** `id` / `name` / `context_length`. Capabilities, protocol and pricing are not served
@@ -25,18 +31,24 @@ Sections worth acting on:
 - **CHANGED** — context window or display name differs from the API (reported per side: `VS Code` / `DSH`) →
   align the static value with the API.
 - **MISSING FROM DSH** — present in the extension but absent from the DSH `CATALOG` → add it to the DSH entry too.
+  (Skipped while the DSH catalog is missing.)
 - **REMOVED** — in the extension catalog but no longer served by the API → drop it from the static catalog
   (do not keep dead ids; `minimax/minimax-m2.7-free` and `minimax/minimax-m3-free` were removed this way).
 - **CAPABILITY** — the extension's `VISION_SET` / `EFFORTS_MAP` / `PROTOCOL_MAP` disagree with the DSH
   `CATALOG` for the same id. The two repositories are separate on purpose (different hosts, different
   consumers), so the capability data is copied rather than imported; this section is the machine check that
   keeps the copy honest. It compares `modalities`/`efforts`/`protocol` against vision/efforts/protocol and
-  must stay empty.
+  must stay empty. (Skipped while the DSH catalog is missing.)
 - **EFFORTS MISMATCH** — the DSH `CATALOG` ladder disagrees with a recorded decision or with an explicit
   pi-ai `thinkingLevelMap` → fix the catalog, or (if research shows pi-ai is wrong for Command Code) record a
   decision that says why. See "Thinking efforts" below.
 - **EFFORTS UNVERIFIED** — no recorded decision and no explicit pi-ai map → research the model and record a
   decision. This is how every row ends up backed by evidence; once recorded, the row stops being reported.
+
+Both EFFORTS sections can no longer cross-check the ladders against DSH while its checkout is missing,
+but they keep running against the extension's own `EFFORTS_MAP` — so new reasoning models still surface as
+UNVERIFIED until a research decision is recorded. `MISSING FROM DSH` and `CAPABILITY` are the two sections
+that disappear with the checkout.
 
 A clean run across all five sections is the expected steady state: two independent repositories consuming one
 live API, with no drift between them.

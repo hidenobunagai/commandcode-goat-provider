@@ -121,7 +121,9 @@ function writeText(report: Report): void {
     `   VS Code catalog: ${report.vscode.count ?? "?"} models (v${report.vscode.version ?? "?"}) ${report.vscode.path}`,
   );
   console.log(
-    `   DSH catalog:     ${report.dsh.count ?? "?"} models (v${report.dsh.version ?? "?"}) ${report.dsh.path}`,
+    report.dsh.error
+      ? `   DSH catalog:     ⚠️  ${report.dsh.error} (${report.dsh.path})`
+      : `   DSH catalog:     ${report.dsh.count ?? "?"} models (v${report.dsh.version ?? "?"}) ${report.dsh.path}`,
   );
 
   if (report.effortError) console.log(`⚠️  effort check skipped: ${report.effortError}`);
@@ -179,7 +181,7 @@ function writeText(report: Report): void {
   );
 
   console.log(`\n${line}`);
-  console.log("Next: follow docs/model-sync.md to update both catalogs and publish.");
+  console.log("Next: follow docs/model-sync.md to update the catalog and publish.");
 }
 
 const live = await fetchLiveModels().catch((error: unknown) => {
@@ -214,30 +216,43 @@ if ("error" in live) {
 }
 
 const vsceSource = readCatalog(VSCE_FILE, "VS Code catalog");
-const dshSource = readCatalog(DSH_FILE, "DSH catalog");
+// The DSH plugin repo is retired (2026-10-03): its CATALOG is still the upstream truth while
+// the checkout exists, but a missing one must not stop the gate — that would silently disable
+// the daily auto-update. Without it, the VS Code tables are the only catalog and the DSH
+// cross-checks (capabilities, missingFromDsh, DSH-side metadata) are skipped with a warning.
+const dshSource = fs.existsSync(DSH_FILE) ? readCatalog(DSH_FILE, "DSH catalog") : undefined;
 
 const vscode = parseOrDie(VSCE_FILE, () => parseVsceCatalog(vsceSource));
-const dsh = parseOrDie(DSH_FILE, () => parseDshCatalog(dshSource));
+const dsh = dshSource ? parseOrDie(DSH_FILE, () => parseDshCatalog(dshSource)) : new Map();
 report.vscode.count = vscode.size;
-report.dsh.count = dsh.size;
+report.dsh.count = dshSource ? dsh.size : null;
+if (!dshSource) report.dsh.error = "catalog not found (DSH retired?) — DSH cross-checks skipped";
 
-const dshCapabilities = parseOrDie(DSH_FILE, () => parseDshCapabilities(dshSource));
-const capabilities = compareCapabilities(
-  parseOrDie(VSCE_FILE, () => parseVsceCapabilities(vsceSource)),
-  dshCapabilities,
-);
+let capabilities: ModelDiff[] = [];
+const vsceCapabilities = parseOrDie(VSCE_FILE, () => parseVsceCapabilities(vsceSource));
+const dshCapabilities = dshSource
+  ? parseOrDie(DSH_FILE, () => parseDshCapabilities(dshSource))
+  : undefined;
+if (dshCapabilities) capabilities = compareCapabilities(vsceCapabilities, dshCapabilities);
 
 // A missing Pi install only disables this section; it must not hide the rest of the gate.
 const piDataDir = findPiDataDir();
 if (piDataDir) {
+  // Without the DSH catalog the extension's own tables are the catalog side of the effort check:
+  // it still proves every ladder is backed by a decision or an explicit pi-ai map, it just cannot
+  // cross-check the ladders against DSH any more.
   const decisions = parseOrDie(DECISIONS_FILE, () => loadDecisions(DECISIONS_FILE));
-  const efforts = compareEfforts(dshCapabilities, loadPiData(piDataDir), decisions);
+  const efforts = compareEfforts(
+    dshCapabilities ?? vsceCapabilities,
+    loadPiData(piDataDir),
+    decisions,
+  );
   report.effortMismatched = efforts.mismatched;
   report.effortUnverified = efforts.unverified;
 } else {
   report.effortError = "pi-ai provider data not found (install Pi or set PI_AI_DATA_DIR)";
 }
-Object.assign(report, compare(live, vscode, dsh));
+Object.assign(report, compare(live, vscode, dsh, { crossCheckDsh: Boolean(dshSource) }));
 report.capabilityModels = capabilities.filter((m) => !report.newModels.some((n) => n.id === m.id));
 report.drift =
   report.newModels.length > 0 ||

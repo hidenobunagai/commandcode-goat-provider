@@ -393,3 +393,69 @@ test("compare treats a live row without name or context_length as unchanged", ()
     removedModels: [],
   });
 });
+
+// The DSH plugin repo is retired: when its checkout is gone the gate must keep checking the
+// VS Code catalog against the live API instead of reporting every model as missing from DSH.
+test("compare without the DSH catalog still reports VS Code drift", () => {
+  const live = [
+    { id: "known", name: "Known", context_length: 100 },
+    { id: "retuned", name: "New Name", context_length: 200 },
+    { id: "fresh", name: "Fresh", context_length: 300 },
+  ];
+  const vscode = new Map([
+    ["known", entry("known", "Known", 100)],
+    ["retuned", entry("retuned", "Old Name", 100)],
+    ["gone", entry("gone", "Gone", 50)],
+  ]);
+
+  expect(compare(live, vscode, new Map(), { crossCheckDsh: false })).toEqual({
+    newModels: [{ id: "fresh", name: "Fresh", contextWindow: 300, dsh: undefined, changed: [] }],
+    changedModels: [
+      {
+        id: "retuned",
+        vscode: entry("retuned", "Old Name", 100),
+        dsh: undefined,
+        changed: ["VS Code contextWindow 100 → 200", 'VS Code name "Old Name" → "New Name"'],
+      },
+    ],
+    missingFromDsh: [],
+    removedModels: [
+      {
+        id: "gone",
+        name: "Gone",
+        contextWindow: 50,
+        vscode: entry("gone", "Gone", 50),
+        dsh: undefined,
+        changed: [],
+      },
+    ],
+  });
+});
+
+test("compare without the DSH catalog does not report DSH-side drift", () => {
+  // Same id on both sides, but the DSH entry is retuned: with the cross-check off the
+  // stale DSH row must stay out of the report (there is no checkout to fix).
+  const live = [{ id: "known", name: "Known", context_length: 100 }];
+  const vscode = new Map([["known", entry("known", "Known", 100)]]);
+  const dsh = new Map([["known", entry("known", "Old Name", 50)]]);
+
+  expect(compare(live, vscode, dsh)).toEqual({
+    newModels: [],
+    changedModels: [
+      {
+        id: "known",
+        vscode: entry("known", "Known", 100),
+        dsh: entry("known", "Old Name", 50),
+        changed: ["DSH contextWindow 50 → 100", 'DSH name "Old Name" → "Known"'],
+      },
+    ],
+    missingFromDsh: [],
+    removedModels: [],
+  });
+  expect(compare(live, vscode, dsh, { crossCheckDsh: false })).toEqual({
+    newModels: [],
+    changedModels: [],
+    missingFromDsh: [],
+    removedModels: [],
+  });
+});
