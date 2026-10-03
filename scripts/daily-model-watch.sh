@@ -1,17 +1,14 @@
 #!/usr/bin/env bash
-# Daily model-catalog watch for the Command Code GOAT provider pair.
+# Daily model-catalog watch for the Command Code GOAT provider.
 #
-# 1. Cheap gate (no LLM): compare the live provider API with both catalogs.
-# 2. Only when drift is detected, wake a DSH headless agent run that follows
-#    docs/model-sync.md to update the catalogs and publish (tag push -> GitHub
+# 1. Cheap gate (no LLM): compare the live provider API with the catalog.
+# 2. Only when drift is detected, wake a Pi headless agent run that follows
+#    docs/model-sync.md to update the catalog and publish (tag push -> GitHub
 #    Actions -> VS Code Marketplace).
-# 3. After that run, restart `dsh web` so the rebuilt DSH plugin is re-read
-#    (scripts/restart-dsh-web.sh; it no-ops when the server is already newer).
 #
-# 公開ポリシー (2026-09-13): リリース (version bump + タグ push = 公開) を行うのは
-# **この日次ジョブと daily-pi-provider-sync.sh だけ**。30 分ごとの dsh-idle-improve.sh は
-# 公開しない (項目本文が明示した時だけ)。この拡張は Copilot Chat プロバイダなので
-# publish.yml は VS Code Marketplace のみへ出す (Open VSX には出さない)。
+# 公開ポリシー: リリース (version bump + タグ push = 公開) を行うのは
+# **この日次ジョブと daily-pi-provider-sync.sh だけ**。
+# この拡張は Copilot Chat プロバイダなので publish.yml は VS Code Marketplace のみへ出す。
 #
 # Invoked by the systemd user timer daily-model-watch.timer.
 # Manual use:
@@ -21,9 +18,6 @@
 set -uo pipefail
 
 REPO="/home/pi/projects/commandcode-goat-provider"
-DSH_REPO="/home/pi/projects/commandcode-goat-dsh-provider"
-HARNESS="/home/pi/deepseek-harness"
-DSH_PROFILE="headless"
 LOG_DIR="$REPO/logs"
 AGENT_TIMEOUT_SEC="${AGENT_TIMEOUT_SEC:-3600}"
 
@@ -46,6 +40,17 @@ trap 'rm -f "$REPORT_FILE"' EXIT
 
 log() { echo "[$STAMP] $*"; }
 
+notify() {
+  local title="$1" body="$2" silent="${3:-false}"
+  if command -v notify-telegram >/dev/null 2>&1; then
+    if [ "$silent" = "true" ]; then
+      notify-telegram --silent "$title" "$body" || true
+    else
+      notify-telegram "$title" "$body" || true
+    fi
+  fi
+}
+
 log "=== daily model watch started (repo=$REPO) ==="
 
 cd "$REPO" || { log "FATAL: cannot cd $REPO"; exit 1; }
@@ -67,15 +72,12 @@ fi
 DRIFT=0
 [ "$CHECK_STATUS" -eq 2 ] && DRIFT=1
 
-# Releasing only makes sense from the default branch: a version bump, commit and tag
-# on a feature branch would publish a commit that is not on main.
-for repo in "$REPO" "$DSH_REPO"; do
-  branch="$(git -C "$repo" rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
-  if [ "$branch" != "main" ]; then
-    log "$(basename "$repo") is on branch '$branch' (not main) — skipping agent run"
-    exit 1
-  fi
-done
+# Releasing only makes sense from the default branch
+branch="$(git -C "$REPO" rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+if [ "$branch" != "main" ]; then
+  log "$(basename "$REPO") is on branch '$branch' (not main) — skipping agent run"
+  exit 1
+fi
 
 if [ "$DRIFT" -eq 0 ] && [ "$FORCE" -eq 0 ]; then
   log "no catalog drift — nothing to do (agent not started)"
@@ -87,8 +89,7 @@ PROMPT="$(cat <<EOF
 Command Code のモデルカタログ日次同期を実行してください。
 
 手順書: $REPO/docs/model-sync.md を必ず最初に読み、そこに書かれた手順に従ってください。
-対象リポジトリ: $REPO （VS Code 拡張）と $DSH_REPO （DSH プラグイン）。
-両リポジトリの AGENTS.md があればそれにも従ってください。
+対象リポジトリ: $REPO （VS Code 拡張）。AGENTS.md があればそれにも従ってください。
 
 検出済みの差分（scripts/check-live-models.ts の出力）:
 ---
@@ -97,25 +98,23 @@ $REPORT
 
 やること:
 1. 上記の差分が実在するか確認し、実在しなければ何も変更せず、その理由を1段落で報告して終了。
-2. 新モデルがあれば capability（vision / thinking / protocol / 価格 / tier）を commandcode.ai の情報から確認して両カタログへ反映。
+2. 新モデルがあれば capability（vision / thinking / protocol / 価格 / tier）を commandcode.ai の情報から確認してカタログへ反映。
    thinking effort は手順書の「Thinking efforts」に従う。EFFORTS MISMATCH / UNVERIFIED の行と新しい reasoning モデルは、
-   開発元の API ドキュメントを web_search / web_fetch で調べ、scripts/probe-efforts.ts で既定の思考の有無と off 可否を確かめてから
-   docs/effort-decisions.json に根拠つきで記録し、DSH CATALOG と EFFORTS_MAP に反映する。わからないからといって effort を外さないこと。
+   開発元の API ドキュメントを調べ、scripts/probe-efforts.ts で既定の思考の有無と off 可否を確かめてから
+   docs/effort-decisions.json に根拠つきで記録し、EFFORTS_MAP に反映する。
    最後に bun run check:models を再実行し、EFFORTS の2セクションが空になったことを確認する。
-   確認できない項目は推測せず保守的デフォルトにし、判断できなかった点を最終報告に明記。
-3. 各リポジトリで test / lint / compile を実行し、通ってから version bump・CHANGELOG 更新・commit・push・tag push。
-   CHANGELOG にはカタログ更新の要点を書く。同じ版に未リリースのコミット（30 分のアイドル自動改善の分）が
-   載る場合は、その要点もまとめて書く（何を載せた版か後から分かるように）。
-   DSH プラグインは bun run build までで完了（deploy）。dsh web の再起動は呼び出し元のラッパーが行うので自分で再起動しないこと。
+3. test / lint / compile を実行し、通ってから version bump・CHANGELOG 更新・commit・push・tag push。
+   CHANGELOG にはカタログ更新の要点を書く。
 4. VS Code 拡張の tag push で起動する GitHub Actions（Publish / CI）の結果を gh で確認し、成功を確認してから完了とする。
-   失敗したら原因を直して再実行するところまでやる。Marketplace の VSCE_PAT は GitHub Secrets にあるのでホームディレクトリから探さないこと。
+   失敗したら原因を直して再実行するところまでやる。
 5. 最後に、何をどう判断して何を公開したのか（または公開しなかったのか）を日本語で簡潔に報告。
 
 壊れた状態で push しないこと。テストが落ちる場合は原因を直すか、直せなければ何も push せず理由を報告して終了してください。
 EOF
 )"
 
-log "drift=$DRIFT force=$FORCE — starting DSH agent run"
+log "drift=$DRIFT force=$FORCE — starting Pi agent run"
+notify "🔎 モデルカタログ更新開始" "Command Code GOAT プロバイダのモデル差分を検知しました。Pi による自動更新を開始します。" "true"
 
 if [ "$DRY_RUN" -eq 1 ]; then
   echo "--- prompt that would be sent ---"
@@ -124,33 +123,15 @@ if [ "$DRY_RUN" -eq 1 ]; then
   exit 0
 fi
 
-cd "$HARNESS" || { log "FATAL: cannot cd $HARNESS"; exit 1; }
-
-# headless has no usage-failover, so pick the model route from the quota before booting.
-# dsh-headless-route prints a --patch overlay only when Go is over its threshold and goat
-# has room; no output keeps the default. Its one-line reasoning (stderr) still goes to the
-# transcript, and is echoed here as well so the service log alone shows which of Go / goat
-# the run used — the transcript is the only other place that line would appear.
-ROUTE_ARGS=(); ROUTE_ERR="$(mktemp /tmp/model-watch.route.XXXXXX)"
-ROUTE_PATCH="$("$HOME/bin/dsh-headless-route" 2>"$ROUTE_ERR")"
-[ -n "$ROUTE_PATCH" ] && ROUTE_ARGS=(--patch "$ROUTE_PATCH")
-ROUTE_NOTE="$(cat "$ROUTE_ERR")"; rm -f "$ROUTE_ERR"
-[ -n "$ROUTE_NOTE" ] && printf '%s\n' "$ROUTE_NOTE" >>"$LOG_DIR/daily-model-watch.log"
-log "model route: ${ROUTE_NOTE:-no reason reported by dsh-headless-route (default route)}"
-
-timeout "$AGENT_TIMEOUT_SEC" node --import tsx/esm apps/cli/src/bin.ts --profile "$DSH_PROFILE" "${ROUTE_ARGS[@]}" "$PROMPT" \
-  >>"$LOG_DIR/daily-model-watch.log" 2>&1
+( cd "$REPO" && timeout "$AGENT_TIMEOUT_SEC" pi -p "$PROMPT" ) >>"$LOG_DIR/daily-model-watch.log" 2>&1
 AGENT_STATUS=$?
 
 if [ "$AGENT_STATUS" -eq 0 ]; then
   log "agent run finished OK (full transcript: $LOG_DIR/daily-model-watch.log)"
-  # Deploy step: the plugin has no npm publish, so the rebuilt lib/ only reaches the
-  # Web GUI when `dsh web` restarts. The script no-ops when the running server is
-  # already newer than the artifacts, and waits for an idle window (this agent's own
-  # session log stays busy until the run ends) before replacing a live turn.
-  "$REPO/scripts/restart-dsh-web.sh" --wait 600 || log "dsh web restart failed — see the output above"
+  notify "✅ モデルカタログ更新完了" "Command Code GOAT プロバイダの更新・公開が完了しました。" "false"
 else
   log "agent run exited $AGENT_STATUS — see $LOG_DIR/daily-model-watch.log"
+  notify "⚠️ モデルカタログ更新エラー" "Command Code GOAT プロバイダの更新でエラーが発生しました (exit=$AGENT_STATUS)。" "false"
 fi
 
 exit "$AGENT_STATUS"
