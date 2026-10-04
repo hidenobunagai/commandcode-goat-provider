@@ -79,7 +79,7 @@ The provider dynamically discovers available models from `GET https://api.comman
 
 - **401 / 403 Unauthorized**: Your API key is missing or invalid. Use `Command Code GOAT: Manage API Key` to update it.
 - **422 Unprocessable Entity (ZDR mode)**: The selected model or account tier does not support Zero Data Retention. Toggle `commandcode-goat.enableZdr` to `false` in settings.
-- **429 Rate Limit**: The provider rate limit has been exceeded. The extension retries with exponential backoff before surfacing errors.
+- **429 Rate Limit**: The provider rate limit has been exceeded. The extension retries with exponential backoff before surfacing errors. If Retry-After exceeds 30 seconds, an error is displayed immediately without waiting.
 - **400 Token Limit Exceeded**: The conversation length exceeds the model's effective context limit. Reduce conversation history or switch to a 1M-token model.
 - **5xx Server Errors**: Temporary provider outage. The extension automatically retries transient server errors up to 5 times.
 

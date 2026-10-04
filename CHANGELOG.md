@@ -4,6 +4,7 @@
 
 ### Fixed
 
+- **Abortable retry backoff & immediate error on long Retry-After** — `fetchWithRetry` in `src/api.ts` now uses an abortable `sleep` respecting `init.signal`, so cancelling stops backoff wait immediately. Responses with `Retry-After` exceeding `MAX_RETRY_DELAY_MS` (30s) return immediately without retry, immediately surfacing clear 429 rate limit guidance.
 - **Clear OSV scan with dependency bumps** — `bun.lock` only, no code changes:
   `brace-expansion` 5.0.9 → 5.0.12 (plus nested 1.1.18 → 1.1.21 via minimatch),
   `fast-uri` 3.1.6 → 3.1.8, `markdown-it` 14.3.0 → 14.3.2, `undici` 7.29.0 → 7.29.1
