@@ -113,8 +113,8 @@ $REPORT
 EOF
 )"
 
-log "drift=$DRIFT force=$FORCE — starting Pi agent run"
-notify "🔎 モデルカタログ更新開始" "Command Code GOAT プロバイダのモデル差分を検知しました。Pi による自動更新を開始します。" "true"
+log "drift=$DRIFT force=$FORCE — starting agy agent run"
+notify "🔎 モデルカタログ更新開始" "Command Code GOAT プロバイダのモデル差分を検知しました。agy による自動更新を開始します。" "true"
 
 if [ "$DRY_RUN" -eq 1 ]; then
   echo "--- prompt that would be sent ---"
@@ -123,7 +123,7 @@ if [ "$DRY_RUN" -eq 1 ]; then
   exit 0
 fi
 
-( cd "$REPO" && timeout "$AGENT_TIMEOUT_SEC" pi -p "$PROMPT" ) >>"$LOG_DIR/daily-model-watch.log" 2>&1
+( cd "$REPO" && timeout "$AGENT_TIMEOUT_SEC" agy -p "$PROMPT" --dangerously-skip-permissions --model gemini-3.8-flash-medium ) >>"$LOG_DIR/daily-model-watch.log" 2>&1
 AGENT_STATUS=$?
 
 if [ "$AGENT_STATUS" -eq 0 ]; then
