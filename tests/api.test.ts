@@ -42,6 +42,80 @@ describe("fetchWithRetry", () => {
     expect(result.status).toBe(401);
     expect(fetch).toHaveBeenCalledTimes(1);
   });
+
+  it("rejects immediately with AbortError when aborted during backoff delay", async () => {
+    const controller = new AbortController();
+    let fetchCount = 0;
+    global.fetch = jest.fn().mockImplementation(async () => {
+      fetchCount++;
+      controller.abort();
+      return {
+        ok: false,
+        status: 503,
+        statusText: "Service Unavailable",
+        headers: new Headers(),
+      } as any;
+    });
+
+    const promise = fetchWithRetry(`${BASE_URL}/models`, {
+      method: "GET",
+      signal: controller.signal,
+    });
+
+    await expect(promise).rejects.toMatchObject({ name: "AbortError" });
+    expect(fetchCount).toBe(1);
+  });
+
+  it("rejects immediately without waiting if signal is already aborted on network error", async () => {
+    const controller = new AbortController();
+    controller.abort();
+
+    let fetchCount = 0;
+    global.fetch = jest.fn().mockImplementation(async () => {
+      fetchCount++;
+      throw new Error("Network error");
+    });
+
+    const promise = fetchWithRetry(`${BASE_URL}/models`, {
+      method: "GET",
+      signal: controller.signal,
+    });
+
+    await expect(promise).rejects.toMatchObject({ name: "AbortError" });
+    expect(fetchCount).toBe(1);
+  });
+
+  it("returns 429 response without retrying when Retry-After exceeds MAX_RETRY_DELAY_MS", async () => {
+    const response = {
+      ok: false,
+      status: 429,
+      statusText: "Too Many Requests",
+      headers: new Headers({ "retry-after": "300" }),
+    } as any;
+    global.fetch = jest.fn().mockResolvedValue(response);
+
+    const result = await fetchWithRetry(`${BASE_URL}/models`, { method: "GET" });
+    expect(result.status).toBe(429);
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects streamChatCompletion with clear message when Retry-After exceeds limit", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 429,
+      statusText: "Too Many Requests",
+      headers: new Headers({ "retry-after": "300" }),
+      text: async () => "Rate limit exceeded",
+    } as any);
+
+    const gen = streamChatCompletion("key", {
+      model: "deepseek/deepseek-v4-flash",
+      messages: [],
+      stream: true,
+    });
+    await expect(gen.next()).rejects.toThrow("rate limit reached (429). Retry after 300.");
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("fetchModels", () => {
@@ -268,7 +342,12 @@ describe("streamChatCompletion", () => {
 
   it("retries on 429 and eventually throws after exhausting retries", async () => {
     const originalSetTimeout = global.setTimeout;
-    global.setTimeout = ((cb: () => void) => cb()) as any;
+    global.setTimeout = ((cb: (...args: unknown[]) => void, ms?: number, ...args: unknown[]) => {
+      if (typeof ms === "number" && ms >= 10000) {
+        return originalSetTimeout(cb, ms, ...args);
+      }
+      return originalSetTimeout(cb, 0, ...args);
+    }) as any;
 
     global.fetch = jest.fn().mockResolvedValue({
       ok: false,
