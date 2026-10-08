@@ -74,6 +74,10 @@ DRIFT=0
 
 # Releasing only makes sense from the default branch
 branch="$(git -C "$REPO" rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+# jj colocated repos sit on a detached HEAD, so check the main bookmark instead
+if [ -d "$REPO/.jj" ]; then
+  [ -n "$(jj -R "$REPO" log -r '(@ | @-) & main' --no-graph -T commit_id 2>/dev/null)" ] && branch=main || branch="detached (main bookmark not at @ or @-)"
+fi
 if [ "$branch" != "main" ]; then
   log "$(basename "$REPO") is on branch '$branch' (not main) — skipping agent run"
   exit 1
@@ -104,6 +108,8 @@ $REPORT
    docs/effort-decisions.json に根拠つきで記録し、EFFORTS_MAP に反映する。
    最後に bun run check:models を再実行し、EFFORTS の2セクションが空になったことを確認する。
 3. test / lint / compile を実行し、通ってから version bump・CHANGELOG 更新・commit・push・tag push。
+   jj で管理された repo（.jj がある）では commit・push を jj で行う: jj commit <paths> -m "..." → jj bookmark set main -r @- → jj git push -b main。
+   タグは git tag vX.Y.Z と git push origin vX.Y.Z で作る（publish.yml はタグで起動し、jj はタグを push できないため、これだけ git を使う）。git add -A は使わない。
    CHANGELOG にはカタログ更新の要点を書く。
 4. VS Code 拡張の tag push で起動する GitHub Actions（Publish / CI）の結果を gh で確認し、成功を確認してから完了とする。
    失敗したら原因を直して再実行するところまでやる。
