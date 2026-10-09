@@ -13,19 +13,36 @@
       {
         "id": "e2e-flow",
         "label": "Primary Request Flow",
-        "focus": ["copilot", "provider", "router", "stream", "gateway", "models"],
+        "focus": [
+          "copilot",
+          "provider",
+          "router",
+          "stream",
+          "gateway",
+          "models"
+        ],
         "note": "Follow how Copilot Chat user requests are routed to Command Code and dispatched to 60+ models."
       },
       {
         "id": "dual-protocol",
         "label": "Dual Protocol Routing",
-        "focus": ["router", "anthropic", "openai", "stream"],
+        "focus": [
+          "router",
+          "anthropic",
+          "openai",
+          "stream"
+        ],
         "note": "Claude models route to Anthropic Messages while all other models use OpenAI Chat Completions."
       },
       {
         "id": "tool-resilience",
         "label": "Streaming & Tool Repair",
-        "focus": ["stream", "tool_engine", "provider", "copilot"],
+        "focus": [
+          "stream",
+          "tool_engine",
+          "provider",
+          "copilot"
+        ],
         "note": "Real-time SSE token stream parsing, tool call chunk assembly, schema coercion, and nudge continuation."
       }
     ]
@@ -36,8 +53,14 @@
       "type": "frontend",
       "label": "Copilot Chat",
       "sublabel": "VS Code UI",
-      "pos": [40, 280],
-      "size": [130, 60]
+      "pos": [
+        40,
+        280
+      ],
+      "size": [
+        130,
+        60
+      ]
     },
     {
       "id": "provider",
@@ -45,10 +68,20 @@
       "label": "GOAT Provider",
       "sublabel": "ChatModelProvider",
       "tag": "SecretStorage",
-      "pos": [250, 280],
-      "size": [140, 60],
+      "pos": [
+        250,
+        274
+      ],
+      "size": [
+        140,
+        72
+      ],
       "sources": [
-        { "path": "src/provider.ts", "line": 1, "label": "Provider Core" }
+        {
+          "path": "src/provider.ts",
+          "line": 1,
+          "label": "Provider Core"
+        }
       ]
     },
     {
@@ -56,10 +89,20 @@
       "type": "backend",
       "label": "Prompt Guidance",
       "sublabel": "grounding & sanitize",
-      "pos": [250, 140],
-      "size": [140, 60],
+      "pos": [
+        250,
+        140
+      ],
+      "size": [
+        140,
+        60
+      ],
       "sources": [
-        { "path": "src/guidance.ts", "line": 1, "label": "Guidance Engine" }
+        {
+          "path": "src/guidance.ts",
+          "line": 1,
+          "label": "Guidance Engine"
+        }
       ]
     },
     {
@@ -67,10 +110,20 @@
       "type": "backend",
       "label": "Protocol Router",
       "sublabel": "format selector",
-      "pos": [470, 280],
-      "size": [130, 60],
+      "pos": [
+        470,
+        280
+      ],
+      "size": [
+        130,
+        60
+      ],
       "sources": [
-        { "path": "src/provider.ts", "line": 1, "label": "Format Routing" }
+        {
+          "path": "src/provider.ts",
+          "line": 1,
+          "label": "Format Routing"
+        }
       ]
     },
     {
@@ -79,10 +132,20 @@
       "label": "Anthropic Wire",
       "sublabel": "POST /messages",
       "brand": "anthropic",
-      "pos": [470, 140],
-      "size": [130, 60],
+      "pos": [
+        470,
+        140
+      ],
+      "size": [
+        130,
+        60
+      ],
       "sources": [
-        { "path": "src/anthropic-conversion.ts", "line": 1, "label": "Anthropic Converter" }
+        {
+          "path": "src/anthropic-conversion.ts",
+          "line": 1,
+          "label": "Anthropic Converter"
+        }
       ]
     },
     {
@@ -91,10 +154,20 @@
       "label": "OpenAI Wire",
       "sublabel": "POST /completions",
       "brand": "openai",
-      "pos": [470, 420],
-      "size": [130, 60],
+      "pos": [
+        470,
+        420
+      ],
+      "size": [
+        130,
+        60
+      ],
       "sources": [
-        { "path": "src/openai-conversion.ts", "line": 1, "label": "OpenAI Converter" }
+        {
+          "path": "src/openai-conversion.ts",
+          "line": 1,
+          "label": "OpenAI Converter"
+        }
       ]
     },
     {
@@ -102,11 +175,25 @@
       "type": "backend",
       "label": "Tool Call Engine",
       "sublabel": "parser & auto-repair",
-      "pos": [250, 420],
-      "size": [140, 60],
+      "pos": [
+        250,
+        420
+      ],
+      "size": [
+        140,
+        60
+      ],
       "sources": [
-        { "path": "src/tool-parser.ts", "line": 1, "label": "Tool Parser" },
-        { "path": "src/tool-repair.ts", "line": 1, "label": "Tool Repair" }
+        {
+          "path": "src/tool-parser.ts",
+          "line": 1,
+          "label": "Tool Parser"
+        },
+        {
+          "path": "src/tool-repair.ts",
+          "line": 1,
+          "label": "Tool Repair"
+        }
       ]
     },
     {
@@ -114,10 +201,20 @@
       "type": "backend",
       "label": "SSE Transport",
       "sublabel": "HTTP client & retry",
-      "pos": [680, 280],
-      "size": [130, 60],
+      "pos": [
+        680,
+        280
+      ],
+      "size": [
+        130,
+        60
+      ],
       "sources": [
-        { "path": "src/api.ts", "line": 1, "label": "API Client" }
+        {
+          "path": "src/api.ts",
+          "line": 1,
+          "label": "API Client"
+        }
       ]
     },
     {
@@ -125,28 +222,52 @@
       "type": "cloud",
       "label": "Command Code",
       "sublabel": "api.commandcode.ai",
-      "pos": [890, 280],
-      "size": [140, 60]
+      "pos": [
+        920,
+        280
+      ],
+      "size": [
+        140,
+        60
+      ]
     },
     {
       "id": "models",
       "type": "external",
       "label": "60+ AI Models",
       "sublabel": "Claude, DeepSeek, Qwen...",
-      "pos": [1110, 280],
-      "size": [140, 60]
+      "pos": [
+        1110,
+        280
+      ],
+      "size": [
+        160,
+        60
+      ]
     }
   ],
   "boundaries": [
     {
       "kind": "region",
       "label": "VS Code Extension Client",
-      "wraps": ["copilot", "provider", "guidance", "router", "anthropic", "openai", "stream", "tool_engine"]
+      "wraps": [
+        "copilot",
+        "provider",
+        "guidance",
+        "router",
+        "anthropic",
+        "openai",
+        "stream",
+        "tool_engine"
+      ]
     },
     {
       "kind": "region",
       "label": "Command Code API & Models",
-      "wraps": ["gateway", "models"]
+      "wraps": [
+        "gateway",
+        "models"
+      ]
     }
   ],
   "connections": [
@@ -163,7 +284,10 @@
       "fromSide": "top",
       "toSide": "bottom",
       "label": "grounding",
-      "labelDy": -58
+      "labelAt": [
+        320,
+        237
+      ]
     },
     {
       "id": "guidance-to-router",
@@ -228,9 +352,25 @@
       "to": "tool_engine",
       "fromSide": "bottom",
       "toSide": "right",
-      "via": [[745, 520], [420, 520], [420, 450]],
+      "via": [
+        [
+          745,
+          520
+        ],
+        [
+          420,
+          520
+        ],
+        [
+          420,
+          450
+        ]
+      ],
       "label": "SSE tokens",
-      "labelAt": [580, 506]
+      "labelAt": [
+        600,
+        520
+      ]
     },
     {
       "id": "tool-engine-to-provider",
@@ -239,7 +379,10 @@
       "fromSide": "top",
       "toSide": "bottom",
       "label": "yield parts",
-      "labelDy": -58
+      "labelAt": [
+        320,
+        383
+      ]
     }
   ],
   "cards": [
