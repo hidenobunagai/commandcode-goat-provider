@@ -98,4 +98,6 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `sakana/fugu-ultra` | Fugu Ultra | 1M | 65,536 | OpenAI | high, xhigh, max | Yes |
 | `meituan/LongCat-2.0` | LongCat 2.0 | 1,000,000 | 131,072 | OpenAI | - | ✗ |
 | `inclusionai/ling-3.0-flash-sante:free` | Ling 3.0 Flash Sante | 262,144 | 65,536 | OpenAI | - | No |
-| `stealth/space-bunny-alpha` | Space Bunny Alpha | 1,000,000 | 131,072 | OpenAI | - | ✓ |
+| `claude-haiku-5-5` | Claude Haiku 5.5 | 1,000,000 | 65,536 | Anthropic | ✓ (`low,medium,high,xhigh,max`) | ✓ |
+| `stealth/glyph-cluster:free` | Glyph Cluster | 256,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✗ |
+| `mistral/mistral-large-4` | Mistral Large 4 | 524,288 | 131,072 | OpenAI | ✓ (`high`) | ✓ |

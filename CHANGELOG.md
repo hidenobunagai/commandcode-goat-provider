@@ -1,5 +1,18 @@
 # Change Log
 
+## [0.1.30] - 2026-10-10
+
+### Added
+
+- **Catalog reaches 87 models** — three NEW ids from the live API, curated from commandcode.ai and provider docs:
+  - `claude-haiku-5-5` ("Claude Haiku 5.5", 1M ctx, anthropic protocol, vision on, `low..max` efforts via adaptive thinking `output_config.effort`).
+  - `stealth/glyph-cluster:free` ("Glyph Cluster", 256K ctx, free preview tier, openai protocol, text-only, `low,medium,high,xhigh` efforts).
+  - `mistral/mistral-large-4` ("Mistral Large 4", 524K ctx, openai protocol, vision on, `high` effort via Mistral's adjustable reasoning).
+
+### Removed
+
+- **`stealth/space-bunny-alpha` retired** — no longer served by the live API, dropped from catalog and decisions.
+
 ## [0.1.29] - 2026-10-02
 
 ### Fixed

@@ -168,7 +168,9 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["deepseek/deepseek-v4-flash-vision-exp", "DeepSeek V4 Flash Vision (exp)", 1000000],
   ["poolside/laguna-s-2.1-free", "Laguna S 2.1", 256000],
   ["inclusionai/ling-3.0-flash-sante:free", "Ling 3.0 Flash Sante", 262144],
-  ["stealth/space-bunny-alpha", "Space Bunny Alpha", 1000000],
+  ["claude-haiku-5-5", "Claude Haiku 5.5", 1000000],
+  ["stealth/glyph-cluster:free", "Glyph Cluster", 256000],
+  ["mistral/mistral-large-4", "Mistral Large 4", 524288],
   ["claude-fable-5-1", "Claude Fable 5.1", 1000000],
   ["claude-fable-5", "Claude Fable 5", 1000000],
   ["claude-opus-4-7", "Claude Opus 4.7", 1000000],
@@ -262,7 +264,8 @@ const VISION_SET = new Set([
   "gpt-5.5",
   "google/gemini-3.6-flash",
   "sakana/fugu-ultra",
-  "stealth/space-bunny-alpha",
+  "claude-haiku-5-5",
+  "mistral/mistral-large-4",
 ]);
 const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["gpt-5.6-luna", ["low", "medium", "high", "xhigh", "max"]],
@@ -350,9 +353,9 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["meta/muse-spark-1.2-contributor", ["low", "medium", "high", "xhigh"]],
   ["meta/muse-spark-1.3", ["low", "medium", "high", "xhigh", "max"]],
   ["meta/muse-spark-1.3-contributor", ["low", "medium", "high", "xhigh"]],
-  // Space Bunny Alpha: probed 2026-09-25 on /provider/v1/chat/completions (low..max -> 200,
-  // unknown -> 400). Streams reasoning in delta.reasoning rather than delta.reasoning_content.
-  ["stealth/space-bunny-alpha", ["low", "medium", "high", "xhigh", "max"]],
+  ["claude-haiku-5-5", ["low", "medium", "high", "xhigh", "max"]],
+  ["stealth/glyph-cluster:free", ["low", "medium", "high", "xhigh"]],
+  ["mistral/mistral-large-4", ["high"]],
 ]);
 const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["gpt-5.6-luna", "openai"],
@@ -439,7 +442,9 @@ const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["meituan/LongCat-2.0", "openai"],
   ["inclusionai/ling-3.1-flash:free", "openai"],
   ["inclusionai/ling-3.0-flash-sante:free", "openai"],
-  ["stealth/space-bunny-alpha", "openai"],
+  ["claude-haiku-5-5", "anthropic"],
+  ["stealth/glyph-cluster:free", "openai"],
+  ["mistral/mistral-large-4", "openai"],
 ]);
 const vision = (id: string) => VISION_SET.has(id);
 const thinking = (id: string) => EFFORTS_MAP.has(id);

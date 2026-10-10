@@ -446,5 +446,38 @@
     ],
     "source": "Corrected low,medium,xhigh -> low,medium,high,xhigh (same Qwen3.8 high:null data-entry fix as Qwen3.8-Max-0902/Omni-Flash: pi-ai openrouter:qwen/qwen3.8-max-0902 explicit map lists low,medium,high,xhigh; Alibaba hybrid-thinking docs expose low/medium/high across the Qwen3 line). Probe 2026-10-02 on 0902: thinks by default, off rejected; family ladder applied to all five Qwen3.8 rows.",
     "decided": "2026-10-02"
+  },
+  "stealth/space-bunny-alpha": {
+    "efforts": [],
+    "source": "Catalog row REMOVED 2026-10-10. Live API no longer serves stealth/space-bunny-alpha (87 models, space-bunny-alpha absent). Dead ids are dropped per playbook section 1 (REMOVED). The 0.1.20 low..max probe evidence is preserved in git history.",
+    "decided": "2026-10-10"
+  },
+  "claude-haiku-5-5": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "Anthropic API docs & release announcement (2026-10-07): Claude Haiku 5.5 transitions from budget_tokens to adaptive thinking with effort parameter (output_config.effort low, medium, high, xhigh, max); commandcode.ai/models/claude-haiku-5-5: Reasons before answering, Text input, Image input, Text output; protocol anthropic (claude-* rule, /messages only); sibling Sonnet 5.5/Opus 5.5 rows all low..max",
+    "decided": "2026-10-10"
+  },
+  "stealth/glyph-cluster:free": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh"
+    ],
+    "source": "Stealth Models platform (stealthmodels.com/models/stealth/glyph-cluster): reasoning model in early access, 256k ctx, playground & API expose reasoning effort low, medium, high, xhigh; commandcode.ai/models/glyph-cluster-free: Reasons before answering, Text input, Text output (text-only, no image badge), free tier ($0/m); protocol openai (/chat/completions, /responses)",
+    "decided": "2026-10-10"
+  },
+  "mistral/mistral-large-4": {
+    "efforts": [
+      "high"
+    ],
+    "source": "Mistral AI API docs (docs.mistral.ai): Mistral Large 4 (flagship multimodal 1T MoE, released October 2026) supports adjustable reasoning via reasoning_effort parameter with documented values none and high (sending low/medium returns HTTP 400); gateway maps high to vendor high, giving reachable distinct gateway rung high; commandcode.ai/models/mistral-large-4: Reasons before answering, Text input, Image input, Text output; protocol openai",
+    "decided": "2026-10-10"
   }
 }

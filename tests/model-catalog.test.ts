@@ -163,7 +163,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(85);
+  expect(FALLBACK_MODELS.length).toBe(87);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 
@@ -185,14 +185,34 @@ test("offers the effort picker for Muse Spark with the probed gateway ladder", (
   }
 });
 
-test("offers the effort picker for Space Bunny Alpha with probed reasoning ladder", () => {
-  // Probed 2026-09-25 on /provider/v1/chat/completions: low..max all 200,
-  // unknown value rejected 400. Reasoning streamed in delta.reasoning.
-  const info = inferModelInfo({
-    id: "stealth/space-bunny-alpha",
-    name: "Space Bunny Alpha",
+test("includes the 2026-10-10 new models with curated capabilities", () => {
+  // Claude Haiku 5.5: anthropic protocol, vision on, full five-rung ladder
+  const haiku = inferModelInfo({
+    id: "claude-haiku-5-5",
+    name: "Claude Haiku 5.5",
     context_length: 1_000_000,
   });
-  expect(info.supportsThinking).toBe(true);
-  expect(info.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
+  expect(haiku.apiFormat).toBe("anthropic");
+  expect(haiku.supportsVision).toBe(true);
+  expect(haiku.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
+
+  // Glyph Cluster (free): openai protocol, text-only (vision off), low..xhigh
+  const glyph = inferModelInfo({
+    id: "stealth/glyph-cluster:free",
+    name: "Glyph Cluster",
+    context_length: 256_000,
+  });
+  expect(glyph.apiFormat).toBe("openai");
+  expect(glyph.supportsVision).toBe(false);
+  expect(glyph.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh"]);
+
+  // Mistral Large 4: openai protocol, vision on, high effort only
+  const mistral = inferModelInfo({
+    id: "mistral/mistral-large-4",
+    name: "Mistral Large 4",
+    context_length: 524_288,
+  });
+  expect(mistral.apiFormat).toBe("openai");
+  expect(mistral.supportsVision).toBe(true);
+  expect(mistral.supportedReasoningEfforts).toEqual(["high"]);
 });
