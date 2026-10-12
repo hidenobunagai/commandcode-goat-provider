@@ -163,7 +163,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(87);
+  expect(FALLBACK_MODELS.length).toBe(88);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 
@@ -215,4 +215,19 @@ test("includes the 2026-10-10 new models with curated capabilities", () => {
   expect(mistral.apiFormat).toBe("openai");
   expect(mistral.supportsVision).toBe(true);
   expect(mistral.supportedReasoningEfforts).toEqual(["high"]);
+});
+
+test("includes the 2026-10-12 new models with curated capabilities", () => {
+  // Muse Wonder: openai protocol, vision on, full five-rung ladder (probed live: thinks by default, off rejected)
+  const wonder = inferModelInfo({
+    id: "meta/muse-wonder-1.0",
+    name: "Muse Wonder",
+    context_length: 1_048_576,
+  });
+  expect(wonder.apiFormat).toBe("openai");
+  expect(wonder.supportsVision).toBe(true);
+  expect(wonder.supportsThinking).toBe(true);
+  expect(wonder.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
+  expect(wonder.contextWindow).toBe(1_048_576);
+  expect(wonder.maxOutput).toBe(131_072);
 });

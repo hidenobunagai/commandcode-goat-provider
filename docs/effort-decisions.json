@@ -479,5 +479,16 @@
     ],
     "source": "Mistral AI API docs (docs.mistral.ai): Mistral Large 4 (flagship multimodal 1T MoE, released October 2026) supports adjustable reasoning via reasoning_effort parameter with documented values none and high (sending low/medium returns HTTP 400); gateway maps high to vendor high, giving reachable distinct gateway rung high; commandcode.ai/models/mistral-large-4: Reasons before answering, Text input, Image input, Text output; protocol openai",
     "decided": "2026-10-10"
+  },
+  "meta/muse-wonder-1.0": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "Meta Model API docs & commandcode.ai/models/muse-wonder-1-0: frontier coding & agentic reasoning, Reasons badge on, Max tier ($4/M in, $20/M out, 1.05M ctx); vendor reasoning_effort supports minimal..max with minimal rejected on gateway; probe 2026-10-12: thinks by default (reasoning=437), off rejected 400, rungs low..max all 200; protocol openai; vision true; matches Muse family ladder low..max",
+    "decided": "2026-10-12"
   }
 }

@@ -171,6 +171,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["claude-haiku-5-5", "Claude Haiku 5.5", 1000000],
   ["stealth/glyph-cluster:free", "Glyph Cluster", 256000],
   ["mistral/mistral-large-4", "Mistral Large 4", 524288],
+  ["meta/muse-wonder-1.0", "Muse Wonder", 1048576],
   ["claude-fable-5-1", "Claude Fable 5.1", 1000000],
   ["claude-fable-5", "Claude Fable 5", 1000000],
   ["claude-opus-4-7", "Claude Opus 4.7", 1000000],
@@ -266,6 +267,7 @@ const VISION_SET = new Set([
   "sakana/fugu-ultra",
   "claude-haiku-5-5",
   "mistral/mistral-large-4",
+  "meta/muse-wonder-1.0",
 ]);
 const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["gpt-5.6-luna", ["low", "medium", "high", "xhigh", "max"]],
@@ -356,6 +358,7 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["claude-haiku-5-5", ["low", "medium", "high", "xhigh", "max"]],
   ["stealth/glyph-cluster:free", ["low", "medium", "high", "xhigh"]],
   ["mistral/mistral-large-4", ["high"]],
+  ["meta/muse-wonder-1.0", ["low", "medium", "high", "xhigh", "max"]],
 ]);
 const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["gpt-5.6-luna", "openai"],
@@ -445,6 +448,7 @@ const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["claude-haiku-5-5", "anthropic"],
   ["stealth/glyph-cluster:free", "openai"],
   ["mistral/mistral-large-4", "openai"],
+  ["meta/muse-wonder-1.0", "openai"],
 ]);
 const vision = (id: string) => VISION_SET.has(id);
 const thinking = (id: string) => EFFORTS_MAP.has(id);

@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.1.31] - 2026-10-12
+
+### Added
+
+- **Catalog reaches 88 models** — one NEW id from the live API, curated from commandcode.ai and live-probed:
+  - `meta/muse-wonder-1.0` ("Muse Wonder", 1.05M ctx, Max tier, openai protocol, vision on, `low,medium,high,xhigh,max` efforts — probed live: thinks by default, `off` rejected 400).
+
 ## [0.1.30] - 2026-10-10
 
 ### Added
