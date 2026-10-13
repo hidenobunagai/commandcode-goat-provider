@@ -490,5 +490,14 @@
     ],
     "source": "Meta Model API docs & commandcode.ai/models/muse-wonder-1-0: frontier coding & agentic reasoning, Reasons badge on, Max tier ($4/M in, $20/M out, 1.05M ctx); vendor reasoning_effort supports minimal..max with minimal rejected on gateway; probe 2026-10-12: thinks by default (reasoning=437), off rejected 400, rungs low..max all 200; protocol openai; vision true; matches Muse family ladder low..max",
     "decided": "2026-10-12"
+  },
+  "google/gemini-4-argon": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Google DeepMind Gemini API docs (google.dev): thinking_level supports low, medium (default), high; commandcode.ai/models/gemini-4-argon: Reasons badge on, Pro tier ($2/M in, $10/M out, 1M ctx), Image input supported; probe 2026-10-13: thinks by default (reasoning=516), off rejected 400, rungs low (0), medium (398), high (2441) all 200; protocol openai",
+    "decided": "2026-10-13"
   }
 }

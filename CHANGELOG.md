@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.1.32] - 2026-10-13
+
+### Added
+
+- **Catalog reaches 89 models** — one NEW id from the live API, curated from commandcode.ai, Google DeepMind API docs, and live-probed:
+  - `google/gemini-4-argon` ("Gemini 4 Argon", 1M ctx, 65,536 max output, Pro tier, openai protocol, vision on, `low,medium,high` efforts — probed live: thinks by default, `off` rejected 400).
+
 ## [0.1.31] - 2026-10-12
 
 ### Added

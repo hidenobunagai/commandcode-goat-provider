@@ -163,7 +163,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(88);
+  expect(FALLBACK_MODELS.length).toBe(89);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 
@@ -230,4 +230,19 @@ test("includes the 2026-10-12 new models with curated capabilities", () => {
   expect(wonder.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
   expect(wonder.contextWindow).toBe(1_048_576);
   expect(wonder.maxOutput).toBe(131_072);
+});
+
+test("includes the 2026-10-13 new models with curated capabilities", () => {
+  // Gemini 4 Argon: openai protocol, vision on, low..high ladder (probed live: thinks by default, off rejected)
+  const argon = inferModelInfo({
+    id: "google/gemini-4-argon",
+    name: "Gemini 4 Argon",
+    context_length: 1_000_000,
+  });
+  expect(argon.apiFormat).toBe("openai");
+  expect(argon.supportsVision).toBe(true);
+  expect(argon.supportsThinking).toBe(true);
+  expect(argon.supportedReasoningEfforts).toEqual(["low", "medium", "high"]);
+  expect(argon.contextWindow).toBe(1_000_000);
+  expect(argon.maxOutput).toBe(65_536);
 });
