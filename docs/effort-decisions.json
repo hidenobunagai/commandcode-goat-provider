@@ -39,10 +39,14 @@
     "source": "DeepSeek API docs (api-docs.deepseek.com/guides/thinking_mode): reasoning_effort low/high/max, default high, gateway minimal/low->low medium/high/xhigh->high ultra/max->max, so reachable gateway ladder is low,high,max; pi-ai baseten explicit map (off:none, low, high, max) confirms vendor ladder; probe 2026-10-02: thinks by default (reasoning=386), off accepted; commandcode.ai/models/deepseek-v4-1-flash-fast: Reasons+Image badges on, Go tier",
     "decided": "2026-10-02"
   },
-  "inclusionai/ling-3.1-flash:free": {
-    "efforts": [],
-    "source": "commandcode.ai/models/ling-3-1-flash-free: no Reasons badge (Text input/output only), free tier; probe 2026-10-02: reasoning tokens present by default (160) and off rejected, but the badge is the curated capability source and the sibling ling-3.0-flash-sante:free is also text-only without efforts; pi-ai has no explicit map (vercel-ai-gateway reasoning:true, map null = generic default). Non-reasoning model per playbook rule (leave vision/efforts out when unconfirmed). Revisit if the badge gains a Reasons icon.",
-    "decided": "2026-10-02"
+  "inclusionai/ling-3.1-flash": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "commandcode.ai/models/ling-3-1-flash: Reasons before answering badge on, Text input/output only, Go tier; vendor and aggregators (OpenRouter, Vercel AI Gateway) support standard reasoning_effort low/medium/high; probe 2026-10-14: thinks by default (reasoning=179), off rejected 400 with 'does not support reasoning_effort off', rungs low/medium/high accepted.",
+    "decided": "2026-10-14"
   },
   "deepseek/deepseek-v4-flash": {
     "efforts": [

@@ -90,16 +90,17 @@ test("includes the 2026-10-02 new models with curated capabilities", () => {
   expect(fast.supportsVision).toBe(true);
   expect(fast.supportedReasoningEfforts).toEqual(["low", "high", "max"]);
 
-  // Ling 3.1 Flash (free): text-only, no effort picker — no Reasons badge
-  // on commandcode.ai, so no invented ladder.
+  // Ling 3.1 Flash: text-only, low/medium/high effort ladder — Reasons badge
+  // on commandcode.ai, probe confirmed thinking by default, off rejected.
   const ling = inferModelInfo({
-    id: "inclusionai/ling-3.1-flash:free",
+    id: "inclusionai/ling-3.1-flash",
     name: "Ling 3.1 Flash",
     context_length: 262_144,
   });
   expect(ling.apiFormat).toBe("openai");
   expect(ling.supportsVision).toBe(false);
-  expect(ling.supportsThinking).toBe(false);
+  expect(ling.supportsThinking).toBe(true);
+  expect(ling.supportedReasoningEfforts).toEqual(["low", "medium", "high"]);
   expect(ling.isUserSelectable).toBe(true);
 });
 

@@ -122,7 +122,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["deepseek/deepseek-v4-flash-fast", "DeepSeek V4 Flash Fast", 1000000],
   ["deepseek/deepseek-v4.1-flash", "DeepSeek V4.1 Flash", 1000000],
   ["deepseek/deepseek-v4.1-flash-fast", "DeepSeek V4.1 Flash Fast", 1000000],
-  ["inclusionai/ling-3.1-flash:free", "Ling 3.1 Flash", 262144],
+  ["inclusionai/ling-3.1-flash", "Ling 3.1 Flash", 262144],
   ["moonshotai/Kimi-K3", "Kimi K3", 1000000],
   ["moonshotai/Kimi-K2.7-Code", "Kimi K2.7 Code", 256000],
   ["Qwen/Qwen3.8-Max", "Qwen 3.8 Max", 1000000],
@@ -362,6 +362,7 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["stealth/glyph-cluster:free", ["low", "medium", "high", "xhigh"]],
   ["mistral/mistral-large-4", ["high"]],
   ["meta/muse-wonder-1.0", ["low", "medium", "high", "xhigh", "max"]],
+  ["inclusionai/ling-3.1-flash", ["low", "medium", "high"]],
 ]);
 const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["gpt-5.6-luna", "openai"],
@@ -447,7 +448,7 @@ const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["google/gemini-3.6-flash", "openai"],
   ["sakana/fugu-ultra", "openai"],
   ["meituan/LongCat-2.0", "openai"],
-  ["inclusionai/ling-3.1-flash:free", "openai"],
+  ["inclusionai/ling-3.1-flash", "openai"],
   ["inclusionai/ling-3.0-flash-sante:free", "openai"],
   ["claude-haiku-5-5", "anthropic"],
   ["stealth/glyph-cluster:free", "openai"],

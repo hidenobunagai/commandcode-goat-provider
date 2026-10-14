@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.1.33] - 2026-10-14
+
+### Added
+
+- **`inclusionai/ling-3.1-flash` replaces free-tier predecessor** — live API now serves the standard Go-tier Ling 3.1 Flash:
+  - `inclusionai/ling-3.1-flash` ("Ling 3.1 Flash", 262,144 ctx, 131,072 max output, Go tier $0.30/$0.90, openai protocol, text-only, `low,medium,high` efforts — commandcode.ai Reasons badge on; live probe confirmed default reasoning with 179 tokens, `off` rejected 400).
+
+### Removed
+
+- **`inclusionai/ling-3.1-flash:free` retired** — no longer served by the live API, replaced by `inclusionai/ling-3.1-flash`.
+
 ## [0.1.32] - 2026-10-13
 
 ### Added
