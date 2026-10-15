@@ -503,5 +503,45 @@
     ],
     "source": "Google DeepMind Gemini API docs (google.dev): thinking_level supports low, medium (default), high; commandcode.ai/models/gemini-4-argon: Reasons badge on, Pro tier ($2/M in, $10/M out, 1M ctx), Image input supported; probe 2026-10-13: thinks by default (reasoning=516), off rejected 400, rungs low (0), medium (398), high (2441) all 200; protocol openai",
     "decided": "2026-10-13"
+  },
+  "Qwen/Qwen3.8-Max-Prime": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh"
+    ],
+    "source": "Alibaba Qwen3.8 hybrid-thinking docs & sibling Qwen3.8 family ladder (all five rows low..xhigh); pi-ai openrouter:qwen/qwen3.8-max-prime explicit map (off:null, low..xhigh, max:null); probe 2026-10-15: thinks by default (reasoning=375/29), off rejected 400; commandcode.ai/models/qwen3-8-max-prime: Reasons+Image badges on, GOAT tier ($4/M in, $12/M out, 1M ctx); protocol openai",
+    "decided": "2026-10-15"
+  },
+  "nvidia/nemotron-3.5-super-vl": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "NVIDIA API & OpenRouter reasoning parameters (supported_parameters includes reasoning with low/medium/high effort); commandcode.ai/models/nemotron-3-5-super-vl: Reasons+Image badges on, Go tier ($0.20/M in, $0.50/M out, 262k ctx); probe 2026-10-15: default request omitted reasoning=0, off rejected 400, hard prompt with low (566), medium (869), high (658), xhigh (956), max (851) all returned reasoning content; conservative vendor ladder low,medium,high; protocol openai",
+    "decided": "2026-10-15"
+  },
+  "stealth/cat-jam:free": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "Stealth Models platform & OpenCode (opencode.ai, pi-ai opencode-go:cat-jam-free explicit thinkingLevelMap off:null + low..max all five rungs); commandcode.ai/models/cat-jam-free: Reasons badge on, Text input/output only (no image badge), free tier preview ($0/M in/out, 1.05M ctx); probe 2026-10-15: thinks by default (reasoning=223), off rejected 400, rungs low..max all 200; protocol openai",
+    "decided": "2026-10-15"
+  },
+  "meta/muse-spark-open": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh"
+    ],
+    "source": "Meta Superintelligence Labs & OpenRouter (pi-ai openrouter:meta/muse-spark-open explicit thinkingLevelMap off:null, low..xhigh, max:null); commandcode.ai/models/muse-spark-open: open-weight Muse Spark for coding & agentic workflows, Reasons+Image badges on, Go tier ($1.25/M in, $4.25/M out, 1.05M ctx); probe 2026-10-15: thinks by default (reasoning=557), off rejected 400, rungs low..max all 200; matches contributor/open ladder low..xhigh; protocol openai",
+    "decided": "2026-10-15"
   }
 }

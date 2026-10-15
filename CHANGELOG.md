@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.1.34] - 2026-10-15
+
+### Added
+
+- **Catalog reaches 93 models** — four NEW ids from the live API, curated from commandcode.ai, provider docs, and live-probed:
+  - `Qwen/Qwen3.8-Max-Prime` ("Qwen 3.8 Max Prime", 1,000,000 ctx, 65,536 max output, GOAT tier $4.00/$12.00, openai protocol, vision on, `low,medium,high,xhigh` efforts — commandcode.ai Reasons+Image badges on; live probe confirmed default reasoning with 375 tokens, `off` rejected 400).
+  - `nvidia/nemotron-3.5-super-vl` ("Nemotron 3.5 Super VL", 262,144 ctx, 131,072 max output, Go tier $0.20/$0.50, openai protocol, vision on, `low,medium,high` efforts — commandcode.ai Reasons+Image badges on; probe confirmed reasoning with 566-869 tokens across rungs on hard prompt, `off` rejected 400).
+  - `stealth/cat-jam:free` ("Cat Jam", 1,048,576 ctx, 131,072 max output, free preview tier $0/$0, openai protocol, text-only, `low,medium,high,xhigh,max` efforts — commandcode.ai Reasons badge on; live probe confirmed default reasoning with 223 tokens, `off` rejected 400).
+  - `meta/muse-spark-open` ("Muse Spark Open", 1,048,576 ctx, 131,072 max output, Go tier $1.25/$4.25, openai protocol, vision on, `low,medium,high,xhigh` efforts — commandcode.ai Reasons+Image badges on; live probe confirmed default reasoning with 557 tokens, `off` rejected 400).
+
 ## [0.1.33] - 2026-10-14
 
 ### Added

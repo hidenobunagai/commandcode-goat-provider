@@ -130,6 +130,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["Qwen/Qwen3.8-Flash", "Qwen 3.8 Flash", 1000000],
   ["Qwen/Qwen3.8-27B", "Qwen 3.8 27B", 262144],
   ["Qwen/Qwen3.8-Omni-Flash", "Qwen 3.8 Omni Flash", 1000000],
+  ["Qwen/Qwen3.8-Max-Prime", "Qwen 3.8 Max Prime", 1000000],
   ["z-ai/glm-5.3-flash", "GLM-5.3 Flash", 1048576],
   ["z-ai/glm-5.3-flashx", "GLM-5.3 FlashX", 1000000],
   ["zai-org/GLM-5.3", "GLM-5.3", 1000000],
@@ -139,6 +140,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["meta/muse-spark-1.3-contributor", "Muse Spark 1.3 Contributor", 1048576],
   ["meta/muse-spark-1.2", "Muse Spark 1.2", 1048576],
   ["meta/muse-spark-1.2-contributor", "Muse Spark 1.2 Contributor", 1048576],
+  ["meta/muse-spark-open", "Muse Spark Open", 1048576],
   ["stepfun/Step-3.7-Flash", "Step 3.7 Flash", 256000],
   ["stepfun/Step-5-Preview", "Step 5 Preview", 1000000],
   ["tencent/hy4-preview", "Tencent Hy4 Preview", 1048576],
@@ -154,6 +156,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["Qwen/Qwen3.6-Plus", "Qwen 3.6 Plus", 200000],
   ["moonshotai/Kimi-K2.5", "Kimi K2.5", 256000],
   ["nvidia/nemotron-3-ultra-550b-a55b", "Nemotron 3 Ultra", 1000000],
+  ["nvidia/nemotron-3.5-super-vl", "Nemotron 3.5 Super VL", 262144],
   ["zai-org/GLM-5", "GLM-5", 200000],
   ["thinkingmachines/inkling", "Inkling", 256000],
   ["Qwen/Qwen3.6-Max-Preview", "Qwen 3.6 Max Preview", 200000],
@@ -171,6 +174,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["inclusionai/ling-3.0-flash-sante:free", "Ling 3.0 Flash Sante", 262144],
   ["claude-haiku-5-5", "Claude Haiku 5.5", 1000000],
   ["stealth/glyph-cluster:free", "Glyph Cluster", 256000],
+  ["stealth/cat-jam:free", "Cat Jam", 1048576],
   ["mistral/mistral-large-4", "Mistral Large 4", 524288],
   ["meta/muse-wonder-1.0", "Muse Wonder", 1048576],
   ["claude-fable-5-1", "Claude Fable 5.1", 1000000],
@@ -270,6 +274,9 @@ const VISION_SET = new Set([
   "claude-haiku-5-5",
   "mistral/mistral-large-4",
   "meta/muse-wonder-1.0",
+  "Qwen/Qwen3.8-Max-Prime",
+  "nvidia/nemotron-3.5-super-vl",
+  "meta/muse-spark-open",
 ]);
 const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["gpt-5.6-luna", ["low", "medium", "high", "xhigh", "max"]],
@@ -363,6 +370,10 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["mistral/mistral-large-4", ["high"]],
   ["meta/muse-wonder-1.0", ["low", "medium", "high", "xhigh", "max"]],
   ["inclusionai/ling-3.1-flash", ["low", "medium", "high"]],
+  ["Qwen/Qwen3.8-Max-Prime", ["low", "medium", "high", "xhigh"]],
+  ["nvidia/nemotron-3.5-super-vl", ["low", "medium", "high"]],
+  ["stealth/cat-jam:free", ["low", "medium", "high", "xhigh", "max"]],
+  ["meta/muse-spark-open", ["low", "medium", "high", "xhigh"]],
 ]);
 const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["gpt-5.6-luna", "openai"],
@@ -454,6 +465,10 @@ const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["stealth/glyph-cluster:free", "openai"],
   ["mistral/mistral-large-4", "openai"],
   ["meta/muse-wonder-1.0", "openai"],
+  ["Qwen/Qwen3.8-Max-Prime", "openai"],
+  ["nvidia/nemotron-3.5-super-vl", "openai"],
+  ["stealth/cat-jam:free", "openai"],
+  ["meta/muse-spark-open", "openai"],
 ]);
 const vision = (id: string) => VISION_SET.has(id);
 const thinking = (id: string) => EFFORTS_MAP.has(id);

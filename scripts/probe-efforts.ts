@@ -24,9 +24,14 @@ const PROMPT = "What is the sum of the digits of 2^50? Reply with the number onl
 function apiKey(): string {
   if (process.env.COMMANDCODE_API_KEY) return process.env.COMMANDCODE_API_KEY;
   const f = `${homedir()}/.dsh/.credentials.yaml`;
-  const m = existsSync(f) && readFileSync(f, "utf8").match(/COMMANDCODE_API_KEY:\s*"?([^"\s#]+)/);
-  if (!m) throw new Error("COMMANDCODE_API_KEY not found (env or ~/.dsh/.credentials.yaml)");
-  return m[1];
+  if (existsSync(f)) {
+    const content = readFileSync(f, "utf8");
+    const qm = content.match(/COMMANDCODE_API_KEY:\s*"([^"]+)"/);
+    if (qm) return qm[1].replace(/\\\r?\n\s*/g, "");
+    const m = content.match(/COMMANDCODE_API_KEY:\s*([^"\s#]+)/);
+    if (m) return m[1];
+  }
+  throw new Error("COMMANDCODE_API_KEY not found (env or ~/.dsh/.credentials.yaml)");
 }
 
 type Result = { rung: string; status: number; reasoning?: number; error?: string };

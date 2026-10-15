@@ -164,7 +164,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(89);
+  expect(FALLBACK_MODELS.length).toBe(93);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 
@@ -246,4 +246,58 @@ test("includes the 2026-10-13 new models with curated capabilities", () => {
   expect(argon.supportedReasoningEfforts).toEqual(["low", "medium", "high"]);
   expect(argon.contextWindow).toBe(1_000_000);
   expect(argon.maxOutput).toBe(65_536);
+});
+
+test("includes the 2026-10-15 new models with curated capabilities", () => {
+  // Qwen 3.8 Max Prime: openai, vision on, low..xhigh ladder
+  const prime = inferModelInfo({
+    id: "Qwen/Qwen3.8-Max-Prime",
+    name: "Qwen 3.8 Max Prime",
+    context_length: 1_000_000,
+  });
+  expect(prime.apiFormat).toBe("openai");
+  expect(prime.supportsVision).toBe(true);
+  expect(prime.supportsThinking).toBe(true);
+  expect(prime.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh"]);
+  expect(prime.contextWindow).toBe(1_000_000);
+  expect(prime.maxOutput).toBe(65_536);
+
+  // Nemotron 3.5 Super VL: openai, vision on, low..high ladder
+  const vl = inferModelInfo({
+    id: "nvidia/nemotron-3.5-super-vl",
+    name: "Nemotron 3.5 Super VL",
+    context_length: 262_144,
+  });
+  expect(vl.apiFormat).toBe("openai");
+  expect(vl.supportsVision).toBe(true);
+  expect(vl.supportsThinking).toBe(true);
+  expect(vl.supportedReasoningEfforts).toEqual(["low", "medium", "high"]);
+  expect(vl.contextWindow).toBe(262_144);
+  expect(vl.maxOutput).toBe(131_072);
+
+  // Cat Jam: openai, text-only (vision off), low..max ladder
+  const cat = inferModelInfo({
+    id: "stealth/cat-jam:free",
+    name: "Cat Jam",
+    context_length: 1_048_576,
+  });
+  expect(cat.apiFormat).toBe("openai");
+  expect(cat.supportsVision).toBe(false);
+  expect(cat.supportsThinking).toBe(true);
+  expect(cat.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
+  expect(cat.contextWindow).toBe(1_048_576);
+  expect(cat.maxOutput).toBe(131_072);
+
+  // Muse Spark Open: openai, vision on, low..xhigh ladder
+  const muse = inferModelInfo({
+    id: "meta/muse-spark-open",
+    name: "Muse Spark Open",
+    context_length: 1_048_576,
+  });
+  expect(muse.apiFormat).toBe("openai");
+  expect(muse.supportsVision).toBe(true);
+  expect(muse.supportsThinking).toBe(true);
+  expect(muse.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh"]);
+  expect(muse.contextWindow).toBe(1_048_576);
+  expect(muse.maxOutput).toBe(131_072);
 });
