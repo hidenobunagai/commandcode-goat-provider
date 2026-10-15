@@ -4,7 +4,7 @@ Command Code GOAT Provider supports 60+ models across Anthropic, OpenAI, DeepSee
 
 ## Catalog Authority
 
-At runtime, the extension fetches the dynamic model list from `GET https://api.commandcode.ai/provider/v1/models`. The static catalog in `src/constants.ts` (synced from `commandcode-goat-dsh-provider/src/catalog/data.ts` via `commandcode.ai/docs`) provides authoritative capability flags, wire protocol assignment, and safety margins:
+At runtime, the extension fetches the dynamic model list from `GET https://api.commandcode.ai/provider/v1/models`. The static catalog in `src/constants.ts` (synced from `dsh-commandcode-goat-provider/src/catalog/data.ts` via `commandcode.ai/docs`) provides authoritative capability flags, wire protocol assignment, and safety margins:
 
 - **Claude Models (`claude-*`)**: Routed to `/provider/v1/messages` (Anthropic Messages API).
 - **Other Models**: Routed to `/provider/v1/chat/completions` (OpenAI Chat Completions).

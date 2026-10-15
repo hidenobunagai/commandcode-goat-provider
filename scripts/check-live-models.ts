@@ -42,7 +42,7 @@ import {
 const API_URL = "https://api.commandcode.ai/provider/v1/models";
 const DEFAULT_DSH_REPO = path.join(
   process.env.HOME ?? "/home/pi",
-  "projects/commandcode-goat-dsh-provider",
+  "projects/dsh-commandcode-goat-provider",
 );
 const VSCE_REPO = process.cwd();
 const VSCE_FILE = path.join(VSCE_REPO, "src/constants.ts");

@@ -198,7 +198,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["meituan/LongCat-2.0", "LongCat 2.0", 1048576],
 ];
 
-// Synced from commandcode-goat-dsh-provider/src/catalog/data.ts (commandcode.ai/docs via pnpm generate:knowledge) — do not hand-edit modalities/efforts/protocol
+// Synced from dsh-commandcode-goat-provider/src/catalog/data.ts (commandcode.ai/docs via pnpm generate:knowledge) — do not hand-edit modalities/efforts/protocol
 const VISION_SET = new Set([
   "gpt-5.6-luna",
   "gpt-5.6-sol",

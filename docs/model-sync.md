@@ -1,18 +1,18 @@
 # Model Catalog Sync & Release Playbook
 
-Procedure for the daily model-catalog sync (`scripts/daily-model-watch.sh` → Pi agent run)
-and for the same work done by hand. While the DSH plugin checkout exists, both catalogs must stay
-in sync:
+Procedure for the daily model-catalog sync (`scripts/daily-model-watch.sh` → agy agent run)
+and for the same work done by hand. Both catalogs must stay in sync:
 
 | Repo | File | Role |
 |---|---|---|
-| `~/projects/commandcode-goat-dsh-provider` | `src/catalog/data.ts` (`CATALOG`) | Upstream truth: id, name, contextWindow, maxTokens, protocol, modalities, efforts, pricing, tier |
+| `~/projects/dsh-commandcode-goat-provider` | `src/catalog/data.ts` (`CATALOG`) | Upstream truth: id, name, contextWindow, maxTokens, protocol, modalities, efforts, pricing, tier |
 | `~/projects/commandcode-goat-provider` (this repo) | `src/constants.ts` (`OFFICIAL_MODELS`, `VISION_SET`, `EFFORTS_MAP`, `PROTOCOL_MAP`) | VS Code extension: derived capability tables + `docs/models.md` |
 
-The DSH repo is retired (2026-10-03) and its checkout may disappear at any time: the gate then keeps
-running with `src/constants.ts` as the only catalog and prints a `⚠️ DSH catalog` warning, skipping the two
-DSH cross-checks (`MISSING FROM DSH`, `CAPABILITY`). A missing DSH catalog is not an error and must never
-stop the daily auto-update.
+DSH was retired on 2026-10-03 and reintroduced on 2026-10-14; the plugin checkout moved to
+`~/projects/dsh-commandcode-goat-provider`. If that checkout is missing, the gate keeps running with
+`src/constants.ts` as the only catalog and prints a `⚠️ DSH catalog` warning, skipping the two DSH
+cross-checks (`MISSING FROM DSH`, `CAPABILITY`) — so check the gate's `DSH catalog:` line, since a wrong
+path silently turns the DSH side off.
 
 `GET https://api.commandcode.ai/provider/v1/models` (public, no auth) is the discovery source, but it
 returns **only** `id` / `name` / `context_length`. Capabilities, protocol and pricing are not served
@@ -35,8 +35,7 @@ Sections worth acting on:
 - **REMOVED** — in the extension catalog but no longer served by the API → drop it from the static catalog
   (do not keep dead ids; `minimax/minimax-m2.7-free` and `minimax/minimax-m3-free` were removed this way).
 - **CAPABILITY** — the extension's `VISION_SET` / `EFFORTS_MAP` / `PROTOCOL_MAP` disagree with the DSH
-  `CATALOG` for the same id. The two repositories are separate on purpose (different hosts, different
-  consumers), so the capability data is copied rather than imported; this section is the machine check that
+  `CATALOG` for the same id. The two repositories are separate on purpose (different consumers), so the capability data is copied rather than imported; this section is the machine check that
   keeps the copy honest. It compares `modalities`/`efforts`/`protocol` against vision/efforts/protocol and
   must stay empty. (Skipped while the DSH catalog is missing.)
 - **EFFORTS MISMATCH** — the DSH `CATALOG` ladder disagrees with a recorded decision or with an explicit
@@ -115,27 +114,28 @@ Keep vendor-id quirks in mind: ids containing `:` are sent verbatim
 ## 3. Update the DSH plugin first
 
 ```bash
-cd ~/projects/commandcode-goat-dsh-provider
+cd ~/projects/dsh-commandcode-goat-provider
 # edit src/catalog/data.ts (single source of truth; derived maps compute from it)
 bun run test && bun run build          # the gate that must be green
 bun run typecheck                      # optional: known pre-existing ToolCallId errors (unrelated to catalogs)
 ```
 
 The **DSH repo's** CI (`.github/workflows/ci.yml` — a different file from this extension repo's, see
-section 4) runs install → OSV scan → lint → test → build on every push/PR and pins **bun 1.4.0**: that
+section 4) runs install → lint → test → build → OSV scan on every push/PR and pins **bun 1.4.0**: that
 checkout's `bun.lock` was created as `lockfileVersion: 2`, which bun 1.3.x cannot parse, so a lockfile
 rewritten by an older bun breaks the build with `Unknown lockfile version` before any test runs.
 
 Bump `version` in `package.json` (patch) and commit, e.g.
 `feat(catalog): add <id> (Command Code)`. Push to `main`.
-The DSH profile loads this checkout through a symlink
-(`~/.dsh/profiles/node_modules/dsh-commandcode-goat-provider`), so `bun run build` is the deploy step —
+This repo has no CHANGELOG and no tags; the catalog commit is the record.
+The DSH `web` profile loads this checkout through a symlink
+(`~/.dsh/profiles/web/node_modules/dsh-commandcode-goat-provider`), so `bun run build` is the deploy step —
 a `dsh web` restart picks it up; no npm publish exists for this package.
 The restart always goes through the supervisor, never through a hand-started process:
-`scripts/restart-dsh-web.sh` runs `sudo -n systemctl restart dsh-web.service` on homepi and
+`scripts/restart-dsh-web.sh` runs `systemctl --user restart dsh-web.service` on homepi and
 `launchctl kickstart -k gui/$UID/com.dsh.web` on the Mac. One `bun run build` deploys both hosts because
 `~/projects` is Mutagen-synced (`/Users/hidenobunagai/projects` ↔ `pi@homepi:/home/pi/projects`); only the
-restart differs per host, and the Mac side is covered by the launchd job `com.dsh.plugin-watch`.
+restart differs per host. The daily wrapper restarts both (the Mac over `ssh mac`).
 
 ## 4. Then the VS Code extension
 
@@ -185,41 +185,30 @@ from step 4. Never leave a broken build pushed without reporting it.
 
 ## 6. Automated daily run
 
-`daily-model-watch.timer` (systemd user unit) runs `scripts/daily-model-watch.sh` daily:
+On homepi, `daily-provider-publish.timer` (systemd user unit, `~/bin/daily-provider-publish.sh`) runs
+`scripts/daily-model-watch.sh` daily, before the Pi-derived providers. The old `daily-model-watch.timer`
+stays disabled.
 
 1. `check-live-models.ts` gates for free; with no drift the run ends in seconds and no LLM quota is spent.
-2. On drift, a DSH headless agent session is started with this playbook as its prompt
-   (`dsh --profile headless`), which performs sections 2–5 autonomously. Headless has no
-   usage-failover, so the wrapper asks `~/bin/dsh-headless-route` for a `--patch` overlay first: when Go is
-   over 80% of a quota window and goat has room, the run boots on the goat provider instead. The decision is
-   written to both the transcript and the service log (`logs/daily-model-watch.service.log`, one
-   `model route:` line), so the daily outcome can be traced without opening the transcript.
+2. On drift, an agy headless run (`agy -p`) is started with this playbook as its prompt and performs
+   sections 2–5 autonomously for both repositories.
 3. When that run exits 0, the wrapper restarts `dsh web` through the supervisor
-   (`scripts/restart-dsh-web.sh --wait 600`) so homepi serves the rebuilt plugin. The script no-ops when the
-   running server is already newer than `lib/`, and defers while a session was written within the last 120s
-   (the agent's own session log stays busy until the run ends, which is what `--wait` is for). The agent
-   itself must not restart the server.
-4. Logs: `logs/daily-model-watch.service.log` is the **canonical** service log. The unit
-   (`~/.config/systemd/user/daily-model-watch.service`, not versioned in this repo) sends stdout/stderr
-   straight to it with `StandardOutput=append:` / `StandardError=append:` rather than to journald, so
-   `journalctl --user -u daily-model-watch.service` holds only systemd's `Starting`/`Finished` lines —
-   read the file (or `tail -f` it) for the gate output, the `model route:` line and the agent status.
-   The file is not rotated; a normal run appends a handful of lines. The full agent transcript is
-   `logs/daily-model-watch.log` (gitignored) plus the persisted DSH session, viewable in the Web GUI.
-
-The Mac is not part of the daily run: `~/projects` reaches it by Mutagen, and its launchd job
-`com.dsh.plugin-watch` (`~/Library/LaunchAgents/com.dsh.plugin-watch.plist`) restarts the Mac server on
-`lib/` changes, with a 10-minute interval as a fallback. Both hosts run the same `restart-dsh-web.sh`.
+   (`scripts/restart-dsh-web.sh --wait 600`) on homepi, then on the Mac over `ssh mac`. The script no-ops
+   when the running server is already newer than `lib/`, and defers while a DSH session was written within
+   the last 120s. The agent itself must not restart the server.
+4. Logs: the wrapper's output (gate report and agent status) is appended to
+   `~/.agents/logs/daily-provider-publish.log`. The full agent transcript is `logs/daily-model-watch.log`
+   (gitignored). `logs/daily-model-watch.service.log` belongs to the disabled timer and is no longer written.
 
 ```bash
-systemctl --user list-timers daily-model-watch.timer
-systemctl --user start daily-model-watch.service     # manual run
-scripts/daily-model-watch.sh --dry-run --force       # show the agent prompt without running it
+systemctl --user list-timers daily-provider-publish.timer
+systemctl --user start daily-provider-publish.service  # manual run (all providers)
+scripts/daily-model-watch.sh --dry-run --force         # show the agent prompt without running it
 ```
 
 Related: the gate runs only by hand (`bun run check:models`) and in the daily watch above
 (`scripts/daily-model-watch.sh`). No workflow runs it: `ci.yml` and `publish.yml` call `package:vsix`,
 which is `check-changelog && compile && vsce package` with no `check:models` step.
 There is deliberately **no** scheduled CI-side drift job: the comparison needs the sibling DSH checkout,
-which only exists on homepi, and the timer above already covers it (`Persistent=true` catches up after a
+which CI does not have, and the timer above already covers it (`Persistent=true` catches up after a
 host that was off at the scheduled time).
