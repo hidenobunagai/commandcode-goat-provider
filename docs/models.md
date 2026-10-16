@@ -97,7 +97,6 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `google/gemini-3.6-flash` | Gemini 3.6 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
 | `sakana/fugu-ultra` | Fugu Ultra | 1M | 65,536 | OpenAI | high, xhigh, max | Yes |
 | `meituan/LongCat-2.0` | LongCat 2.0 | 1,000,000 | 131,072 | OpenAI | - | ✗ |
-| `inclusionai/ling-3.0-flash-sante:free` | Ling 3.0 Flash Sante | 262,144 | 65,536 | OpenAI | - | No |
 | `claude-haiku-5-5` | Claude Haiku 5.5 | 1,000,000 | 65,536 | Anthropic | ✓ (`low,medium,high,xhigh,max`) | ✓ |
 | `stealth/glyph-cluster:free` | Glyph Cluster | 256,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✗ |
 | `mistral/mistral-large-4` | Mistral Large 4 | 524,288 | 131,072 | OpenAI | ✓ (`high`) | ✓ |
@@ -107,3 +106,4 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `nvidia/nemotron-3.5-super-vl` | Nemotron 3.5 Super VL | 262,144 | 131,072 | OpenAI | ✓ (`low,medium,high`) | ✓ |
 | `stealth/cat-jam:free` | Cat Jam | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✗ |
 | `meta/muse-spark-open` | Muse Spark Open | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✓ |
+| `reflection/beam:free` | Beam 1.0 | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✗ |

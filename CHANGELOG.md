@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.1.35] - 2026-10-16
+
+### Added
+
+- **`reflection/beam:free` added to catalog** — Reflection AI's open-weight sparse MoE reasoning model (501B total, 23B active) in free capacity preview:
+  - `reflection/beam:free` ("Beam 1.0", 1,048,576 ctx, 131,072 max output, free preview tier $0/$0, openai protocol, text-only, `low,medium,high,xhigh,max` efforts — commandcode.ai Reasons badge on; live probe confirmed default reasoning with 343 tokens, `off` rejected 400).
+
+### Removed
+
+- **`inclusionai/ling-3.0-flash-sante:free` retired** — no longer served by the live API (superseded by `inclusionai/ling-3.1-flash`).
+
 ## [0.1.34] - 2026-10-15
 
 ### Added

@@ -403,8 +403,19 @@
   },
   "inclusionai/ling-3.0-flash-sante:free": {
     "efforts": [],
-    "source": "Kept catalog empty (no efforts). commandcode.ai/models/ling-3-0-flash-sante-free: NO Reasons badge (Text only), free tier — same badge state as ling-3.1-flash; probe shows reasoning tokens by default (115/62) with off rejected, but the badge is the curated capability source and Ling publishes no effort ladder. Same rule as ling-3.1-flash:free. Revisit if the badge gains a Reasons icon.",
-    "decided": "2026-10-02"
+    "source": "Catalog row REMOVED 2026-10-16. Live API no longer serves inclusionai/ling-3.0-flash-sante:free (93 models, ling-3.0-flash-sante absent). Dead ids are dropped per playbook section 1 (REMOVED). The 2026-10-02 evidence is preserved in git history.",
+    "decided": "2026-10-16"
+  },
+  "reflection/beam:free": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "Reflection AI & OpenRouter (openrouter.ai/models/reflection/beam-1.0-501b-a23b: reasoning.mandatory: true, supported_efforts: low, medium, high, xhigh, max); commandcode.ai/models/beam-free: Reasons badge on, Text input/output only (no image badge), free tier preview ($0, 1.05M ctx); probe 2026-10-16: thinks by default (reasoning=343), off rejected 400, rungs low..max all 200; protocol openai",
+    "decided": "2026-10-16"
   },
   "poolside/laguna-s-2.1-free": {
     "efforts": [],

@@ -171,7 +171,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["MiniMaxAI/MiniMax-M2.7", "MiniMax M2.7", 200000],
   ["deepseek/deepseek-v4-flash-vision-exp", "DeepSeek V4 Flash Vision (exp)", 1000000],
   ["poolside/laguna-s-2.1-free", "Laguna S 2.1", 256000],
-  ["inclusionai/ling-3.0-flash-sante:free", "Ling 3.0 Flash Sante", 262144],
+  ["reflection/beam:free", "Beam 1.0", 1048576],
   ["claude-haiku-5-5", "Claude Haiku 5.5", 1000000],
   ["stealth/glyph-cluster:free", "Glyph Cluster", 256000],
   ["stealth/cat-jam:free", "Cat Jam", 1048576],
@@ -374,6 +374,7 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["nvidia/nemotron-3.5-super-vl", ["low", "medium", "high"]],
   ["stealth/cat-jam:free", ["low", "medium", "high", "xhigh", "max"]],
   ["meta/muse-spark-open", ["low", "medium", "high", "xhigh"]],
+  ["reflection/beam:free", ["low", "medium", "high", "xhigh", "max"]],
 ]);
 const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["gpt-5.6-luna", "openai"],
@@ -460,7 +461,7 @@ const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["sakana/fugu-ultra", "openai"],
   ["meituan/LongCat-2.0", "openai"],
   ["inclusionai/ling-3.1-flash", "openai"],
-  ["inclusionai/ling-3.0-flash-sante:free", "openai"],
+  ["reflection/beam:free", "openai"],
   ["claude-haiku-5-5", "anthropic"],
   ["stealth/glyph-cluster:free", "openai"],
   ["mistral/mistral-large-4", "openai"],
