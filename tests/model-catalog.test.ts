@@ -84,7 +84,7 @@ test("includes the 2026-10-02 new models with curated capabilities", () => {
   // DeepSeek V4.1 Flash Fast: vendor low/high/max ladder, vision on.
   const fast = inferModelInfo({
     id: "deepseek/deepseek-v4.1-flash-fast",
-    name: "DeepSeek V4.1 Flash Fast",
+    name: "DeepSeek V4.1 Flash Fast (latest)",
     context_length: 1_000_000,
   });
   expect(fast.supportsVision).toBe(true);

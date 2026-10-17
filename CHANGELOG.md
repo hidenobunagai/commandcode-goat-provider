@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.36] - 2026-10-17
+
+### Changed
+
+- **`deepseek/deepseek-v4.1-flash-fast` display name updated** — aligned with upstream live API name: `"DeepSeek V4.1 Flash Fast"` → `"DeepSeek V4.1 Flash Fast (latest)"`.
+
 ## [0.1.35] - 2026-10-16
 
 ### Added

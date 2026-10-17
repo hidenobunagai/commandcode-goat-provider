@@ -121,7 +121,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["deepseek/deepseek-v4-flash", "DeepSeek V4 Flash (latest)", 1000000],
   ["deepseek/deepseek-v4-flash-fast", "DeepSeek V4 Flash Fast", 1000000],
   ["deepseek/deepseek-v4.1-flash", "DeepSeek V4.1 Flash", 1000000],
-  ["deepseek/deepseek-v4.1-flash-fast", "DeepSeek V4.1 Flash Fast", 1000000],
+  ["deepseek/deepseek-v4.1-flash-fast", "DeepSeek V4.1 Flash Fast (latest)", 1000000],
   ["inclusionai/ling-3.1-flash", "Ling 3.1 Flash", 262144],
   ["moonshotai/Kimi-K3", "Kimi K3", 1000000],
   ["moonshotai/Kimi-K2.7-Code", "Kimi K2.7 Code", 256000],
