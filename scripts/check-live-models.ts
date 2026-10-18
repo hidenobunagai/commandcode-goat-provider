@@ -38,8 +38,22 @@ import {
   loadPiData,
   type EffortDiff,
 } from "./effort-evidence";
+import {
+  diffPrice,
+  findPublished,
+  formatPriceRange,
+  parseDshCatalogPrices,
+  parsePublishedPrices,
+  type PagePrice,
+  type PriceDiff,
+} from "./price-list";
 
 const API_URL = "https://api.commandcode.ai/provider/v1/models";
+/**
+ * The marketing site's model table is the only published pricing anywhere: the provider
+ * API carries none. Read from here so a price change is caught like any other drift.
+ */
+const PRICES_URL = "https://commandcode.ai/models";
 const DEFAULT_DSH_REPO = path.join(
   process.env.HOME ?? "/home/pi",
   "projects/dsh-commandcode-goat-provider",
@@ -69,6 +83,10 @@ interface Report {
   effortMismatched: EffortDiff[];
   effortUnverified: EffortDiff[];
   effortError?: string;
+  priceMismatched: PriceDiff[];
+  /** Models the catalogs carry that the price page does not list (no comparison possible). */
+  priceUnlisted: string[];
+  priceError?: string;
   drift: boolean;
 }
 
@@ -99,6 +117,12 @@ async function fetchLiveModels(): Promise<ApiModel[]> {
   return body.data as ApiModel[];
 }
 
+async function fetchPublishedPrices(): Promise<Map<string, PagePrice>> {
+  const res = await fetch(PRICES_URL, { signal: AbortSignal.timeout(30_000) });
+  if (!res.ok) throw new Error(`HTTP ${res.status} from ${PRICES_URL}`);
+  return parsePublishedPrices(await res.text());
+}
+
 function gitVersion(repo: string): string | undefined {
   try {
     const pkg = JSON.parse(fs.readFileSync(path.join(repo, "package.json"), "utf8")) as {
@@ -127,6 +151,14 @@ function writeText(report: Report): void {
   );
 
   if (report.effortError) console.log(`⚠️  effort check skipped: ${report.effortError}`);
+  if (report.priceError) console.log(`⚠️  price check skipped: ${report.priceError}`);
+  if (report.priceUnlisted.length > 0) {
+    // Not drift on its own, but a reader must see it: a page that stopped listing rows
+    // it lists today would otherwise shrink the price check to nothing, silently.
+    console.log(
+      `⚠️  ${report.priceUnlisted.length} catalog model(s) have no published price to compare`,
+    );
+  }
   if (!report.drift) {
     console.log("✅ no catalog drift");
     return;
@@ -179,6 +211,19 @@ function writeText(report: Report): void {
     report.effortUnverified,
     effortLine,
   );
+  section(
+    "PRICE — published price differs from the DSH CATALOG",
+    report.priceMismatched,
+    (m) =>
+      `${m.id}  ${m.side} ${m.catalog} → ${m.published} (matched by ${m.matchedBy})${m.changed.length > 0 ? `  [${m.changed.join("; ")}]` : ""}`,
+  );
+  if (report.priceUnlisted.length > 0) {
+    console.log(
+      `\nNOT ON THE PRICE PAGE (${report.priceUnlisted.length}) — no published figure to compare`,
+    );
+    for (const id of report.priceUnlisted) console.log(`  - ${id}`);
+  }
+  if (report.priceError) console.log(`\n⚠️  price check skipped: ${report.priceError}`);
 
   console.log(`\n${line}`);
   console.log("Next: follow docs/model-sync.md to update the catalog and publish.");
@@ -202,6 +247,8 @@ const report: Report = {
   capabilityModels: [],
   effortMismatched: [],
   effortUnverified: [],
+  priceMismatched: [],
+  priceUnlisted: [],
   drift: false,
 };
 
@@ -254,6 +301,38 @@ if (piDataDir) {
 }
 Object.assign(report, compare(live, vscode, dsh, { crossCheckDsh: Boolean(dshSource) }));
 report.capabilityModels = capabilities.filter((m) => !report.newModels.some((n) => n.id === m.id));
+
+// Prices live only in the DSH CATALOG: the extension ships no pricing table, so a price
+// drift is a DSH-only repair. An unreachable price page must not hide the rest of the gate,
+// so it degrades to a warning the way the Pi-data and effort sections do.
+if (dshSource) {
+  const dshPrices = parseOrDie(DSH_FILE, () => parseDshCatalogPrices(dshSource));
+  try {
+    const published = await fetchPublishedPrices();
+    for (const [id, catalog] of dshPrices) {
+      const entry = dsh.get(id);
+      const hit = findPublished(published, id, entry?.name ?? id);
+      if (!hit) {
+        report.priceUnlisted.push(id);
+        continue;
+      }
+      const changed = diffPrice(catalog, hit.price);
+      if (changed.length > 0) {
+        report.priceMismatched.push({
+          id,
+          side: "DSH",
+          matchedBy: hit.matchedBy,
+          catalog: formatPriceRange(catalog.input, catalog.output),
+          published: formatPriceRange(hit.price.input, hit.price.output),
+          changed,
+        });
+      }
+    }
+  } catch (error) {
+    report.priceError = error instanceof Error ? error.message : String(error);
+  }
+}
+
 report.drift =
   report.newModels.length > 0 ||
   report.changedModels.length > 0 ||
@@ -261,7 +340,8 @@ report.drift =
   report.removedModels.length > 0 ||
   report.capabilityModels.length > 0 ||
   report.effortMismatched.length > 0 ||
-  report.effortUnverified.length > 0;
+  report.effortUnverified.length > 0 ||
+  report.priceMismatched.length > 0;
 
 if (JSON_OUT) console.log(JSON.stringify(report, null, 2));
 else writeText(report);

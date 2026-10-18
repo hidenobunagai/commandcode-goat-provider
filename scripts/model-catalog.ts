@@ -86,8 +86,11 @@ export function parseVsceCatalog(source: string): Map<string, ModelEntry> {
  * that ended early (an unrecognised close followed by a row-shaped one-liner used to read
  * that helper straight into the catalog). Anything else throws, the way a missing
  * declaration does.
+ *
+ * Exported so the price reader walks the same literal with the same guards instead of
+ * carrying a second copy that could disagree about where the catalog ends.
  */
-function dshCatalogBlock(source: string): string {
+export function dshCatalogBlock(source: string): string {
   const start = source.indexOf("export const CATALOG");
   if (start < 0) throw new Error("cannot locate CATALOG");
   const rest = source.slice(start);

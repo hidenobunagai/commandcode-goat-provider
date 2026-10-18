@@ -43,14 +43,41 @@ Sections worth acting on:
   decision that says why. See "Thinking efforts" below.
 - **EFFORTS UNVERIFIED** — no recorded decision and no explicit pi-ai map → research the model and record a
   decision. This is how every row ends up backed by evidence; once recorded, the row stops being reported.
+- **PRICE** — the price `commandcode.ai/models` publishes for a model disagrees with the DSH `CATALOG`
+  (`inputPrice` / `outputPrice` / `discount`). Only DSH carries prices, so this is a DSH-only repair; the
+  extension needs no change. An unpriced row reads `? → $0.20`, which is the gap to fill rather than a
+  mismatch. See "Prices" below.
+- **NOT ON THE PRICE PAGE** — a warning, not drift: the catalogs list a model the price table does not, so
+  there is no published figure to compare. Expected for a model that was just removed from the API. A sudden
+  jump in this count means the page was reshaped and the price check has gone quiet — investigate before
+  trusting a clean run.
 
 Both EFFORTS sections can no longer cross-check the ladders against DSH while its checkout is missing,
 but they keep running against the extension's own `EFFORTS_MAP` — so new reasoning models still surface as
-UNVERIFIED until a research decision is recorded. `MISSING FROM DSH` and `CAPABILITY` are the two sections
-that disappear with the checkout.
+UNVERIFIED until a research decision is recorded. `MISSING FROM DSH`, `CAPABILITY` and `PRICE` are the three
+sections that disappear with the checkout.
 
-A clean run across all five sections is the expected steady state: two independent repositories consuming one
+A clean run across all six sections is the expected steady state: two independent repositories consuming one
 live API, with no drift between them.
+
+### Prices
+
+The provider API publishes no pricing, so the marketing site's model table (`https://commandcode.ai/models`)
+is the only machine-readable source. The gate scrapes that one table — it keys on the `Input` / `Output`
+column headers, so a renamed or added column fails the gate instead of shifting a positional read.
+
+Three things about that table have already caused misreads and are handled by `scripts/price-list.ts`:
+
+- **A struck-through figure is the pre-discount original.** The row reads `<s>$0.60</s>$0.30`; the price to
+  record is `0.30`. Reading the first number would rewrite the catalog to a rate the model no longer costs.
+- **A trailing `+N` is not part of the number.** It counts context price bands (`$0.20+1` is `$0.20`).
+- **Time-of-day models show the off-peak rate** (`Off-peak shown (17h/day) · peak $0.30 / $1.20`). Record the
+  displayed off-peak figure, which is what the catalog already holds for those rows.
+
+A `discount` is written from the deal badge as `-N%` (`50% off` → `-50%`). When a badge disappears the price
+usually returns to its list rate, so delete the `discount` field in the same edit — the gate reports a
+discount change on its own for exactly that case. Never invent a price: a model the page does not list stays
+as it is, and shows up under NOT ON THE PRICE PAGE.
 
 ## 2. Curate a new model
 
@@ -64,7 +91,7 @@ when the listing is ambiguous:
 | `efforts` (Thinking) | See "Thinking efforts" below — never leave a reasoning model without a researched ladder |
 | `maxTokens` | Family default used in `staticInfo` (Claude/Qwen/Kimi/Gemini → 65536, others → 131072) unless known otherwise |
 | `name` / `contextWindow` | Authoritative value from the API response |
-| pricing / tier / intelligence | DSH `CATALOG` only; skip when not published — never invent numbers |
+| pricing / tier / intelligence | DSH `CATALOG` only; skip when not published — never invent numbers. Copy the price from the model table per "Prices" above (effective figure, off-peak when the row says so) |
 
 If a capability cannot be confirmed, leave it out (text-only, no reasoning UI) and state the limitation in
 the final report and commit message. Shipping a wrong capability flag is worse than shipping none.
@@ -117,8 +144,12 @@ Keep vendor-id quirks in mind: ids containing `:` are sent verbatim
 cd ~/projects/dsh-commandcode-goat-provider
 # edit src/catalog/data.ts (single source of truth; derived maps compute from it)
 bun run test && bun run build          # the gate that must be green
-bun run typecheck                      # optional: known pre-existing ToolCallId errors (unrelated to catalogs)
+bun run check                          # typecheck + lint + test in one pass
 ```
+
+A **price-only** change (PRICE reported, nothing else) stops here: the extension ships no pricing table, so
+there is nothing to publish and no Marketplace release is warranted. Commit the DSH catalog and let the
+wrapper's restart pick it up. Steps 4–5 apply when a model, capability or effort changed.
 
 The **DSH repo's** CI (`.github/workflows/ci.yml` — a different file from this extension repo's, see
 section 4) runs install → lint → test → build → OSV scan on every push/PR and pins **bun 1.4.0**: that
@@ -190,6 +221,9 @@ On homepi, `daily-provider-publish.timer` (systemd user unit, `~/bin/daily-provi
 stays disabled.
 
 1. `check-live-models.ts` gates for free; with no drift the run ends in seconds and no LLM quota is spent.
+   It makes two requests: the provider API and the published price table. A dead API exits 1 (a timer-side
+   error); a price page that cannot be read only skips the PRICE section with a warning, so the rest of the
+   gate still runs.
 2. On drift, an agy headless run (`agy -p`) is started with this playbook as its prompt and performs
    sections 2–5 autonomously for both repositories.
 3. When that run exits 0, the wrapper restarts `dsh web` through the supervisor

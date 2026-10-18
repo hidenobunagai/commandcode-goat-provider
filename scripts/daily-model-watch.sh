@@ -113,12 +113,19 @@ $REPORT
    thinking effort は手順書の「Thinking efforts」に従う。EFFORTS MISMATCH / UNVERIFIED の行と新しい reasoning モデルは、
    開発元の API ドキュメントを調べ、scripts/probe-efforts.ts で既定の思考の有無と off 可否を確かめてから
    docs/effort-decisions.json に根拠つきで記録し、DSH CATALOG と EFFORTS_MAP に反映する。
-   最後に bun run check:models を再実行し、EFFORTS の2セクションと MISSING FROM DSH / CAPABILITY が空になったことを確認する。
+   PRICE の行（公開価格が DSH CATALOG と違う）は、DSH CATALOG の inputPrice / outputPrice / discount を
+   公開価格に合わせて直す。価格を持つのは DSH 側だけなので、VS Code 拡張には手を入れない。
+   表の価格は割引後の実効価格（取り消し線の旧価格ではない）。オフピーク表記のある行はオフピーク料金を採る。
+   discount は表の「N% off」バッジを -N% の形で書き、バッジが消えていれば discount を削除する。
+   価格を推測で埋めないこと。公開ページに無いモデルはそのままにする（NOT ON THE PRICE PAGE として報告される）。
+   最後に bun run check:models を再実行し、EFFORTS の2セクションと PRICE / MISSING FROM DSH / CAPABILITY が空になったことを確認する。
 3. 各リポジトリで test / lint / build（VS Code 拡張は compile）を実行し、通ってから version bump・CHANGELOG 更新・commit・push・tag push。
    jj で管理された repo（.jj がある）では commit・push を jj で行う: jj commit <paths> -m "..." → jj bookmark set main -r @- → jj git push -b main。
    タグは git tag vX.Y.Z と git push origin vX.Y.Z で作る（publish.yml はタグで起動し、jj はタグを push できないため、これだけ git を使う）。git add -A は使わない。
    CHANGELOG にはカタログ更新の要点を書く（DSH プラグインには CHANGELOG もタグも無い。version の patch bump と commit・push だけ）。
    DSH プラグインは bun run build までで完了（deploy）。dsh web の再起動はこのラッパーが行うので自分で再起動しないこと。
+   ただし差分が PRICE だけのときは DSH プラグインの修正で完結する。VS Code 拡張は価格を持たないので、
+   拡張側の version bump・CHANGELOG・タグ push・Marketplace 公開（手順 4・5）は行わないこと。
 4. VS Code 拡張の tag push で起動する GitHub Actions（Publish / CI）の結果を gh で確認し、成功を確認してから完了とする。
    失敗したら原因を直して再実行するところまでやる。
 5. 最後に、何をどう判断して何を公開したのか（または公開しなかったのか）を日本語で簡潔に報告。
