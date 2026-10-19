@@ -1,4 +1,26 @@
 {
+  "minimax/minimax-m3.1-flash": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "MiniMax API docs (minimax.io): reasoning_effort tunable across low, medium, high, xhigh, max; commandcode.ai/models/minimax-m3-1-flash: Reasons before answering + Image input badges on, Go tier; probe 2026-10-20: thinks by default (reasoning=141), off rejected 400 ('does not support reasoning_effort off'), all 5 rungs accepted 200.",
+    "decided": "2026-10-20"
+  },
+  "minimax/minimax-m3.1-flash:free": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "MiniMax API docs (minimax.io): reasoning_effort tunable across low, medium, high, xhigh, max; commandcode.ai/models/minimax-m3-1-flash-free: Reasons before answering + Image input badges on, Free tier; probe 2026-10-20: thinks by default (reasoning=143), off rejected 400 ('does not support reasoning_effort off'), all 5 rungs accepted 200.",
+    "decided": "2026-10-20"
+  },
   "xiaomi/mimo-v2.6-flash": {
     "efforts": [
       "low",

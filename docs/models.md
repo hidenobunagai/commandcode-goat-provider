@@ -26,7 +26,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `deepseek/deepseek-v4-pro` | DeepSeek V4 Pro (latest) | 1,000,000 | 384,000 | OpenAI | ✓ (`high,max`) | ✗ |
 | `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash (latest) | 1,000,000 | 384,000 | OpenAI | ✓ (`low,high,max`) | ✗ |
 | `deepseek/deepseek-v4-flash-fast` | DeepSeek V4 Flash Fast | 1M | 65,536 | OpenAI | high, max | No |
-| `deepseek/deepseek-v4.1-flash` | DeepSeek V4.1 Flash | 1,000,000 | 65,536 | OpenAI | ✓ (`low,high,max`) | ✓ |
+| `deepseek/deepseek-v4.1-flash` | DeepSeek V4.1 Flash (latest) | 1,000,000 | 65,536 | OpenAI | ✓ (`low,high,max`) | ✓ |
 | `deepseek/deepseek-v4.1-flash-fast` | DeepSeek V4.1 Flash Fast (latest) | 1,000,000 | 65,536 | OpenAI | ✓ (`low,high,max`) | ✓ |
 | `inclusionai/ling-3.1-flash` | Ling 3.1 Flash | 262,144 | 131,072 | OpenAI | ✓ (`low,medium,high`) | ✗ |
 | `moonshotai/Kimi-K3` | Kimi K3 | 1,048,576 | 131,072 | OpenAI | ✓ (`low,high,max`) | ✓ |
@@ -104,6 +104,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `google/gemini-4-argon` | Gemini 4 Argon | 1,000,000 | 65,536 | OpenAI | ✓ (`low,medium,high`) | ✓ |
 | `Qwen/Qwen3.8-Max-Prime` | Qwen 3.8 Max Prime | 1,000,000 | 65,536 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✓ |
 | `nvidia/nemotron-3.5-super-vl` | Nemotron 3.5 Super VL | 262,144 | 131,072 | OpenAI | ✓ (`low,medium,high`) | ✓ |
-| `stealth/cat-jam:free` | Cat Jam | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✗ |
 | `meta/muse-spark-open` | Muse Spark Open | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✓ |
 | `reflection/beam:free` | Beam 1.0 | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✗ |
+| `minimax/minimax-m3.1-flash` | MiniMax M3.1 Flash | 1,000,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
+| `minimax/minimax-m3.1-flash:free` | MiniMax M3.1 Flash | 1,000,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |

@@ -1,5 +1,21 @@
 # Change Log
 
+## [0.1.37] - 2026-10-20
+
+### Added
+
+- **`minimax/minimax-m3.1-flash` and `minimax/minimax-m3.1-flash:free` added to catalog** — MiniMax's multimodal coding model with tunable thinking depth:
+  - `minimax/minimax-m3.1-flash` ("MiniMax M3.1 Flash", 1,000,000 ctx, 131,072 max output, Go tier $0.15/$0.60, openai protocol, vision on, `low,medium,high,xhigh,max` efforts — commandcode.ai Reasons before answering + Image input badges on; live probe confirmed default reasoning with 141 tokens, `off` rejected 400).
+  - `minimax/minimax-m3.1-flash:free` ("MiniMax M3.1 Flash", 1,000,000 ctx, 131,072 max output, free preview tier $0/$0, openai protocol, vision on, `low,medium,high,xhigh,max` efforts — commandcode.ai Reasons before answering + Image input badges on; live probe confirmed default reasoning with 143 tokens, `off` rejected 400).
+
+### Changed
+
+- **`deepseek/deepseek-v4.1-flash` display name updated** — aligned with upstream live API name: `"DeepSeek V4.1 Flash"` → `"DeepSeek V4.1 Flash (latest)"`.
+
+### Removed
+
+- **`stealth/cat-jam:free` retired** — no longer served by the live API.
+
 ## [0.1.36] - 2026-10-17
 
 ### Changed

@@ -164,7 +164,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(93);
+  expect(FALLBACK_MODELS.length).toBe(94);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 
@@ -275,19 +275,6 @@ test("includes the 2026-10-15 new models with curated capabilities", () => {
   expect(vl.contextWindow).toBe(262_144);
   expect(vl.maxOutput).toBe(131_072);
 
-  // Cat Jam: openai, text-only (vision off), low..max ladder
-  const cat = inferModelInfo({
-    id: "stealth/cat-jam:free",
-    name: "Cat Jam",
-    context_length: 1_048_576,
-  });
-  expect(cat.apiFormat).toBe("openai");
-  expect(cat.supportsVision).toBe(false);
-  expect(cat.supportsThinking).toBe(true);
-  expect(cat.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
-  expect(cat.contextWindow).toBe(1_048_576);
-  expect(cat.maxOutput).toBe(131_072);
-
   // Muse Spark Open: openai, vision on, low..xhigh ladder
   const muse = inferModelInfo({
     id: "meta/muse-spark-open",
@@ -315,4 +302,32 @@ test("includes the 2026-10-16 new models with curated capabilities", () => {
   expect(beam.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
   expect(beam.contextWindow).toBe(1_048_576);
   expect(beam.maxOutput).toBe(131_072);
+});
+
+test("includes the 2026-10-20 new models with curated capabilities", () => {
+  // MiniMax M3.1 Flash: openai protocol, vision on, low..max ladder
+  const m31 = inferModelInfo({
+    id: "minimax/minimax-m3.1-flash",
+    name: "MiniMax M3.1 Flash",
+    context_length: 1_000_000,
+  });
+  expect(m31.apiFormat).toBe("openai");
+  expect(m31.supportsVision).toBe(true);
+  expect(m31.supportsThinking).toBe(true);
+  expect(m31.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
+  expect(m31.contextWindow).toBe(1_000_000);
+  expect(m31.maxOutput).toBe(131_072);
+
+  // MiniMax M3.1 Flash Free: openai protocol, vision on, low..max ladder
+  const m31Free = inferModelInfo({
+    id: "minimax/minimax-m3.1-flash:free",
+    name: "MiniMax M3.1 Flash",
+    context_length: 1_000_000,
+  });
+  expect(m31Free.apiFormat).toBe("openai");
+  expect(m31Free.supportsVision).toBe(true);
+  expect(m31Free.supportsThinking).toBe(true);
+  expect(m31Free.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
+  expect(m31Free.contextWindow).toBe(1_000_000);
+  expect(m31Free.maxOutput).toBe(131_072);
 });
