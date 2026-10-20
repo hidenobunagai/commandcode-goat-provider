@@ -8,3 +8,11 @@ reason = "Transitive dev dependency from jest/fast-glob via micromatch; no upstr
 [[IgnoredVulns]]
 id = "GHSA-hp3w-g68c-fv3c"
 reason = "Transitive dev dependency from istanbuljs/argparse via sprintf-js 1.0.3; no 1.0.x upstream fix"
+
+[[IgnoredVulns]]
+id = "GHSA-gfr2-rv44-r23c"
+reason = "Transitive dev dependency from @vscode/vsce via markdown-it 14.3.2; 14.3.3 within cooldown window"
+
+[[IgnoredVulns]]
+id = "GHSA-vfgh-jcmw-g37q"
+reason = "Transitive dev dependency from @vscode/vsce via markdown-it 14.3.2; 14.3.3 within cooldown window"
