@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.1.38] - 2026-10-21
+
+### Added
+
+- **`ornith/ornith-1.5-122b` and `ornith/ornith-1.5-122b:free` added to catalog** — Ornith AI's open-weights MoE reasoning model for fast agentic coding:
+  - `ornith/ornith-1.5-122b` ("Ornith 1.5 122B", 262,144 ctx, 131,072 max output, Go tier $0.16/$0.64, openai protocol, text-only, `low,medium,high,xhigh,max` efforts — commandcode.ai Reasons before answering badge on; live probe confirmed default reasoning with 1,097 tokens, `off` rejected 400).
+  - `ornith/ornith-1.5-122b:free` ("Ornith 1.5 122B", 262,144 ctx, 131,072 max output, free preview tier $0/$0, openai protocol, text-only, `low,medium,high,xhigh,max` efforts — commandcode.ai Reasons before answering badge on; live probe confirmed default reasoning with 1,284 tokens, `off` rejected 400).
+
 ## [0.1.37] - 2026-10-20
 
 ### Added

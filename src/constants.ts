@@ -158,6 +158,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["moonshotai/Kimi-K2.5", "Kimi K2.5", 256000],
   ["nvidia/nemotron-3-ultra-550b-a55b", "Nemotron 3 Ultra", 1000000],
   ["nvidia/nemotron-3.5-super-vl", "Nemotron 3.5 Super VL", 262144],
+  ["ornith/ornith-1.5-122b", "Ornith 1.5 122B", 262144],
   ["zai-org/GLM-5", "GLM-5", 200000],
   ["thinkingmachines/inkling", "Inkling", 256000],
   ["Qwen/Qwen3.6-Max-Preview", "Qwen 3.6 Max Preview", 200000],
@@ -173,6 +174,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["deepseek/deepseek-v4-flash-vision-exp", "DeepSeek V4 Flash Vision (exp)", 1000000],
   ["minimax/minimax-m3.1-flash:free", "MiniMax M3.1 Flash", 1000000],
   ["poolside/laguna-s-2.1-free", "Laguna S 2.1", 256000],
+  ["ornith/ornith-1.5-122b:free", "Ornith 1.5 122B", 262144],
   ["reflection/beam:free", "Beam 1.0", 1048576],
   ["claude-haiku-5-5", "Claude Haiku 5.5", 1000000],
   ["stealth/glyph-cluster:free", "Glyph Cluster", 256000],
@@ -379,6 +381,8 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["nvidia/nemotron-3.5-super-vl", ["low", "medium", "high"]],
   ["meta/muse-spark-open", ["low", "medium", "high", "xhigh"]],
   ["reflection/beam:free", ["low", "medium", "high", "xhigh", "max"]],
+  ["ornith/ornith-1.5-122b", ["low", "medium", "high", "xhigh", "max"]],
+  ["ornith/ornith-1.5-122b:free", ["low", "medium", "high", "xhigh", "max"]],
 ]);
 const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["gpt-5.6-luna", "openai"],
@@ -475,6 +479,8 @@ const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["Qwen/Qwen3.8-Max-Prime", "openai"],
   ["nvidia/nemotron-3.5-super-vl", "openai"],
   ["meta/muse-spark-open", "openai"],
+  ["ornith/ornith-1.5-122b", "openai"],
+  ["ornith/ornith-1.5-122b:free", "openai"],
 ]);
 const vision = (id: string) => VISION_SET.has(id);
 const thinking = (id: string) => EFFORTS_MAP.has(id);

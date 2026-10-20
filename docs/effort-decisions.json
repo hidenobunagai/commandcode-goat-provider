@@ -1,4 +1,26 @@
 {
+  "ornith/ornith-1.5-122b": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "Ornith AI (DeepReinforce, ornith.ai): open-weights MoE reasoning model (qwen3_5_moe style) thinking by default with <think> blocks; commandcode.ai/models/ornith-1-5-122b: Reasons before answering badge on, Text only (no image badge), Go tier ($0.16/M in, $0.64/M out, 262k ctx); probe 2026-10-21: thinks by default (reasoning=1097), off rejected 400 ('does not support reasoning_effort off'), all 5 rungs accepted 200; protocol openai.",
+    "decided": "2026-10-21"
+  },
+  "ornith/ornith-1.5-122b:free": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "Ornith AI (DeepReinforce, ornith.ai): open-weights MoE reasoning model (qwen3_5_moe style) thinking by default with <think> blocks; commandcode.ai/models/ornith-1-5-122b-free: Reasons before answering badge on, Text only (no image badge), Free tier preview ($0/M in/out, 262k ctx); probe 2026-10-21: thinks by default (reasoning=1284), off rejected 400 ('does not support reasoning_effort off'), all 5 rungs accepted 200; protocol openai.",
+    "decided": "2026-10-21"
+  },
   "minimax/minimax-m3.1-flash": {
     "efforts": [
       "low",
