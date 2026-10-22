@@ -164,7 +164,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(96);
+  expect(FALLBACK_MODELS.length).toBe(94);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 
@@ -317,19 +317,6 @@ test("includes the 2026-10-20 new models with curated capabilities", () => {
   expect(m31.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
   expect(m31.contextWindow).toBe(1_000_000);
   expect(m31.maxOutput).toBe(131_072);
-
-  // MiniMax M3.1 Flash Free: openai protocol, vision on, low..max ladder
-  const m31Free = inferModelInfo({
-    id: "minimax/minimax-m3.1-flash:free",
-    name: "MiniMax M3.1 Flash",
-    context_length: 1_000_000,
-  });
-  expect(m31Free.apiFormat).toBe("openai");
-  expect(m31Free.supportsVision).toBe(true);
-  expect(m31Free.supportsThinking).toBe(true);
-  expect(m31Free.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
-  expect(m31Free.contextWindow).toBe(1_000_000);
-  expect(m31Free.maxOutput).toBe(131_072);
 });
 
 test("includes the 2026-10-21 new models with curated capabilities", () => {
@@ -345,17 +332,4 @@ test("includes the 2026-10-21 new models with curated capabilities", () => {
   expect(ornith.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
   expect(ornith.contextWindow).toBe(262_144);
   expect(ornith.maxOutput).toBe(131_072);
-
-  // Ornith 1.5 122B Free: openai protocol, text-only (vision off), low..max ladder
-  const ornithFree = inferModelInfo({
-    id: "ornith/ornith-1.5-122b:free",
-    name: "Ornith 1.5 122B",
-    context_length: 262_144,
-  });
-  expect(ornithFree.apiFormat).toBe("openai");
-  expect(ornithFree.supportsVision).toBe(false);
-  expect(ornithFree.supportsThinking).toBe(true);
-  expect(ornithFree.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
-  expect(ornithFree.contextWindow).toBe(262_144);
-  expect(ornithFree.maxOutput).toBe(131_072);
 });

@@ -172,9 +172,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["MiniMaxAI/MiniMax-M2.5", "MiniMax M2.5", 200000],
   ["MiniMaxAI/MiniMax-M2.7", "MiniMax M2.7", 200000],
   ["deepseek/deepseek-v4-flash-vision-exp", "DeepSeek V4 Flash Vision (exp)", 1000000],
-  ["minimax/minimax-m3.1-flash:free", "MiniMax M3.1 Flash", 1000000],
   ["poolside/laguna-s-2.1-free", "Laguna S 2.1", 256000],
-  ["ornith/ornith-1.5-122b:free", "Ornith 1.5 122B", 262144],
   ["reflection/beam:free", "Beam 1.0", 1048576],
   ["claude-haiku-5-5", "Claude Haiku 5.5", 1000000],
   ["stealth/glyph-cluster:free", "Glyph Cluster", 256000],
@@ -228,7 +226,6 @@ const VISION_SET = new Set([
   "z-ai/glm-5.3-flash",
   "z-ai/glm-5.3-flashx",
   "minimax/minimax-m3.1-flash",
-  "minimax/minimax-m3.1-flash:free",
   "MiniMaxAI/MiniMax-M3",
   "xai/grok-4.5",
   "meta/muse-spark-1.3",
@@ -316,7 +313,6 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["Qwen/Qwen3.7-Max", ["low", "medium", "high"]],
   ["Qwen/Qwen3.6-Max-Preview", ["low", "medium", "high"]],
   ["minimax/minimax-m3.1-flash", ["low", "medium", "high", "xhigh", "max"]],
-  ["minimax/minimax-m3.1-flash:free", ["low", "medium", "high", "xhigh", "max"]],
   ["MiniMaxAI/MiniMax-M3", ["low", "medium", "high"]],
   ["MiniMaxAI/MiniMax-M2.5", ["low", "medium", "high"]],
   ["MiniMaxAI/MiniMax-M2.7", ["low", "medium", "high"]],
@@ -382,7 +378,6 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["meta/muse-spark-open", ["low", "medium", "high", "xhigh"]],
   ["reflection/beam:free", ["low", "medium", "high", "xhigh", "max"]],
   ["ornith/ornith-1.5-122b", ["low", "medium", "high", "xhigh", "max"]],
-  ["ornith/ornith-1.5-122b:free", ["low", "medium", "high", "xhigh", "max"]],
 ]);
 const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["gpt-5.6-luna", "openai"],
@@ -410,7 +405,6 @@ const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["z-ai/glm-5.3-flashx", "openai"],
   ["zai-org/GLM-5.3", "openai"],
   ["minimax/minimax-m3.1-flash", "openai"],
-  ["minimax/minimax-m3.1-flash:free", "openai"],
   ["MiniMaxAI/MiniMax-M3", "openai"],
   ["xai/grok-4.5", "openai"],
   ["meta/muse-spark-1.3", "openai"],
@@ -480,7 +474,6 @@ const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["nvidia/nemotron-3.5-super-vl", "openai"],
   ["meta/muse-spark-open", "openai"],
   ["ornith/ornith-1.5-122b", "openai"],
-  ["ornith/ornith-1.5-122b:free", "openai"],
 ]);
 const vision = (id: string) => VISION_SET.has(id);
 const thinking = (id: string) => EFFORTS_MAP.has(id);

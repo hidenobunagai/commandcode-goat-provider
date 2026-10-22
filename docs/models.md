@@ -107,6 +107,4 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `meta/muse-spark-open` | Muse Spark Open | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✓ |
 | `reflection/beam:free` | Beam 1.0 | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✗ |
 | `minimax/minimax-m3.1-flash` | MiniMax M3.1 Flash | 1,000,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
-| `minimax/minimax-m3.1-flash:free` | MiniMax M3.1 Flash | 1,000,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
 | `ornith/ornith-1.5-122b` | Ornith 1.5 122B | 262,144 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✗ |
-| `ornith/ornith-1.5-122b:free` | Ornith 1.5 122B | 262,144 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✗ |

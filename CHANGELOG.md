@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.39] - 2026-10-23
+
+### Removed
+
+- **`minimax/minimax-m3.1-flash:free` and `ornith/ornith-1.5-122b:free` retired** — no longer served by the live API.
+
 ## [0.1.38] - 2026-10-21
 
 ### Added
