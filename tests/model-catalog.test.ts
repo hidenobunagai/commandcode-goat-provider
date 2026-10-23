@@ -113,8 +113,15 @@ test("applies the researched 2026-10-02 effort ladders", () => {
   });
   expect(v4.supportedReasoningEfforts).toEqual(["high", "max"]);
 
-  // Kimi K3: vendor low/high/max; Kimi K2.7-Code: low/high/xhigh
+  // Kimi K3 / K3.1 Pro: vendor low/high/max; Kimi K2.7-Code: low/high/xhigh
   // (medium rejected 400 by the Moonshot route, max rejected on the base id).
+  const k31 = inferModelInfo({
+    id: "moonshotai/Kimi-K3.1-Pro",
+    name: "K",
+    context_length: 1_048_576,
+  });
+  expect(k31.supportedReasoningEfforts).toEqual(["low", "high", "max"]);
+  expect(k31.supportsVision).toBe(true);
   const k3 = inferModelInfo({ id: "moonshotai/Kimi-K3", name: "K", context_length: 1_000_000 });
   expect(k3.supportedReasoningEfforts).toEqual(["low", "high", "max"]);
   const k27 = inferModelInfo({
@@ -164,7 +171,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(94);
+  expect(FALLBACK_MODELS.length).toBe(93);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 

@@ -109,6 +109,15 @@
     "source": "Corrected high,max -> low,high,max. DeepSeek API docs (api-docs.deepseek.com/guides/thinking_mode): reasoning_effort low/high/max, gateway minimal/low->low medium/high/xhigh->high ultra/max->max; unlike V4 Flash the commandcode.ai badge set and the 2026-09-10 curation (fc5fabe, Go/GOAT reasoning+vision) treat V4.1 as the fuller ladder, and pi-ai openrouter explicit map lists low,high,max. Probe 2026-10-02: thinks by default, off accepted.",
     "decided": "2026-10-02"
   },
+  "moonshotai/Kimi-K3.1-Pro": {
+    "efforts": [
+      "low",
+      "high",
+      "max"
+    ],
+    "source": "Moonshot AI Kimi K3.1 Pro documentation & API (platform.kimi.ai): reasoning_effort supports low/high/max, default max, thinking cannot be disabled (mandatory reasoning mode); pi-ai kimi-k3/moonshotai matching ladder; commandcode.ai/models/kimi-k3-1-pro: Reasoning + Vision + Text; probe 2026-10-24: reasons by default (reasoning=324), off rejected 400 ('does not support reasoning_effort off'), low/medium/high/xhigh/max all 200.",
+    "decided": "2026-10-24"
+  },
   "moonshotai/Kimi-K3": {
     "efforts": [
       "low",

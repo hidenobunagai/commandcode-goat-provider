@@ -29,6 +29,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `deepseek/deepseek-v4.1-flash` | DeepSeek V4.1 Flash (latest) | 1,000,000 | 65,536 | OpenAI | ✓ (`low,high,max`) | ✓ |
 | `deepseek/deepseek-v4.1-flash-fast` | DeepSeek V4.1 Flash Fast (latest) | 1,000,000 | 65,536 | OpenAI | ✓ (`low,high,max`) | ✓ |
 | `inclusionai/ling-3.1-flash` | Ling 3.1 Flash | 262,144 | 131,072 | OpenAI | ✓ (`low,medium,high`) | ✗ |
+| `moonshotai/Kimi-K3.1-Pro` | Kimi K3.1 Pro | 1,048,576 | 65,536 | OpenAI | ✓ (`low,high,max`) | ✓ |
 | `moonshotai/Kimi-K3` | Kimi K3 | 1,048,576 | 131,072 | OpenAI | ✓ (`low,high,max`) | ✓ |
 | `moonshotai/Kimi-K2.7-Code` | Kimi K2.7 Code | 262,144 | 262,144 | OpenAI | ✓ (`low,high,xhigh`) | ✓ |
 | `Qwen/Qwen3.8-Max` | Qwen 3.8 Max | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |
@@ -51,10 +52,8 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `xiaomi/mimo-v2.6-pro` | MiMo V2.6 Pro | 1,048,576 | 128,000 | OpenAI | ✓ (`low,medium,high`) | ✓ |
 | `xiaomi/mimo-v2.6-pro-ultraspeed` | MiMo V2.6 Pro UltraSpeed | 1,048,576 | 128,000 | OpenAI | ✓ (`low,medium,high`) | ✓ |
 | `xiaomi/mimo-v2.6-flash` | MiMo V2.6 Flash | 1,048,576 | 128,000 | OpenAI | ✓ (`low,medium,high`) | ✓ |
-| `xiaomi/mimo-v2.5-pro` | MiMo V2.5 Pro | 1,048,576 | 128,000 | OpenAI | ✓ (`low,medium,high`) | ✗ |
 | `Qwen/Qwen3.7-Flash` | Qwen 3.7 Flash | 1M | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
 | `stepfun/Step-3.5-Flash` | Step 3.5 Flash | 262,144 | 65,536 | OpenAI | ✓ (`low,medium,high`) | No |
-| `xiaomi/mimo-v2.5` | MiMo V2.5 | 1,000,000 | 128,000 | OpenAI | ✓ (`low,medium,high`) | ✓ |
 | `tencent/hy3-paid` | Tencent Hy3 | 262,144 | 65,536 | OpenAI | ✓ (`low,high`) | No |
 | `Qwen/Qwen3.7-Plus` | Qwen 3.7 Plus | 1M | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
 | `Qwen/Qwen3.6-Plus` | Qwen 3.6 Plus | 200,000 | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |

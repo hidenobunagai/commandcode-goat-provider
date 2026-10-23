@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.1.40] - 2026-10-24
+
+### Added
+
+- **`moonshotai/Kimi-K3.1-Pro` added to catalog** — Moonshot AI's flagship reasoning and agentic model with 1M context:
+  - `moonshotai/Kimi-K3.1-Pro` ("Kimi K3.1 Pro", 1,048,576 ctx, 65,536 max output, Go tier $2.00/$10.00, openai protocol, vision on, `low,high,max` efforts with default `max` — commandcode.ai Capabilities: Text input, Vision, Reasoning; live probe confirmed default reasoning with 324 tokens, `off` rejected 400).
+
+### Removed
+
+- **`xiaomi/mimo-v2.5-pro` and `xiaomi/mimo-v2.5` retired** — no longer served by the live API.
+
 ## [0.1.39] - 2026-10-23
 
 ### Removed
