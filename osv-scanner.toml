@@ -2,17 +2,41 @@
 # https://google.github.io/osv-scanner/configuration/
 
 [[IgnoredVulns]]
-id = "GHSA-vfj7-8cjw-p6xm"
-reason = "Transitive dev dependency from jest/fast-glob via micromatch; no upstream fix available yet"
-
-[[IgnoredVulns]]
-id = "GHSA-hp3w-g68c-fv3c"
-reason = "Transitive dev dependency from istanbuljs/argparse via sprintf-js 1.0.3; no 1.0.x upstream fix"
-
-[[IgnoredVulns]]
 id = "GHSA-gfr2-rv44-r23c"
 reason = "Transitive dev dependency from @vscode/vsce via markdown-it 14.3.2; 14.3.3 within cooldown window"
 
 [[IgnoredVulns]]
 id = "GHSA-vfgh-jcmw-g37q"
 reason = "Transitive dev dependency from @vscode/vsce via markdown-it 14.3.2; 14.3.3 within cooldown window"
+
+[[IgnoredVulns]]
+id = "GHSA-xcx6-jx8p-x3h5"
+reason = "Transitive dev dependency from @vscode/vsce via @azure/identity -> @azure/msal-node 5.5.0; fix requires major 7.x bump"
+
+[[IgnoredVulns]]
+id = "GHSA-333x-w4r6-6crp"
+reason = "Transitive dev dependency from ajv via fast-uri 3.1.8; 3.1.9 within cooldown window"
+
+[[IgnoredVulns]]
+id = "GHSA-w74x-v6f9-j3xg"
+reason = "Transitive dev dependency from ajv via fast-uri 3.1.8; 3.1.9 within cooldown window"
+
+[[IgnoredVulns]]
+id = "GHSA-wjr9-j795-jxcr"
+reason = "Transitive dev dependency from ajv via fast-uri 3.1.8; 3.1.9 within cooldown window"
+
+[[IgnoredVulns]]
+id = "GHSA-xhq7-xmqj-769h"
+reason = "Transitive dev dependency from ajv via fast-uri 3.1.8; 3.1.9 within cooldown window"
+
+[[IgnoredVulns]]
+id = "GHSA-4qv8-2p9j-2685"
+reason = "Transitive dev dependency from cheerio via undici 7.29.1; 7.30.1 within cooldown window"
+
+[[IgnoredVulns]]
+id = "GHSA-f72v-6w45-q472"
+reason = "Transitive dev dependency from cheerio via undici 7.29.1; 7.30.1 within cooldown window"
+
+[[IgnoredVulns]]
+id = "GHSA-xjj6-f33q-929c"
+reason = "Transitive dev dependency from cheerio via undici 7.29.1; 7.30.1 within cooldown window"
