@@ -44,9 +44,11 @@ trap 'rm -f "$REPORT_FILE"' EXIT
 
 log() { echo "[$STAMP] $*"; }
 
+# Muse reports this job's results now, so Telegram is off by default. TELEGRAM_NOTIFY=1 restores it.
+TELEGRAM_NOTIFY="${TELEGRAM_NOTIFY:-0}"
 notify() {
   local title="$1" body="$2" silent="${3:-false}"
-  if command -v notify-telegram >/dev/null 2>&1; then
+  if [ "$TELEGRAM_NOTIFY" = 1 ] && command -v notify-telegram >/dev/null 2>&1; then
     if [ "$silent" = "true" ]; then
       notify-telegram --silent "$title" "$body" || true
     else
