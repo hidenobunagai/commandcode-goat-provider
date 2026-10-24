@@ -336,7 +336,7 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["z-ai/glm-5.3-flash", ["low", "high", "max"]],
   ["z-ai/glm-5.3-flashx", ["low", "high", "max"]],
   ["zai-org/GLM-5.3", ["low", "high", "max"]],
-  ["xai/grok-4.5", ["low", "medium", "high"]],
+  ["xai/grok-4.5", ["low", "medium", "high", "xhigh"]],
   ["zai-org/GLM-5.2", ["high", "max"]],
   ["deepseek/deepseek-v4-flash-vision-exp", ["low", "high", "max"]],
   ["claude-fable-5-1", ["low", "medium", "high", "xhigh", "max"]],

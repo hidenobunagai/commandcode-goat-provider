@@ -139,6 +139,15 @@ test("applies the researched 2026-10-02 effort ladders", () => {
   });
   expect(qwen.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh"]);
 
+  // Grok 4.5: vendor low..xhigh ladder (explicit pi-ai xai:grok-4.5).
+  const grok = inferModelInfo({
+    id: "xai/grok-4.5",
+    name: "Grok 4.5",
+    context_length: 500_000,
+  });
+  expect(grok.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh"]);
+  expect(grok.supportsVision).toBe(true);
+
   // Fugu Ultra gains max; GPT-5.4 Mini gains xhigh.
   const fugu = inferModelInfo({ id: "sakana/fugu-ultra", name: "F", context_length: 1_000_000 });
   expect(fugu.supportedReasoningEfforts).toEqual(["high", "xhigh", "max"]);

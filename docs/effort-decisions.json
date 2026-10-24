@@ -1,4 +1,14 @@
 {
+  "xai/grok-4.5": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh"
+    ],
+    "source": "pi-ai xai explicit thinkingLevelMap (low, medium, high, xhigh, max: null, off: null); probe 2026-10-25: thinks by default (reasoning=508), off rejected 400 ('does not support reasoning_effort off'), all 5 rungs accepted 200.",
+    "decided": "2026-10-25"
+  },
   "ornith/ornith-1.5-122b": {
     "efforts": [
       "low",

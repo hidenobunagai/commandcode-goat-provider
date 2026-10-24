@@ -41,7 +41,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `z-ai/glm-5.3-flashx` | GLM-5.3 FlashX | 1M | 65,536 | OpenAI | low, high, max | Yes |
 | `zai-org/GLM-5.3` | GLM-5.3 | 1,000,000 | 131,072 | OpenAI | ✓ (`low,high,max`) | ✗ |
 | `MiniMaxAI/MiniMax-M3` | MiniMax M3 | 1,000,000 | 131,072 | OpenAI | ✓ (`low,medium,high`) | ✓ |
-| `xai/grok-4.5` | Grok 4.5 | 500K | 65,536 | OpenAI | low, medium, high | Yes |
+| `xai/grok-4.5` | Grok 4.5 | 500K | 65,536 | OpenAI | low, medium, high, xhigh | Yes |
 | `meta/muse-spark-1.3` | Muse Spark 1.3 | 1M | 65,536 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | Yes |
 | `meta/muse-spark-1.3-contributor` | Muse Spark 1.3 Contributor | 1,048,576 | 131,072 | Responses | ✓ (`low,medium,high,xhigh`) | ✓ |
 | `meta/muse-spark-1.2` | Muse Spark 1.2 | 1M | 65,536 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | Yes |

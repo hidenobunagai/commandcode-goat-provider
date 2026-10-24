@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.41] - 2026-10-25
+
+### Changed
+
+- **`xai/grok-4.5` reasoning effort ladder aligned with vendor documentation** — added `xhigh` effort (`low, medium, high, xhigh`) backed by explicit pi-ai ladder and vendor capability.
+
 ## [0.1.40] - 2026-10-24
 
 ### Added
