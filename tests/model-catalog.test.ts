@@ -81,6 +81,17 @@ test("includes the 2026-10-02 new models with curated capabilities", () => {
   expect(sol.supportsVision).toBe(true);
   expect(sol.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
 
+  // GPT-6.1 Terra: same five-rung ladder, probed 2026-10-28 (thinks by default,
+  // off rejected 400).
+  const terra = inferModelInfo({
+    id: "gpt-6.1-terra",
+    name: "GPT-6.1 Terra",
+    context_length: 1_050_000,
+  });
+  expect(terra.apiFormat).toBe("openai");
+  expect(terra.supportsVision).toBe(true);
+  expect(terra.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
+
   // DeepSeek V4.1 Flash Fast: vendor low/high/max ladder, vision on.
   const fast = inferModelInfo({
     id: "deepseek/deepseek-v4.1-flash-fast",
@@ -180,7 +191,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(93);
+  expect(FALLBACK_MODELS.length).toBe(94);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 

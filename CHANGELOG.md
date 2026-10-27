@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.1.42] - 2026-10-28
+
+### Added
+
+- **`gpt-6.1-terra` added to catalog** — OpenAI's fast, efficient GPT-6.1 tier for visual reasoning, computer use and writing:
+  - `gpt-6.1-terra` ("GPT-6.1 Terra", 1,050,000 ctx, Pro tier $1.00/$5.00, openai protocol, vision on, `low,medium,high,xhigh,max` efforts with default `medium` — OpenAI model docs list `none|low|medium|high|xhigh|max` (default `medium`); commandcode.ai shows Text input, Image input and Reasons badges; live probe confirmed default reasoning with 104 tokens, `off` rejected 400, every rung `low..max` 200).
+
 ## [0.1.41] - 2026-10-25
 
 ### Changed

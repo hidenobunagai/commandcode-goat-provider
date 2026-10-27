@@ -92,6 +92,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `claude-haiku-4-5-20251001` | Claude Haiku 4.5 | 200K | 65,536 | Anthropic | - | Yes |
 | `gpt-5.6-terra` | GPT-5.6 Terra | 1.05M | 65,536 | OpenAI | low, medium, high, xhigh, max | Yes |
 | `gpt-6.1-sol` | GPT-6.1 Sol | 1.05M | 131,072 | OpenAI | low, medium, high, xhigh, max | Yes |
+| `gpt-6.1-terra` | GPT-6.1 Terra | 1.05M | 131,072 | OpenAI | low, medium, high, xhigh, max | Yes |
 | `gpt-5.5` | GPT-5.5 | 400K | 65,536 | OpenAI | low, medium, high, xhigh | Yes |
 | `google/gemini-3.6-flash` | Gemini 3.6 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
 | `sakana/fugu-ultra` | Fugu Ultra | 1M | 65,536 | OpenAI | high, xhigh, max | Yes |
