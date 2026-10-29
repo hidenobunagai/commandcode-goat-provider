@@ -51,6 +51,28 @@ function chatTokenLimits(info: Pick<CommandCodeModelInfo, "contextWindow" | "max
   };
 }
 
+/**
+ * GOAT Auto as a synthetic catalog entry, so every surface lists it through the same path as
+ * real models. It has no apiFormat: it is never dispatched directly or offered as a pool member.
+ */
+const AUTO_MODEL_INFO: CommandCodeModelInfo = {
+  id: AUTO_MODEL_ID,
+  name: "GOAT Auto",
+  displayName: "GOAT Auto",
+  contextWindow: AUTO_DEFAULT_CONTEXT_WINDOW,
+  maxOutput: DEFAULT_MAX_OUTPUT_TOKENS,
+  supportsTools: true,
+  supportsVision: true,
+  supportsThinking: true,
+  supportedReasoningEfforts: ["low", "medium", "high", "xhigh", "max"],
+  isUserSelectable: true,
+};
+
+/** Catalog models plus GOAT Auto (appended once, even if the catalog already lists its id). */
+function withAutoModel(models: CommandCodeModelInfo[]): CommandCodeModelInfo[] {
+  return [...models.filter((m) => m.id !== AUTO_MODEL_ID), AUTO_MODEL_INFO];
+}
+
 /** Input budget after the context-window safety margin (the pre-check limit). */
 function effectiveInputLimit(limits: { maxInputTokens: number; maxOutputTokens: number }): number {
   const safetyMargin = getContextWindowSafetyMargin(limits.maxInputTokens + limits.maxOutputTokens);
@@ -67,7 +89,7 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
   readonly onDidCompleteResponse: Event<void> = this._onDidCompleteResponse.event;
 
   private readonly _modelMap = new Map<string, CommandCodeModelInfo>();
-  private _models: CommandCodeModelInfo[] = FALLBACK_MODELS;
+  private _models: CommandCodeModelInfo[] = withAutoModel(FALLBACK_MODELS);
   private _modelsFetched = false;
   private readonly _autoRouter = new AutoRouter((body, signal) => this.runJev(body, signal));
 
@@ -75,7 +97,7 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
     private readonly secrets: vscode.SecretStorage,
     private readonly userAgent: string,
   ) {
-    for (const m of FALLBACK_MODELS) {
+    for (const m of this._models) {
       this._modelMap.set(m.id, m);
     }
     void this.fetchModels();
@@ -98,9 +120,9 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
     try {
       const apiModels = await fetchModels(this.userAgent);
       const fetchedModels: CommandCodeModelInfo[] = apiModels.map((item) => inferModelInfo(item));
-      this._models = fetchedModels;
+      this._models = withAutoModel(fetchedModels);
       this._modelMap.clear();
-      for (const m of fetchedModels) {
+      for (const m of this._models) {
         this._modelMap.set(m.id, m);
       }
       this._modelsFetched = true;
@@ -187,7 +209,7 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
       if (!this._modelsFetched) {
         await this.fetchModels();
       }
-      const models = [...this._mapToChatInformation(this._models), this._autoChatInformation()];
+      const models = this._mapToChatInformation(this._models);
       debugLog("provideLanguageModelChatInformation", {
         silent: options.silent,
         modelCount: models.length,
@@ -195,7 +217,7 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
       return models;
     } catch (error) {
       debugLog("provideLanguageModelChatInformationError", error);
-      const models = [...this._mapToChatInformation(this._models), this._autoChatInformation()];
+      const models = this._mapToChatInformation(this._models);
       debugLog("provideLanguageModelChatInformationFallback", {
         modelCount: models.length,
       });
@@ -293,42 +315,8 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
     const poolIds = vscode.workspace
       .getConfiguration("commandcode-goat")
       .get<string[]>("auto.pool", []);
+    // resolvePool drops AUTO_MODEL_ID, so a hand-edited pool cannot make GOAT Auto route to itself.
     return resolvePool(Array.isArray(poolIds) ? poolIds : [], this._modelMap);
-  }
-
-  /** Synthetic "GOAT Auto" entry; always listed so it is discoverable even with an empty pool. */
-  private _autoChatInformation(): LanguageModelChatInformation {
-    const pool = this._autoPool();
-    const largest = pool.reduce<CommandCodeModelInfo | undefined>(
-      (best, m) => (!best || m.contextWindow > best.contextWindow ? m : best),
-      undefined,
-    );
-    const limits = chatTokenLimits(
-      largest ?? {
-        contextWindow: AUTO_DEFAULT_CONTEXT_WINDOW,
-        maxOutput: DEFAULT_MAX_OUTPUT_TOKENS,
-      },
-    );
-    const tooltip =
-      pool.length > 0
-        ? `Command Code GOAT — GOAT Auto · Routes each turn across: ${pool.map((m) => m.displayName).join(", ")}`
-        : 'Command Code GOAT — GOAT Auto · Run "Command Code GOAT: Configure GOAT Auto Pool" to choose models';
-    // isUserSelectable is a proposed-API field, as in _mapToChatInformation.
-    const info: LanguageModelChatInformation & { isUserSelectable: boolean } = {
-      id: AUTO_MODEL_ID,
-      name: "GOAT Auto",
-      detail: "Command Code GOAT",
-      tooltip,
-      family: "commandcode-goat",
-      version: "1.0.0",
-      isUserSelectable: true,
-      ...limits,
-      capabilities: {
-        toolCalling: true,
-        imageInput: pool.some((m) => m.supportsVision),
-      },
-    };
-    return info;
   }
 
   private _toRouterMessages(messages: readonly LanguageModelChatMessage[]): RouterMessage[] {
@@ -466,12 +454,15 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
       const apiFormat = effectiveModelInfo.apiFormat;
       const modelConfig = (options as unknown as Record<string, unknown>).modelConfiguration as
         Record<string, unknown> | undefined;
+      const configuredEffort =
+        typeof modelConfig?.reasoningEffort === "string"
+          ? (modelConfig.reasoningEffort as string)
+          : undefined;
+      // On GOAT Auto, an explicit Thinking Effort pick overrides the router's effort.
       const rawReasoningEffort =
-        model.id === AUTO_MODEL_ID
+        model.id === AUTO_MODEL_ID && (!configuredEffort || configuredEffort === "default")
           ? routedEffort
-          : typeof modelConfig?.reasoningEffort === "string"
-            ? (modelConfig.reasoningEffort as string)
-            : undefined;
+          : configuredEffort;
       let reasoningEffort: string | undefined =
         rawReasoningEffort === "default" ? undefined : rawReasoningEffort;
 

@@ -9,7 +9,7 @@ import type { CommandCodeModelInfo } from "./types";
 
 export const AUTO_MODEL_ID = "commandcode-goat/auto";
 
-/** Context window assumed for the GOAT Auto picker entry while the pool is empty. */
+/** Context window advertised by the GOAT Auto catalog entry. */
 export const AUTO_DEFAULT_CONTEXT_WINDOW = 200000;
 
 /** Effort levels Jev may return, lowest first. Per-model clamping happens in the provider. */
