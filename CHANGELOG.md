@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.1.43] - 2026-10-29
+
+### Added
+
+- **GOAT Auto — per-turn model and reasoning-effort routing** — a new virtual model `commandcode-goat/auto` ("GOAT Auto") that picks the best model and reasoning effort for each turn from a pool you choose:
+  - Pick the pool with the "Command Code GOAT: Configure GOAT Auto Pool" command or the `commandcode-goat.auto.pool` setting.
+  - Each turn is judged by Jev (`typesafe/jev-1.14.0`, served by the Command Code API with the same API key) and routed to a pool model with a suitable effort (`low`–`max`); if Jev is unavailable, a built-in heuristic decides instead. Tool round-trips within a turn reuse that turn's decision, prompts containing images only route to vision-capable pool models, and oversized inputs escalate to the largest-context pool model.
+  - Setting the model's Thinking Effort to anything other than Default overrides the routed effort.
+  - Every GOAT Auto reply starts with a short note naming the model and effort that actually served the turn (for example `GOAT Auto → MiMo V2.6 Pro（effort: high · Jev）`).
+  - Opt-in only: when GOAT Auto is not selected, every model behaves exactly as before.
+
 ## [0.1.42] - 2026-10-28
 
 ### Added
