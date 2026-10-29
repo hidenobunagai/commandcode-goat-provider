@@ -56,11 +56,6 @@
           },
           "default": [],
           "markdownDescription": "Command Code model ids that **GOAT Auto** may route between. GOAT Auto picks one model and reasoning effort per user turn from this pool. Use **Command Code GOAT: Configure GOAT Auto Pool** to choose from the model list."
-        },
-        "commandcode-goat.auto.judgeModel": {
-          "type": "string",
-          "default": "",
-          "markdownDescription": "OpenAI-format model id GOAT Auto uses to judge which pool model fits a turn. Leave empty to pick automatically (a pool model whose id contains `flash`, else the first OpenAI-format pool model; with none, a keyword heuristic decides)."
         }
       }
     },

@@ -1,4 +1,10 @@
-import { fetchModels, fetchWithRetry, streamChatCompletion, throwApiError } from "../src/api";
+import {
+  fetchModels,
+  fetchWithRetry,
+  requestSystemOne,
+  streamChatCompletion,
+  throwApiError,
+} from "../src/api";
 import { BASE_URL } from "../src/constants";
 import { OcGoStreamResponse } from "../src/types";
 
@@ -557,5 +563,49 @@ describe("streamChatCompletion", () => {
       stream: true,
     });
     await expect(gen.next()).rejects.toThrow("Model not found");
+  });
+});
+
+describe("requestSystemOne", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("POSTs the body once to the systemone endpoint and returns the parsed JSON", async () => {
+    const answer = { model: "typesafe/jev-1.14.0", answers: { effort: { choice: "low" } } };
+    global.fetch = jest.fn().mockResolvedValue(new Response(JSON.stringify(answer)));
+    const signal = new AbortController().signal;
+
+    await expect(
+      requestSystemOne("secret", { model: "typesafe/jev-1.14.0" }, signal, "test-agent", true),
+    ).resolves.toEqual(answer);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(global.fetch).toHaveBeenCalledWith(
+      "https://api.commandcode.ai/provider/v1/systemone",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ model: "typesafe/jev-1.14.0" }),
+        signal,
+        headers: expect.objectContaining({
+          Authorization: "Bearer secret",
+          "Content-Type": "application/json",
+          "User-Agent": "test-agent",
+          "x-cmd-zdr": "1",
+        }),
+      }),
+    );
+  });
+
+  it("throws on a non-OK status without retrying", async () => {
+    global.fetch = jest.fn().mockResolvedValue(new Response("upstream down", { status: 503 }));
+    await expect(requestSystemOne("secret", {})).rejects.toThrow(
+      "Jev request failed (503): upstream down",
+    );
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("throws on a body that is not JSON", async () => {
+    global.fetch = jest.fn().mockResolvedValue(new Response("<html>"));
+    await expect(requestSystemOne("secret", {})).rejects.toThrow("Jev returned malformed JSON");
   });
 });

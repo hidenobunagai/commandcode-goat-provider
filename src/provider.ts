@@ -12,16 +12,15 @@ import {
   Progress,
   ProvideLanguageModelChatResponseOptions,
 } from "vscode";
-import { fetchModels, streamChatCompletion } from "./api";
+import { fetchModels, requestSystemOne } from "./api";
 import {
   AUTO_DEFAULT_CONTEXT_WINDOW,
   AUTO_MODEL_ID,
   AutoRouter,
   escalateForInput,
-  type JudgeRequest,
+  type JevRequestBody,
   resolvePool,
   type RouterMessage,
-  selectJudgeModel,
 } from "./auto-router";
 import {
   DEFAULT_MAX_OUTPUT_TOKENS,
@@ -70,7 +69,7 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
   private readonly _modelMap = new Map<string, CommandCodeModelInfo>();
   private _models: CommandCodeModelInfo[] = FALLBACK_MODELS;
   private _modelsFetched = false;
-  private readonly _autoRouter = new AutoRouter((request) => this.runJudge(request));
+  private readonly _autoRouter = new AutoRouter((body, signal) => this.runJev(body, signal));
 
   constructor(
     private readonly secrets: vscode.SecretStorage,
@@ -354,39 +353,15 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
     });
   }
 
-  /** GOAT Auto judge: one chat completion, content deltas concatenated (reasoning ignored). */
-  private async runJudge({ judgeModel, system, user, signal }: JudgeRequest): Promise<string> {
+  /** GOAT Auto judgment: one Jev call with the user's Command Code API key. */
+  private async runJev(body: JevRequestBody, signal: AbortSignal): Promise<unknown> {
     // ensureApiKey() has already stored the key (configured or entered) before routing runs.
     const apiKey = (await this.secrets.get("commandcode-goat.apiKey"))?.trim();
-    if (!apiKey) throw new Error("API key unavailable for judge");
+    if (!apiKey) throw new Error("API key unavailable for Jev");
     const enableZdr = vscode.workspace
       .getConfiguration("commandcode-goat")
       .get<boolean>("enableZdr", false);
-    const efforts = judgeModel.supportsThinking ? judgeModel.supportedReasoningEfforts : undefined;
-    const lowestEffort = efforts?.length
-      ? [...efforts].sort(
-          (a, b) => REASONING_EFFORT_ORDER.indexOf(a) - REASONING_EFFORT_ORDER.indexOf(b),
-        )[0]
-      : undefined;
-    let reply = "";
-    for await (const chunk of streamChatCompletion(
-      apiKey,
-      {
-        model: judgeModel.id,
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: user },
-        ],
-        max_tokens: 1024,
-        ...(lowestEffort ? { reasoning_effort: lowestEffort } : {}),
-      },
-      signal,
-      this.userAgent,
-      enableZdr,
-    )) {
-      reply += chunk.choices?.[0]?.delta?.content ?? "";
-    }
-    return reply;
+    return requestSystemOne(apiKey, body, signal, this.userAgent, enableZdr);
   }
 
   async provideLanguageModelChatResponse(
@@ -426,13 +401,9 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
           );
           return;
         }
-        const judgeModelId = vscode.workspace
-          .getConfiguration("commandcode-goat")
-          .get<string>("auto.judgeModel", "");
         const decision = await this._autoRouter.route({
           messages: this._toRouterMessages(messages),
           pool,
-          judgeModel: selectJudgeModel(judgeModelId, pool, this._modelMap),
           signal: abortController.signal,
         });
         const routed = pool.find((m) => m.id === decision.modelId) ?? pool[0];
@@ -445,6 +416,8 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
           model: chosen.id,
           effort: decision.effort ?? "default",
           via: decision.via,
+          ...(decision.modelVia ? { modelVia: decision.modelVia } : {}),
+          ...(decision.effortVia ? { effortVia: decision.effortVia } : {}),
           ...(chosen.id !== routed.id ? { escalatedFrom: routed.id } : {}),
           ...(decision.note ? { note: decision.note } : {}),
         });

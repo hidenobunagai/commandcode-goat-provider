@@ -194,7 +194,7 @@ export async function fetchModels(userAgent?: string): Promise<CommandCodeApiMod
   }
 }
 
-function buildChatCompletionHeaders(
+export function buildChatCompletionHeaders(
   apiKey: string,
   userAgent?: string,
   enableZdr?: boolean,
@@ -395,5 +395,34 @@ export async function* streamChatCompletion(
       "streamChatCompletion",
       `Received ${malformedSseCount} malformed SSE lines (threshold: ${MALFORMED_SSE_WARN_THRESHOLD})`,
     );
+  }
+}
+
+/**
+ * One Jev (System One) judgment: a single non-streaming POST to `${BASE_URL}/systemone`,
+ * no retries (the caller's timeout budget is too short for them). Throws on a non-OK status
+ * or a body that is not JSON; validating the answers is the caller's job.
+ */
+export async function requestSystemOne(
+  apiKey: string,
+  body: unknown,
+  signal?: AbortSignal,
+  userAgent?: string,
+  enableZdr?: boolean,
+): Promise<unknown> {
+  const response = await fetch(`${BASE_URL}/systemone`, {
+    method: "POST",
+    headers: buildChatCompletionHeaders(apiKey, userAgent, enableZdr),
+    body: JSON.stringify(body),
+    signal,
+  });
+  const text = await response.text();
+  if (!response.ok) {
+    throw new Error(`Jev request failed (${response.status}): ${text.slice(0, 200)}`);
+  }
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    throw new Error("Jev returned malformed JSON");
   }
 }

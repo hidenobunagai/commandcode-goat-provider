@@ -1,7 +1,9 @@
 // auto-router.ts — GOAT Auto: per-turn model + reasoning-effort selection from a user pool.
 //
 // Pure module: no vscode runtime dependency. The provider adapts VS Code messages into
-// RouterMessage values and injects the judge call, so everything here is unit-testable.
+// RouterMessage values and injects the Jev call, so everything here is unit-testable.
+// Judgment semantics (effort question, state shape, follow-up floor, timeout) follow DSH's
+// Jev router (dsh-jev lib/router.js).
 import { createHash } from "node:crypto";
 import type { CommandCodeModelInfo } from "./types";
 
@@ -10,15 +12,41 @@ export const AUTO_MODEL_ID = "commandcode-goat/auto";
 /** Context window assumed for the GOAT Auto picker entry while the pool is empty. */
 export const AUTO_DEFAULT_CONTEXT_WINDOW = 200000;
 
-/** Effort levels the judge may return. Per-model clamping happens in the provider. */
+/** Effort levels Jev may return, lowest first. Per-model clamping happens in the provider. */
 export const AUTO_EFFORT_LEVELS = ["low", "medium", "high", "xhigh", "max"] as const;
 export type AutoEffort = (typeof AUTO_EFFORT_LEVELS)[number];
 
-export const AUTO_JUDGE_TIMEOUT_MS = 4000;
+export const JEV_MODEL = "typesafe/jev-1.14.0";
+/** Jev budget per judged turn, as in DSH. */
+export const AUTO_JEV_TIMEOUT_MS = 3500;
 const DECISION_CACHE_MAX_ENTRIES = 50;
-const JUDGE_TASK_MAX_CHARS = 2000;
-const JUDGE_RECENT_TURNS = 4;
-const JUDGE_RECENT_TURN_MAX_CHARS = 300;
+const PROMPT_MAX_CHARS = 8000;
+const HISTORY_TURNS = 6;
+const HISTORY_TURN_MAX_CHARS = 600;
+/** Short replies ("ok, do it") inherit the effort of the task they continue. */
+export const FOLLOW_UP_MAX_CHARS = 80;
+export const FIRST_TURN_PREVIOUS_EFFORT = "none (first turn)";
+
+/** The Jev effort question, verbatim from DSH's EFFORT_QUESTION. */
+export const EFFORT_QUESTION = {
+  type: "choice",
+  instructions:
+    "Rate the reasoning effort needed for the assistant's NEXT response to `prompt`. " +
+    "`prompt` may be a short follow-up; read `recentConversation` to see what it refers to, " +
+    "and use `previousEffort` (the level chosen for the previous user turn) as a reference point.",
+  criteria: {
+    low: "Simple status checks, reading/grepping logs, single shell commands, quick lookups, trivial answers, small talk",
+    medium: "Routine single-file edits, straightforward configs, clear instructions, minor updates",
+    high: "Multi-component config changes (systemd/launchd/network), new feature implementations, nontrivial debugging",
+    xhigh:
+      "Complex architectural design, deep root-cause investigation, high-risk migrations, heavy multi-step planning",
+    max: "Hardest problems: a bug or incident that earlier attempts failed to fix, security- or data-loss-critical changes, novel algorithms, or the user explicitly asks for the deepest, most careful thinking",
+  },
+} as const;
+
+const MODEL_QUESTION_INSTRUCTIONS =
+  "Choose the single best model from the criteria keys to handle `prompt`. Harder, high-risk, " +
+  "or ambiguous tasks need the strongest model; simple or routine tasks should use the fast model.";
 
 export interface RouterMessage {
   role: "user" | "assistant" | "other";
@@ -27,30 +55,47 @@ export interface RouterMessage {
   hasImage: boolean;
 }
 
+export type FieldSource = "jev" | "heuristic";
+
 export interface AutoDecision {
   modelId: string;
   effort: AutoEffort | undefined;
-  via: "judge" | "heuristic" | "cache";
-  /** Extra context for the decision log (e.g. vision fail-open, judge failure reason). */
+  /** "jev" when Jev supplied the model, the effort, or both; see modelVia/effortVia. */
+  via: "jev" | "heuristic" | "cache";
+  /** Per-field sources of a fresh (non-cache) decision. */
+  modelVia?: FieldSource;
+  effortVia?: FieldSource;
+  /** Extra context for the decision log (e.g. vision fail-open, Jev failure reason). */
   note?: string;
 }
 
-export interface JudgeRequest {
-  judgeModel: CommandCodeModelInfo;
-  system: string;
-  user: string;
-  signal: AbortSignal;
+export interface JevState {
+  prompt: string;
+  recentConversation: { role: "user" | "assistant"; text: string }[];
+  previousEffort: string;
 }
 
-/** Performs one chat completion and returns the raw reply text. */
-export type JudgeFn = (request: JudgeRequest) => Promise<string>;
+export interface JevRequestBody {
+  model: string;
+  state: JevState;
+  questions: Record<string, unknown>;
+}
+
+/** Performs one System One call and returns the parsed JSON response body. */
+export type JevFn = (body: JevRequestBody, signal: AbortSignal) => Promise<unknown>;
 
 export interface RouteInput {
   messages: readonly RouterMessage[];
   pool: readonly CommandCodeModelInfo[];
-  /** Model used as judge, or undefined to skip judging (heuristic only). */
-  judgeModel: CommandCodeModelInfo | undefined;
   signal?: AbortSignal;
+}
+
+/** Effort chosen for the previous judged user turn (feeds previousEffort and the floor). */
+let previousEffort: AutoEffort | undefined;
+
+/** Forget the previous turn's effort (tests). */
+export function resetPreviousEffort(): void {
+  previousEffort = undefined;
 }
 
 /** Pool ids → dispatchable model infos (unknown, non-selectable, or format-less ids dropped). */
@@ -68,24 +113,6 @@ export function resolvePool(
     pool.push(info);
   }
   return pool;
-}
-
-/**
- * Judge choice: an explicitly configured openai-format model wins; otherwise the first
- * openai-format pool model whose id contains "flash", then the first openai-format pool
- * model. No openai-format candidate → undefined (skip judging).
- */
-export function selectJudgeModel(
-  judgeModelId: string | undefined,
-  pool: readonly CommandCodeModelInfo[],
-  modelMap: ReadonlyMap<string, CommandCodeModelInfo>,
-): CommandCodeModelInfo | undefined {
-  const configured = judgeModelId?.trim() ? modelMap.get(judgeModelId.trim()) : undefined;
-  if (configured?.apiFormat === "openai" && configured.isUserSelectable !== false) {
-    return configured;
-  }
-  const openai = pool.filter((m) => m.apiFormat === "openai");
-  return openai.find((m) => m.id.toLowerCase().includes("flash")) ?? openai[0];
 }
 
 function userTexts(messages: readonly RouterMessage[]): string[] {
@@ -135,7 +162,7 @@ const LONG_PROMPT_CHARS = 500;
 const SIMPLE_PROMPT_MAX_CHARS = 120;
 
 /**
- * Deterministic fallback when the judge is unavailable or returns something unusable.
+ * Deterministic fallback when Jev is unavailable or returns something unusable.
  * Rules, applied to the last user prompt in order:
  *   1. Complex: longer than 500 chars, or mentions architecture/migration/root cause/debugging
  *      (English or 設計・移行・根本原因・デバッグ・障害) → strongest pool model (largest context
@@ -166,30 +193,22 @@ export function heuristicDecision(
   return { modelId: pool[0].id, effort: "medium", via: "heuristic" };
 }
 
-const JUDGE_SYSTEM_PROMPT =
-  "You are a model router. Pick the single best model from the pool and a reasoning effort " +
-  "for the user's task: cheap/fast models and low effort for simple lookups or edits, strong " +
-  "models and high effort for complex design, debugging, or multi-step work. Reply with ONLY " +
-  'a JSON object: {"model": "<pool id>", "effort": "<low|medium|high|xhigh|max>"}';
-
 function truncate(text: string, max: number): string {
   return text.length > max ? `${text.slice(0, max)}…` : text;
 }
 
-export function buildJudgePrompt(
+/**
+ * Jev state with DSH semantics: the last user prompt (cut to 8000 chars), the last six
+ * user/assistant text turns before it (each cut to 600 chars), and the previous turn's effort.
+ */
+export function buildJevState(
   messages: readonly RouterMessage[],
-  pool: readonly CommandCodeModelInfo[],
-): { system: string; user: string } {
-  const table = pool
-    .map((m) => {
-      const efforts = m.supportsThinking
-        ? (m.supportedReasoningEfforts?.join(",") ?? "default")
-        : "none";
-      return `- ${m.id} | ${m.name} | context ${m.contextWindow} | vision ${m.supportsVision ? "yes" : "no"} | tools ${m.supportsTools ? "yes" : "no"} | efforts ${efforts}`;
-    })
-    .join("\n");
-
-  const conversational = messages.filter((m) => m.role !== "other" && m.text.trim() !== "");
+  previous: AutoEffort | undefined,
+): JevState {
+  const conversational = messages.filter(
+    (m): m is RouterMessage & { role: "user" | "assistant" } =>
+      m.role !== "other" && m.text.trim() !== "",
+  );
   let lastUserIndex = -1;
   for (let i = conversational.length - 1; i >= 0; i--) {
     if (conversational[i].role === "user") {
@@ -197,42 +216,89 @@ export function buildJudgePrompt(
       break;
     }
   }
-  const task = lastUserIndex >= 0 ? conversational[lastUserIndex].text : "";
-  const recent = conversational
-    .slice(Math.max(0, lastUserIndex - JUDGE_RECENT_TURNS), Math.max(0, lastUserIndex))
-    .map((m) => `${m.role}: ${truncate(m.text.trim(), JUDGE_RECENT_TURN_MAX_CHARS)}`)
-    .join("\n");
-
-  const user = [
-    `Pool:\n${table}`,
-    recent ? `Recent turns:\n${recent}` : "",
-    `Task:\n${truncate(task.trim(), JUDGE_TASK_MAX_CHARS)}`,
-  ]
-    .filter(Boolean)
-    .join("\n\n");
-  return { system: JUDGE_SYSTEM_PROMPT, user };
+  const prompt = lastUserIndex >= 0 ? conversational[lastUserIndex].text : "";
+  const recentConversation = conversational
+    .slice(0, Math.max(0, lastUserIndex))
+    .slice(-HISTORY_TURNS)
+    .map((m) => ({ role: m.role, text: truncate(m.text.trim(), HISTORY_TURN_MAX_CHARS) }));
+  return {
+    prompt: prompt.slice(0, PROMPT_MAX_CHARS),
+    recentConversation,
+    previousEffort: previous ?? FIRST_TURN_PREVIOUS_EFFORT,
+  };
 }
 
-/** Extract and validate the judge's JSON reply. Undefined means "use the heuristic". */
-export function parseJudgeReply(
-  reply: string,
+/** Factual capability summary of a pool model for the Jev model question. */
+export function describeModel(m: CommandCodeModelInfo): string {
+  const efforts = m.supportsThinking
+    ? m.supportedReasoningEfforts?.length
+      ? m.supportedReasoningEfforts.join(", ")
+      : "default only"
+    : "none";
+  return [
+    m.displayName,
+    `context window ${m.contextWindow} tokens`,
+    `vision ${m.supportsVision ? "yes" : "no"}`,
+    `tool calling ${m.supportsTools ? "yes" : "no"}`,
+    `reasoning efforts: ${efforts}`,
+  ].join("; ");
+}
+
+export function buildJevRequest(
+  state: JevState,
   pool: readonly CommandCodeModelInfo[],
-): { modelId: string; effort: AutoEffort } | undefined {
-  const match = /\{[^{}]*\}/.exec(reply);
-  if (!match) return undefined;
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(match[0]);
-  } catch {
-    return undefined;
+): JevRequestBody {
+  return {
+    model: JEV_MODEL,
+    state,
+    questions: {
+      effort: EFFORT_QUESTION,
+      model: {
+        type: "choice",
+        instructions: MODEL_QUESTION_INSTRUCTIONS,
+        criteria: Object.fromEntries(pool.map((m) => [m.id, describeModel(m)])),
+      },
+    },
+  };
+}
+
+/** Jev's choices, each validated independently; an invalid or missing field is undefined. */
+export function parseJevAnswers(
+  body: unknown,
+  pool: readonly CommandCodeModelInfo[],
+): { modelId?: string; effort?: AutoEffort } {
+  const answers =
+    body && typeof body === "object" ? (body as { answers?: unknown }).answers : undefined;
+  if (!answers || typeof answers !== "object") {
+    throw new Error("Jev response is missing answers");
   }
-  if (!parsed || typeof parsed !== "object") return undefined;
-  const { model, effort } = parsed as { model?: unknown; effort?: unknown };
-  if (typeof model !== "string" || !pool.some((m) => m.id === model)) return undefined;
-  if (typeof effort !== "string" || !(AUTO_EFFORT_LEVELS as readonly string[]).includes(effort)) {
-    return undefined;
-  }
-  return { modelId: model, effort: effort as AutoEffort };
+  const choiceOf = (key: string): unknown => {
+    const answer = (answers as Record<string, unknown>)[key];
+    return answer && typeof answer === "object"
+      ? (answer as { choice?: unknown }).choice
+      : undefined;
+  };
+  const model = choiceOf("model");
+  const effort = choiceOf("effort");
+  return {
+    modelId: typeof model === "string" && pool.some((m) => m.id === model) ? model : undefined,
+    effort:
+      typeof effort === "string" && (AUTO_EFFORT_LEVELS as readonly string[]).includes(effort)
+        ? (effort as AutoEffort)
+        : undefined,
+  };
+}
+
+/** A prompt of at most 80 chars never drops below the previous turn's level. */
+export function applyFollowUpFloor(
+  prompt: string,
+  judged: AutoEffort,
+  previous: AutoEffort | undefined,
+): AutoEffort {
+  if (prompt.trim().length > FOLLOW_UP_MAX_CHARS || previous === undefined) return judged;
+  return AUTO_EFFORT_LEVELS.indexOf(previous) > AUTO_EFFORT_LEVELS.indexOf(judged)
+    ? previous
+    : judged;
 }
 
 /**
@@ -261,7 +327,7 @@ function withTimeout<T>(
   const timeout = new Promise<never>((_, reject) => {
     timer = setTimeout(() => {
       controller.abort();
-      reject(new Error(`judge timed out after ${timeoutMs}ms`));
+      reject(new Error(`Jev timed out after ${timeoutMs}ms`));
     }, timeoutMs);
   });
   return Promise.race([run(signal), timeout]).finally(() => clearTimeout(timer));
@@ -271,13 +337,13 @@ export class AutoRouter {
   private readonly cache = new Map<string, AutoDecision>();
 
   constructor(
-    private readonly judge: JudgeFn,
-    private readonly timeoutMs: number = AUTO_JUDGE_TIMEOUT_MS,
+    private readonly jev: JevFn,
+    private readonly timeoutMs: number = AUTO_JEV_TIMEOUT_MS,
   ) {}
 
   /** Never throws: any failure degrades to the heuristic decision. Pool must be non-empty. */
   async route(input: RouteInput): Promise<AutoDecision> {
-    const { messages, judgeModel, signal } = input;
+    const { messages, signal } = input;
     const { pool, note: visionNote } = filterPoolForVision(input.pool, messages);
     const notes = visionNote ? [visionNote] : [];
     const withNotes = (decision: AutoDecision): AutoDecision =>
@@ -291,35 +357,37 @@ export class AutoRouter {
         return withNotes({ modelId: cached.modelId, effort: cached.effort, via: "cache" });
       }
 
-      let decision: AutoDecision | undefined;
-      if (judgeModel) {
-        try {
-          const prompt = buildJudgePrompt(messages, pool);
-          const reply = await withTimeout(
-            (judgeSignal) =>
-              this.judge({
-                judgeModel,
-                system: prompt.system,
-                user: prompt.user,
-                signal: judgeSignal,
-              }),
-            this.timeoutMs,
-            signal,
-          );
-          const parsed = parseJudgeReply(reply, pool);
-          if (parsed) {
-            decision = { ...parsed, via: "judge" };
-          } else {
-            notes.push(`judge reply unusable: ${truncate(reply.trim(), 200)}`);
-          }
-        } catch (error) {
-          notes.push(`judge failed: ${error instanceof Error ? error.message : String(error)}`);
-        }
-      } else {
-        notes.push("no openai-format judge model available");
+      const previous = previousEffort;
+      const state = buildJevState(messages, previous);
+      let answers: { modelId?: string; effort?: AutoEffort } = {};
+      try {
+        const body = await withTimeout(
+          (jevSignal) => this.jev(buildJevRequest(state, pool), jevSignal),
+          this.timeoutMs,
+          signal,
+        );
+        answers = parseJevAnswers(body, pool);
+        if (answers.modelId === undefined) notes.push("Jev model answer missing or not in pool");
+        if (answers.effort === undefined) notes.push("Jev effort answer missing or invalid");
+      } catch (error) {
+        notes.push(`Jev failed: ${error instanceof Error ? error.message : String(error)}`);
       }
 
-      decision ??= heuristicDecision(messages, pool);
+      const heuristic = heuristicDecision(messages, pool);
+      const modelVia: FieldSource = answers.modelId !== undefined ? "jev" : "heuristic";
+      const effortVia: FieldSource = answers.effort !== undefined ? "jev" : "heuristic";
+      const judged = answers.effort ?? heuristic.effort ?? "medium";
+      const effort = applyFollowUpFloor(state.prompt, judged, previous);
+      if (effort !== judged) notes.push(`follow-up floor raised effort ${judged} -> ${effort}`);
+      previousEffort = effort;
+
+      const decision: AutoDecision = {
+        modelId: answers.modelId ?? heuristic.modelId,
+        effort,
+        via: modelVia === "jev" || effortVia === "jev" ? "jev" : "heuristic",
+        modelVia,
+        effortVia,
+      };
       this.remember(key, decision);
       return withNotes(decision);
     } catch (error) {

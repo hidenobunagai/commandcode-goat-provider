@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import * as api from "../src/api";
+import { resetPreviousEffort } from "../src/auto-router";
 import { CommandCodeChatModelProvider } from "../src/provider";
 import * as anthropicStream from "../src/streaming/anthropic";
 import * as openaiStream from "../src/streaming/openai";
@@ -7,12 +8,12 @@ import { FALLBACK_MODELS } from "../src/types";
 
 let mockEnableZdr = false;
 let mockAutoPool: string[] = [];
-let mockJudgeModel = "";
 
 jest.mock("../src/api", () => ({
   fetchModels: jest.fn(),
   streamChatCompletion: jest.fn(),
   fetchWithRetry: jest.fn(),
+  requestSystemOne: jest.fn(),
 }));
 
 jest.mock("../src/streaming/anthropic", () => ({
@@ -56,7 +57,6 @@ jest.mock("vscode", () => ({
       get: jest.fn((key: string, defaultValue: unknown) => {
         if (section === "commandcode-goat" && key === "enableZdr") return mockEnableZdr;
         if (section === "commandcode-goat" && key === "auto.pool") return mockAutoPool;
-        if (section === "commandcode-goat" && key === "auto.judgeModel") return mockJudgeModel;
         return defaultValue;
       }),
     })),
@@ -84,9 +84,9 @@ describe("CommandCodeChatModelProvider", () => {
   let provider: CommandCodeChatModelProvider;
 
   beforeEach(() => {
+    resetPreviousEffort();
     mockEnableZdr = false;
     mockAutoPool = [];
-    mockJudgeModel = "";
     jest.clearAllMocks();
     secrets = {
       get: jest.fn(async (key: string) =>
@@ -373,11 +373,13 @@ describe("CommandCodeChatModelProvider", () => {
       content: [new (vscode as any).LanguageModelTextPart(text)],
       name: undefined,
     });
-    const judgeReplies = (...contents: string[]) =>
-      (api.streamChatCompletion as jest.Mock).mockImplementation(async function* () {
-        for (const content of contents) {
-          yield { choices: [{ index: 0, delta: { content }, finish_reason: null }] };
-        }
+    const jevAnswers = (model: string, effort: string) =>
+      (api.requestSystemOne as jest.Mock).mockResolvedValue({
+        model: "typesafe/jev-1.14.0",
+        answers: {
+          effort: { type: "choice", choice: effort, confidence: 0.8 },
+          model: { type: "choice", choice: model, confidence: 0.7 },
+        },
       });
     const listInfos = () =>
       provider.provideLanguageModelChatInformation({ silent: true } as any, token as any);
@@ -421,10 +423,10 @@ describe("CommandCodeChatModelProvider", () => {
       expect(anthropicStream.handleAnthropicRequest).not.toHaveBeenCalled();
     });
 
-    it("dispatches the judged model with its effort clamped by the existing rules", async () => {
+    it("dispatches Jev's model with its effort clamped by the existing rules", async () => {
       mockAutoPool = ["deepseek/deepseek-v4-pro", "moonshotai/Kimi-K3"];
       mockEnableZdr = true;
-      judgeReplies('{"model": "deepseek/deepseek-v4-pro", ', '"effort": "xhigh"}');
+      jevAnswers("deepseek/deepseek-v4-pro", "xhigh");
       await listInfos();
       const progress = { report: jest.fn() };
 
@@ -436,21 +438,24 @@ describe("CommandCodeChatModelProvider", () => {
         token as any,
       );
 
-      // Judge: first openai-format pool model, lowest supported effort, ZDR honoured.
-      expect(api.streamChatCompletion).toHaveBeenCalledTimes(1);
-      const [judgeKey, judgeBody, judgeSignal, judgeUa, judgeZdr] = (
-        api.streamChatCompletion as jest.Mock
-      ).mock.calls[0];
-      expect(judgeKey).toBe("test-key");
-      expect(judgeBody).toMatchObject({
-        model: "deepseek/deepseek-v4-pro",
-        reasoning_effort: "high",
-        max_tokens: 1024,
+      // One Jev call with the user's API key, both questions, ZDR honoured.
+      expect(api.requestSystemOne).toHaveBeenCalledTimes(1);
+      const [jevKey, jevBody, jevSignal, jevUa, jevZdr] = (api.requestSystemOne as jest.Mock).mock
+        .calls[0];
+      expect(jevKey).toBe("test-key");
+      expect(jevBody).toMatchObject({
+        model: "typesafe/jev-1.14.0",
+        state: { prompt: "refactor the parser module", previousEffort: expect.any(String) },
       });
-      expect(judgeBody.messages[1].content).toContain("refactor the parser module");
-      expect(judgeSignal).toBeInstanceOf(AbortSignal);
-      expect(judgeUa).toBe("test-ua");
-      expect(judgeZdr).toBe(true);
+      expect(Object.keys(jevBody.questions)).toEqual(["effort", "model"]);
+      expect(Object.keys(jevBody.questions.model.criteria)).toEqual([
+        "deepseek/deepseek-v4-pro",
+        "moonshotai/Kimi-K3",
+      ]);
+      expect(jevSignal).toBeInstanceOf(AbortSignal);
+      expect(jevUa).toBe("test-ua");
+      expect(jevZdr).toBe(true);
+      expect(api.streamChatCompletion).not.toHaveBeenCalled();
 
       // xhigh is not supported by DeepSeek V4 Pro (high, max) → mapped to max.
       const call = (openaiStream.processOpenAIStream as jest.Mock).mock.calls[0];
@@ -460,7 +465,7 @@ describe("CommandCodeChatModelProvider", () => {
 
     it("routes to an anthropic-format pool model without passing an effort", async () => {
       mockAutoPool = ["claude-sonnet-4-6", "deepseek/deepseek-v4-pro"];
-      judgeReplies('{"model": "claude-sonnet-4-6", "effort": "high"}');
+      jevAnswers("claude-sonnet-4-6", "high");
       await listInfos();
 
       await provider.provideLanguageModelChatResponse(
@@ -484,7 +489,7 @@ describe("CommandCodeChatModelProvider", () => {
       ]);
       provider = new CommandCodeChatModelProvider(secrets, "test-ua");
       mockAutoPool = ["moonshotai/Kimi-K2.7-Code", "deepseek/deepseek-v4-pro"];
-      judgeReplies('{"model": "moonshotai/Kimi-K2.7-Code", "effort": "low"}');
+      jevAnswers("moonshotai/Kimi-K2.7-Code", "low");
       await listInfos();
 
       await provider.provideLanguageModelChatResponse(
@@ -502,12 +507,11 @@ describe("CommandCodeChatModelProvider", () => {
       expect(call[12]).toBeUndefined();
     });
 
-    it("falls back to the heuristic when the judge request fails", async () => {
+    it("falls back to the heuristic when the Jev request fails", async () => {
       mockAutoPool = ["deepseek/deepseek-v4-pro", "moonshotai/Kimi-K3"];
-      (api.streamChatCompletion as jest.Mock).mockImplementation(async function* () {
-        yield* [];
-        throw new Error("HTTP 503");
-      });
+      (api.requestSystemOne as jest.Mock).mockRejectedValue(
+        new Error("Jev request failed (503): unavailable"),
+      );
       await listInfos();
 
       await provider.provideLanguageModelChatResponse(
