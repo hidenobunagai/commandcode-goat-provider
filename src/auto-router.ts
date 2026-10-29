@@ -354,7 +354,8 @@ export class AutoRouter {
       key = computeTurnKey(messages);
       const cached = this.cache.get(key);
       if (cached && pool.some((m) => m.id === cached.modelId)) {
-        return withNotes({ modelId: cached.modelId, effort: cached.effort, via: "cache" });
+        // Keep the original via: a cached Jev decision is still a Jev decision.
+        return withNotes(cached);
       }
 
       const previous = previousEffort;

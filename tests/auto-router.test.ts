@@ -327,7 +327,9 @@ describe("AutoRouter", () => {
     expect(await router.route({ messages: toolRound, pool })).toEqual({
       modelId: pro.id,
       effort: "high",
-      via: "cache",
+      via: "jev",
+      modelVia: "jev",
+      effortVia: "jev",
     });
     expect(jev).toHaveBeenCalledTimes(1);
     const [body, signal] = jev.mock.calls[0] as [JevRequestBody, AbortSignal];
@@ -519,7 +521,7 @@ describe("AutoRouter", () => {
     for (let i = 0; i < 51; i++) {
       await router.route({ messages: [user(`prompt ${i}`)], pool });
     }
-    expect((await router.route({ messages: [user("prompt 50")], pool })).via).toBe("cache");
+    expect((await router.route({ messages: [user("prompt 50")], pool })).via).toBe("jev");
     expect((await router.route({ messages: [user("prompt 0")], pool })).via).toBe("jev");
   });
 });
