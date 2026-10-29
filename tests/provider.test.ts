@@ -527,17 +527,79 @@ describe("CommandCodeChatModelProvider", () => {
       expect(call[12]).toBe("max");
     });
 
+    it("reports the routed model and effort as the first part, before dispatch", async () => {
+      mockAutoPool = ["deepseek/deepseek-v4-pro", "moonshotai/Kimi-K3"];
+      jevAnswers("deepseek/deepseek-v4-pro", "xhigh");
+      await listInfos();
+      const report = jest.fn();
+
+      await provider.provideLanguageModelChatResponse(
+        autoModel as any,
+        [userMessage("refactor the parser module")] as any,
+        {} as any,
+        { report } as any,
+        token as any,
+      );
+
+      expect(report).toHaveBeenCalledTimes(1);
+      expect(report.mock.calls[0][0].value).toBe(
+        "*GOAT Auto → DeepSeek V4 Pro (latest)（effort: max · Jev）*\n\n",
+      );
+      expect(report.mock.invocationCallOrder[0]).toBeLessThan(
+        (openaiStream.processOpenAIStream as jest.Mock).mock.invocationCallOrder[0],
+      );
+    });
+
+    it("shows a Thinking Effort override and the heuristic source in the note", async () => {
+      mockAutoPool = ["deepseek/deepseek-v4-pro", "moonshotai/Kimi-K3"];
+      (api.requestSystemOne as jest.Mock).mockRejectedValue(new Error("down"));
+      await listInfos();
+      const report = jest.fn();
+
+      await provider.provideLanguageModelChatResponse(
+        autoModel as any,
+        [userMessage("refactor the parser module")] as any,
+        { modelConfiguration: { reasoningEffort: "high" } } as any,
+        { report } as any,
+        token as any,
+      );
+
+      const note: string = report.mock.calls[0][0].value;
+      expect(note).toMatch(/^\*GOAT Auto → .+（effort: high · heuristic）\*\n\n$/);
+    });
+
+    it("does not report a routing note for a directly picked model", async () => {
+      await listInfos();
+      const report = jest.fn();
+
+      await provider.provideLanguageModelChatResponse(
+        { id: "deepseek/deepseek-v4-pro", maxInputTokens: 900000, maxOutputTokens: 65536 } as any,
+        [userMessage("refactor the parser module")] as any,
+        {} as any,
+        { report } as any,
+        token as any,
+      );
+
+      expect(openaiStream.processOpenAIStream).toHaveBeenCalledTimes(1);
+      expect(report).not.toHaveBeenCalled();
+    });
+
     it("routes to an anthropic-format pool model without passing an effort", async () => {
       mockAutoPool = ["claude-sonnet-4-6", "deepseek/deepseek-v4-pro"];
       jevAnswers("claude-sonnet-4-6", "high");
       await listInfos();
+      const report = jest.fn();
 
       await provider.provideLanguageModelChatResponse(
         autoModel as any,
         [userMessage("review this design")] as any,
         {} as any,
-        { report: jest.fn() } as any,
+        { report } as any,
         token as any,
+      );
+
+      expect(report.mock.calls[0][0].value).toBe(
+        "*GOAT Auto → Claude Sonnet 4.6（effort: default · Jev）*\n\n",
       );
 
       expect(anthropicStream.handleAnthropicRequest).toHaveBeenCalledWith(

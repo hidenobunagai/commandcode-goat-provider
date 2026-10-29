@@ -379,6 +379,7 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
       // The model actually dispatched: the picked one, or GOAT Auto's routed choice.
       let target: { id: string; maxInputTokens: number; maxOutputTokens: number } = model;
       let routedEffort: string | undefined;
+      let autoNote: { displayName: string; via: string } | undefined;
       if (model.id === AUTO_MODEL_ID) {
         const pool = this._autoPool();
         if (pool.length === 0) {
@@ -400,6 +401,10 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
         );
         target = { id: chosen.id, ...chatTokenLimits(chosen) };
         routedEffort = decision.effort;
+        autoNote = {
+          displayName: chosen.displayName,
+          via: decision.via === "jev" ? "Jev" : "heuristic",
+        };
         debugLog("goatAuto", {
           model: chosen.id,
           effort: decision.effort ?? "default",
@@ -499,6 +504,17 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
       const enableZdr = vscode.workspace
         .getConfiguration("commandcode-goat")
         .get<boolean>("enableZdr", false);
+
+      // The chat UI shows only "GOAT Auto", so name the model that actually serves the turn.
+      // The anthropic path sends no effort, so the effort shown there is "default".
+      if (autoNote) {
+        const shownEffort = (apiFormat === "anthropic" ? undefined : reasoningEffort) ?? "default";
+        progress.report(
+          new vscode.LanguageModelTextPart(
+            `*GOAT Auto → ${autoNote.displayName}（effort: ${shownEffort} · ${autoNote.via}）*\n\n`,
+          ),
+        );
+      }
 
       if (apiFormat === "anthropic") {
         await handleAnthropicRequest({
