@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.44] - 2026-10-29
+
+### Added
+
+- **Format/lint CI gate** — a `Format` workflow now checks the files changed in a pull request (or pushed to `main`) with the fleet-wide tool mapping (oxfmt + oxlint for JS/TS, Ruff + ty for Python, the SQL formatters for `.sql`), via a repo-local `scripts/format-check.sh`, an `.oxfmtrc.json` migrated from the project's Prettier config, and a `.formatignore` covering generated paths (`docs/`, `tests/fixtures/`). Existing files are not reformatted — the gate ratchets on changed files only — and Markdown is not gated yet. No extension behavior changes in this release.
+
 ## [0.1.43] - 2026-10-29
 
 ### Added
