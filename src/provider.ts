@@ -12,7 +12,17 @@ import {
   Progress,
   ProvideLanguageModelChatResponseOptions,
 } from "vscode";
-import { fetchModels } from "./api";
+import { fetchModels, streamChatCompletion } from "./api";
+import {
+  AUTO_DEFAULT_CONTEXT_WINDOW,
+  AUTO_MODEL_ID,
+  AutoRouter,
+  escalateForInput,
+  type JudgeRequest,
+  resolvePool,
+  type RouterMessage,
+  selectJudgeModel,
+} from "./auto-router";
 import {
   DEFAULT_MAX_OUTPUT_TOKENS,
   FALLBACK_MODELS,
@@ -21,12 +31,32 @@ import {
   REASONING_EFFORT_ORDER,
   THINKING_MODELS,
 } from "./constants";
-import { getTextPartValue } from "./message-parts";
+import { extractImageData, getTextPartValue } from "./message-parts";
 import { debugLog } from "./output-channel";
 import { handleAnthropicRequest } from "./streaming/anthropic";
 import { processOpenAIStream, type OpenAIModelInfo } from "./streaming/openai";
 import { estimateMessagesTokens, estimateTokens } from "./tokenizer";
 import { CommandCodeModelInfo, ReasoningEffort } from "./types";
+
+/** Picker token limits for a model; shared by the model list and GOAT Auto routing. */
+function chatTokenLimits(info: Pick<CommandCodeModelInfo, "contextWindow" | "maxOutput">): {
+  maxInputTokens: number;
+  maxOutputTokens: number;
+} {
+  return {
+    maxInputTokens: Math.max(
+      1,
+      info.contextWindow - Math.min(info.maxOutput, DEFAULT_MAX_OUTPUT_TOKENS),
+    ),
+    maxOutputTokens: info.maxOutput,
+  };
+}
+
+/** Input budget after the context-window safety margin (the pre-check limit). */
+function effectiveInputLimit(limits: { maxInputTokens: number; maxOutputTokens: number }): number {
+  const safetyMargin = getContextWindowSafetyMargin(limits.maxInputTokens + limits.maxOutputTokens);
+  return Math.max(1, limits.maxInputTokens - safetyMargin);
+}
 
 export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
   private readonly _onDidChangeLanguageModelChatInformation = new EventEmitter<void>();
@@ -40,6 +70,7 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
   private readonly _modelMap = new Map<string, CommandCodeModelInfo>();
   private _models: CommandCodeModelInfo[] = FALLBACK_MODELS;
   private _modelsFetched = false;
+  private readonly _autoRouter = new AutoRouter((request) => this.runJudge(request));
 
   constructor(
     private readonly secrets: vscode.SecretStorage,
@@ -55,6 +86,13 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
     void this.fetchModels().then(() => {
       this._onDidChangeLanguageModelChatInformation.fire();
     });
+  }
+
+  /** Models that can be dispatched (candidates for the GOAT Auto pool). */
+  getSelectableModels(): CommandCodeModelInfo[] {
+    return this._models
+      .map((m) => this._modelMap.get(m.id) ?? m)
+      .filter((m) => m.isUserSelectable !== false && !!m.apiFormat);
   }
 
   private async fetchModels(): Promise<void> {
@@ -150,7 +188,7 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
       if (!this._modelsFetched) {
         await this.fetchModels();
       }
-      const models = this._mapToChatInformation(this._models);
+      const models = [...this._mapToChatInformation(this._models), this._autoChatInformation()];
       debugLog("provideLanguageModelChatInformation", {
         silent: options.silent,
         modelCount: models.length,
@@ -158,7 +196,7 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
       return models;
     } catch (error) {
       debugLog("provideLanguageModelChatInformationError", error);
-      const models = this._mapToChatInformation(this._models);
+      const models = [...this._mapToChatInformation(this._models), this._autoChatInformation()];
       debugLog("provideLanguageModelChatInformationFallback", {
         modelCount: models.length,
       });
@@ -196,11 +234,7 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
         family: "commandcode-goat",
         version: "1.0.0",
         isUserSelectable: info.isUserSelectable !== false,
-        maxInputTokens: Math.max(
-          1,
-          info.contextWindow - Math.min(info.maxOutput, DEFAULT_MAX_OUTPUT_TOKENS),
-        ),
-        maxOutputTokens: info.maxOutput,
+        ...chatTokenLimits(info),
         capabilities: {
           toolCalling: info.supportsTools,
           imageInput: info.supportsVision,
@@ -256,6 +290,105 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
     });
   }
 
+  private _autoPool(): CommandCodeModelInfo[] {
+    const poolIds = vscode.workspace
+      .getConfiguration("commandcode-goat")
+      .get<string[]>("auto.pool", []);
+    return resolvePool(Array.isArray(poolIds) ? poolIds : [], this._modelMap);
+  }
+
+  /** Synthetic "GOAT Auto" entry; always listed so it is discoverable even with an empty pool. */
+  private _autoChatInformation(): LanguageModelChatInformation {
+    const pool = this._autoPool();
+    const largest = pool.reduce<CommandCodeModelInfo | undefined>(
+      (best, m) => (!best || m.contextWindow > best.contextWindow ? m : best),
+      undefined,
+    );
+    const limits = chatTokenLimits(
+      largest ?? {
+        contextWindow: AUTO_DEFAULT_CONTEXT_WINDOW,
+        maxOutput: DEFAULT_MAX_OUTPUT_TOKENS,
+      },
+    );
+    const tooltip =
+      pool.length > 0
+        ? `Command Code GOAT — GOAT Auto · Routes each turn across: ${pool.map((m) => m.displayName).join(", ")}`
+        : 'Command Code GOAT — GOAT Auto · Run "Command Code GOAT: Configure GOAT Auto Pool" to choose models';
+    // isUserSelectable is a proposed-API field, as in _mapToChatInformation.
+    const info: LanguageModelChatInformation & { isUserSelectable: boolean } = {
+      id: AUTO_MODEL_ID,
+      name: "GOAT Auto",
+      detail: "Command Code GOAT",
+      tooltip,
+      family: "commandcode-goat",
+      version: "1.0.0",
+      isUserSelectable: true,
+      ...limits,
+      capabilities: {
+        toolCalling: true,
+        imageInput: pool.some((m) => m.supportsVision),
+      },
+    };
+    return info;
+  }
+
+  private _toRouterMessages(messages: readonly LanguageModelChatMessage[]): RouterMessage[] {
+    return messages.map((message) => {
+      const texts: string[] = [];
+      let hasImage = false;
+      for (const part of message.content) {
+        const text = getTextPartValue(part as never);
+        if (text !== undefined) {
+          texts.push(text);
+        } else if (extractImageData(part as never)) {
+          hasImage = true;
+        }
+      }
+      const role =
+        message.role === vscode.LanguageModelChatMessageRole.User
+          ? "user"
+          : message.role === vscode.LanguageModelChatMessageRole.Assistant
+            ? "assistant"
+            : "other";
+      return { role, text: texts.join("\n"), hasImage };
+    });
+  }
+
+  /** GOAT Auto judge: one chat completion, content deltas concatenated (reasoning ignored). */
+  private async runJudge({ judgeModel, system, user, signal }: JudgeRequest): Promise<string> {
+    // ensureApiKey() has already stored the key (configured or entered) before routing runs.
+    const apiKey = (await this.secrets.get("commandcode-goat.apiKey"))?.trim();
+    if (!apiKey) throw new Error("API key unavailable for judge");
+    const enableZdr = vscode.workspace
+      .getConfiguration("commandcode-goat")
+      .get<boolean>("enableZdr", false);
+    const efforts = judgeModel.supportsThinking ? judgeModel.supportedReasoningEfforts : undefined;
+    const lowestEffort = efforts?.length
+      ? [...efforts].sort(
+          (a, b) => REASONING_EFFORT_ORDER.indexOf(a) - REASONING_EFFORT_ORDER.indexOf(b),
+        )[0]
+      : undefined;
+    let reply = "";
+    for await (const chunk of streamChatCompletion(
+      apiKey,
+      {
+        model: judgeModel.id,
+        messages: [
+          { role: "system", content: system },
+          { role: "user", content: user },
+        ],
+        max_tokens: 1024,
+        ...(lowestEffort ? { reasoning_effort: lowestEffort } : {}),
+      },
+      signal,
+      this.userAgent,
+      enableZdr,
+    )) {
+      reply += chunk.choices?.[0]?.delta?.content ?? "";
+    }
+    return reply;
+  }
+
   async provideLanguageModelChatResponse(
     model: LanguageModelChatInformation,
     messages: readonly LanguageModelChatMessage[],
@@ -280,8 +413,45 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
         return;
       }
 
-      const maxInputTokens = model.maxInputTokens;
-      const modelContextWindow = maxInputTokens + model.maxOutputTokens;
+      // The model actually dispatched: the picked one, or GOAT Auto's routed choice.
+      let target: { id: string; maxInputTokens: number; maxOutputTokens: number } = model;
+      let routedEffort: string | undefined;
+      if (model.id === AUTO_MODEL_ID) {
+        const pool = this._autoPool();
+        if (pool.length === 0) {
+          progress.report(
+            new vscode.LanguageModelTextPart(
+              'GOAT Auto has no models to route between. Run "Command Code GOAT: Configure GOAT Auto Pool" from the Command Palette, or set `commandcode-goat.auto.pool` to a list of Command Code model ids.',
+            ),
+          );
+          return;
+        }
+        const judgeModelId = vscode.workspace
+          .getConfiguration("commandcode-goat")
+          .get<string>("auto.judgeModel", "");
+        const decision = await this._autoRouter.route({
+          messages: this._toRouterMessages(messages),
+          pool,
+          judgeModel: selectJudgeModel(judgeModelId, pool, this._modelMap),
+          signal: abortController.signal,
+        });
+        const routed = pool.find((m) => m.id === decision.modelId) ?? pool[0];
+        const chosen = escalateForInput(routed, pool, inputTokenCount, (m) =>
+          effectiveInputLimit(chatTokenLimits(m)),
+        );
+        target = { id: chosen.id, ...chatTokenLimits(chosen) };
+        routedEffort = decision.effort;
+        debugLog("goatAuto", {
+          model: chosen.id,
+          effort: decision.effort ?? "default",
+          via: decision.via,
+          ...(chosen.id !== routed.id ? { escalatedFrom: routed.id } : {}),
+          ...(decision.note ? { note: decision.note } : {}),
+        });
+      }
+
+      const maxInputTokens = target.maxInputTokens;
+      const modelContextWindow = maxInputTokens + target.maxOutputTokens;
       const safetyMargin = getContextWindowSafetyMargin(modelContextWindow);
       const effectiveMaxInputTokens = Math.max(1, maxInputTokens - safetyMargin);
 
@@ -294,39 +464,41 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
       const maxTokensVal = (options.modelOptions as Record<string, unknown>)?.max_tokens;
       const requestedMaxTokens = Math.min(
         typeof maxTokensVal === "number" ? maxTokensVal : DEFAULT_MAX_OUTPUT_TOKENS,
-        model.maxOutputTokens,
+        target.maxOutputTokens,
       );
 
       const MIN_THINKING_MODEL_OUTPUT_TOKENS = 16384;
-      const resolvedModelId = this.resolveApiModelId(model.id);
+      const resolvedModelId = this.resolveApiModelId(target.id);
       const isThinkingModel = THINKING_MODELS.has(resolvedModelId);
       const effectiveMaxTokens = isThinkingModel
         ? Math.max(
             requestedMaxTokens,
-            Math.min(MIN_THINKING_MODEL_OUTPUT_TOKENS, model.maxOutputTokens),
+            Math.min(MIN_THINKING_MODEL_OUTPUT_TOKENS, target.maxOutputTokens),
           )
         : requestedMaxTokens;
 
       const effectiveMessages = messages;
-      const effectiveModelId = this.resolveApiModelId(model.id);
+      const effectiveModelId = this.resolveApiModelId(target.id);
       const effectiveModelInfo = this.getModelInfo(effectiveModelId);
-      const variantModelInfo = this.getModelInfo(model.id);
+      const variantModelInfo = this.getModelInfo(target.id);
 
       if (
         !effectiveModelInfo ||
         effectiveModelInfo.isUserSelectable === false ||
         !effectiveModelInfo.apiFormat
       ) {
-        throw new Error(`Model ${model.id} is not supported or not selectable.`);
+        throw new Error(`Model ${target.id} is not supported or not selectable.`);
       }
 
       const apiFormat = effectiveModelInfo.apiFormat;
       const modelConfig = (options as unknown as Record<string, unknown>).modelConfiguration as
         Record<string, unknown> | undefined;
       const rawReasoningEffort =
-        typeof modelConfig?.reasoningEffort === "string"
-          ? (modelConfig.reasoningEffort as string)
-          : undefined;
+        model.id === AUTO_MODEL_ID
+          ? routedEffort
+          : typeof modelConfig?.reasoningEffort === "string"
+            ? (modelConfig.reasoningEffort as string)
+            : undefined;
       let reasoningEffort: string | undefined =
         rawReasoningEffort === "default" ? undefined : rawReasoningEffort;
 
@@ -386,7 +558,7 @@ export class CommandCodeChatModelProvider implements LanguageModelChatProvider {
       const openAIModel: OpenAIModelInfo = {
         id: effectiveModelId,
         modelInfo: effectiveModelInfo,
-        maxOutputTokens: model.maxOutputTokens,
+        maxOutputTokens: target.maxOutputTokens,
       };
 
       await processOpenAIStream(

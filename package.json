@@ -48,6 +48,19 @@
           "type": "boolean",
           "default": false,
           "markdownDescription": "Enable Command Code Zero Data Retention (ZDR) mode (`x-cmd-zdr: 1`) on requests."
+        },
+        "commandcode-goat.auto.pool": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "markdownDescription": "Command Code model ids that **GOAT Auto** may route between. GOAT Auto picks one model and reasoning effort per user turn from this pool. Use **Command Code GOAT: Configure GOAT Auto Pool** to choose from the model list."
+        },
+        "commandcode-goat.auto.judgeModel": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "OpenAI-format model id GOAT Auto uses to judge which pool model fits a turn. Leave empty to pick automatically (a pool model whose id contains `flash`, else the first OpenAI-format pool model; with none, a keyword heuristic decides)."
         }
       }
     },
@@ -55,6 +68,11 @@
       {
         "command": "commandcode-goat.manage",
         "title": "Manage API Key",
+        "category": "Command Code GOAT"
+      },
+      {
+        "command": "commandcode-goat.auto.configurePool",
+        "title": "Configure GOAT Auto Pool",
         "category": "Command Code GOAT"
       },
       {

@@ -35,6 +35,9 @@ jest.mock("vscode", () => ({
   commands: {
     registerCommand: mockRegisterCommand,
   },
+  workspace: {
+    onDidChangeConfiguration: jest.fn(() => ({ dispose: jest.fn() })),
+  },
   lm: {
     registerLanguageModelChatProvider: mockRegisterLanguageModelChatProvider,
   },
@@ -75,6 +78,7 @@ describe("activate", () => {
     expect(registeredCommands.has("commandcode-goat.manage")).toBe(true);
     expect(registeredCommands.has("commandcode-goat.toggleDebugLogging")).toBe(true);
     expect(registeredCommands.has("commandcode-goat.openDebugLog")).toBe(true);
+    expect(registeredCommands.has("commandcode-goat.auto.configurePool")).toBe(true);
     expect(mockShowErrorMessage).not.toHaveBeenCalled();
   });
 });

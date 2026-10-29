@@ -6,6 +6,8 @@ import * as openaiStream from "../src/streaming/openai";
 import { FALLBACK_MODELS } from "../src/types";
 
 let mockEnableZdr = false;
+let mockAutoPool: string[] = [];
+let mockJudgeModel = "";
 
 jest.mock("../src/api", () => ({
   fetchModels: jest.fn(),
@@ -53,6 +55,8 @@ jest.mock("vscode", () => ({
     getConfiguration: jest.fn((section?: string) => ({
       get: jest.fn((key: string, defaultValue: unknown) => {
         if (section === "commandcode-goat" && key === "enableZdr") return mockEnableZdr;
+        if (section === "commandcode-goat" && key === "auto.pool") return mockAutoPool;
+        if (section === "commandcode-goat" && key === "auto.judgeModel") return mockJudgeModel;
         return defaultValue;
       }),
     })),
@@ -81,6 +85,8 @@ describe("CommandCodeChatModelProvider", () => {
 
   beforeEach(() => {
     mockEnableZdr = false;
+    mockAutoPool = [];
+    mockJudgeModel = "";
     jest.clearAllMocks();
     secrets = {
       get: jest.fn(async (key: string) =>
@@ -349,6 +355,173 @@ describe("CommandCodeChatModelProvider", () => {
           token as any,
         ),
       ).rejects.toThrow("is not supported or not selectable");
+    });
+  });
+
+  describe("GOAT Auto", () => {
+    const token = {
+      isCancellationRequested: false,
+      onCancellationRequested: jest.fn(() => ({ dispose: jest.fn() })),
+    };
+    const autoModel = {
+      id: "commandcode-goat/auto",
+      maxInputTokens: 900000,
+      maxOutputTokens: 65536,
+    };
+    const userMessage = (text: string) => ({
+      role: vscode.LanguageModelChatMessageRole.User,
+      content: [new (vscode as any).LanguageModelTextPart(text)],
+      name: undefined,
+    });
+    const judgeReplies = (...contents: string[]) =>
+      (api.streamChatCompletion as jest.Mock).mockImplementation(async function* () {
+        for (const content of contents) {
+          yield { choices: [{ index: 0, delta: { content }, finish_reason: null }] };
+        }
+      });
+    const listInfos = () =>
+      provider.provideLanguageModelChatInformation({ silent: true } as any, token as any);
+
+    it("lists GOAT Auto without an effort picker, with defaults for an empty pool", async () => {
+      const infos = await listInfos();
+      const auto = infos.find((i) => i.id === "commandcode-goat/auto");
+      expect(auto).toMatchObject({
+        name: "GOAT Auto",
+        family: "commandcode-goat",
+        isUserSelectable: true,
+        maxInputTokens: 200000 - 65536,
+        maxOutputTokens: 65536,
+        capabilities: { toolCalling: true, imageInput: false },
+      });
+      expect((auto as any).configurationSchema).toBeUndefined();
+      expect(infos.filter((i) => i.id !== "commandcode-goat/auto").length).toBe(4);
+    });
+
+    it("derives GOAT Auto limits and vision from the pool", async () => {
+      mockAutoPool = ["deepseek/deepseek-v4-pro", "moonshotai/Kimi-K3", "not-a-model"];
+      const auto = (await listInfos()).find((i) => i.id === "commandcode-goat/auto");
+      expect(auto?.capabilities.imageInput).toBe(true);
+      expect(auto?.maxOutputTokens).toBe(131072);
+      expect(auto?.maxInputTokens).toBe(1000000 - 65536);
+    });
+
+    it("explains how to configure the pool when it is empty", async () => {
+      const reported: any[] = [];
+      await provider.provideLanguageModelChatResponse(
+        autoModel as any,
+        [userMessage("hi")] as any,
+        {} as any,
+        { report: (part: any) => reported.push(part) } as any,
+        token as any,
+      );
+      expect(reported).toHaveLength(1);
+      expect(reported[0].value).toContain("Configure GOAT Auto Pool");
+      expect(reported[0].value).toContain("commandcode-goat.auto.pool");
+      expect(openaiStream.processOpenAIStream).not.toHaveBeenCalled();
+      expect(anthropicStream.handleAnthropicRequest).not.toHaveBeenCalled();
+    });
+
+    it("dispatches the judged model with its effort clamped by the existing rules", async () => {
+      mockAutoPool = ["deepseek/deepseek-v4-pro", "moonshotai/Kimi-K3"];
+      mockEnableZdr = true;
+      judgeReplies('{"model": "deepseek/deepseek-v4-pro", ', '"effort": "xhigh"}');
+      await listInfos();
+      const progress = { report: jest.fn() };
+
+      await provider.provideLanguageModelChatResponse(
+        autoModel as any,
+        [userMessage("refactor the parser module")] as any,
+        {} as any,
+        progress as any,
+        token as any,
+      );
+
+      // Judge: first openai-format pool model, lowest supported effort, ZDR honoured.
+      expect(api.streamChatCompletion).toHaveBeenCalledTimes(1);
+      const [judgeKey, judgeBody, judgeSignal, judgeUa, judgeZdr] = (
+        api.streamChatCompletion as jest.Mock
+      ).mock.calls[0];
+      expect(judgeKey).toBe("test-key");
+      expect(judgeBody).toMatchObject({
+        model: "deepseek/deepseek-v4-pro",
+        reasoning_effort: "high",
+        max_tokens: 1024,
+      });
+      expect(judgeBody.messages[1].content).toContain("refactor the parser module");
+      expect(judgeSignal).toBeInstanceOf(AbortSignal);
+      expect(judgeUa).toBe("test-ua");
+      expect(judgeZdr).toBe(true);
+
+      // xhigh is not supported by DeepSeek V4 Pro (high, max) → mapped to max.
+      const call = (openaiStream.processOpenAIStream as jest.Mock).mock.calls[0];
+      expect(call[0]).toMatchObject({ id: "deepseek/deepseek-v4-pro", maxOutputTokens: 131072 });
+      expect(call[12]).toBe("max");
+    });
+
+    it("routes to an anthropic-format pool model without passing an effort", async () => {
+      mockAutoPool = ["claude-sonnet-4-6", "deepseek/deepseek-v4-pro"];
+      judgeReplies('{"model": "claude-sonnet-4-6", "effort": "high"}');
+      await listInfos();
+
+      await provider.provideLanguageModelChatResponse(
+        autoModel as any,
+        [userMessage("review this design")] as any,
+        {} as any,
+        { report: jest.fn() } as any,
+        token as any,
+      );
+
+      expect(anthropicStream.handleAnthropicRequest).toHaveBeenCalledWith(
+        expect.objectContaining({ modelId: "claude-sonnet-4-6", apiKey: "test-key" }),
+      );
+      expect(openaiStream.processOpenAIStream).not.toHaveBeenCalled();
+    });
+
+    it("escalates to the largest pool model when input exceeds the chosen model", async () => {
+      (api.fetchModels as jest.Mock).mockResolvedValue([
+        { id: "moonshotai/Kimi-K2.7-Code", name: "Kimi K2.7 Code", context_length: 256000 },
+        { id: "deepseek/deepseek-v4-pro", name: "DeepSeek V4 Pro", context_length: 1000000 },
+      ]);
+      provider = new CommandCodeChatModelProvider(secrets, "test-ua");
+      mockAutoPool = ["moonshotai/Kimi-K2.7-Code", "deepseek/deepseek-v4-pro"];
+      judgeReplies('{"model": "moonshotai/Kimi-K2.7-Code", "effort": "low"}');
+      await listInfos();
+
+      await provider.provideLanguageModelChatResponse(
+        autoModel as any,
+        [userMessage("a".repeat(400000))] as any,
+        {} as any,
+        { report: jest.fn() } as any,
+        token as any,
+      );
+
+      // ~200k tokens do not fit Kimi K2.7 Code (256k); DeepSeek V4 Pro gets it, and "low"
+      // is re-clamped against DeepSeek's supported efforts (high, max) → dropped.
+      const call = (openaiStream.processOpenAIStream as jest.Mock).mock.calls[0];
+      expect(call[0]).toMatchObject({ id: "deepseek/deepseek-v4-pro" });
+      expect(call[12]).toBeUndefined();
+    });
+
+    it("falls back to the heuristic when the judge request fails", async () => {
+      mockAutoPool = ["deepseek/deepseek-v4-pro", "moonshotai/Kimi-K3"];
+      (api.streamChatCompletion as jest.Mock).mockImplementation(async function* () {
+        yield* [];
+        throw new Error("HTTP 503");
+      });
+      await listInfos();
+
+      await provider.provideLanguageModelChatResponse(
+        autoModel as any,
+        [userMessage("debug the flaky login test")] as any,
+        {} as any,
+        { report: jest.fn() } as any,
+        token as any,
+      );
+
+      // Heuristic: debugging keyword → strongest pool model (largest context, tie by id).
+      const call = (openaiStream.processOpenAIStream as jest.Mock).mock.calls[0];
+      expect(call[0]).toMatchObject({ id: "deepseek/deepseek-v4-pro" });
+      expect(call[12]).toBe("high");
     });
   });
 

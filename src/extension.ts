@@ -84,6 +84,44 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
+    vscode.commands.registerCommand("commandcode-goat.auto.configurePool", async () => {
+      const config = vscode.workspace.getConfiguration("commandcode-goat");
+      const current = new Set(config.get<string[]>("auto.pool", []));
+      const items = (_provider?.getSelectableModels() ?? []).map((m) => ({
+        label: m.displayName,
+        description: m.id,
+        picked: current.has(m.id),
+        id: m.id,
+      }));
+      const picked = await vscode.window.showQuickPick(items, {
+        title: "GOAT Auto Pool",
+        placeHolder: "Select the models GOAT Auto may route between",
+        canPickMany: true,
+        ignoreFocusOut: true,
+      });
+      if (picked === undefined) {
+        return;
+      }
+      await config.update(
+        "auto.pool",
+        picked.map((item) => item.id),
+        vscode.ConfigurationTarget.Global,
+      );
+      vscode.window.showInformationMessage(
+        `GOAT Auto pool saved (${picked.length} model${picked.length === 1 ? "" : "s"}).`,
+      );
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration("commandcode-goat.auto")) {
+        _provider?.fireModelInfoChanged();
+      }
+    }),
+  );
+
+  context.subscriptions.push(
     vscode.commands.registerCommand("commandcode-goat.toggleDebugLogging", async () => {
       const current = context.globalState.get<boolean>("commandcode-goat.debug", false);
       const next = !current;

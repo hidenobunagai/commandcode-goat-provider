@@ -46,6 +46,16 @@ In VS Code Settings (`Ctrl+,` / `Cmd+,`), search for `Command Code GOAT`:
 - **Command Code GOAT: Toggle Debug Logging** (`commandcode-goat.toggleDebugLogging`): Enable or disable verbose debug logs in the output channel.
 - **Command Code GOAT: Open Debug Log** (`commandcode-goat.openDebugLog`): Open the Command Code GOAT output channel.
 
+### 4. GOAT Auto (optional)
+
+GOAT Auto is an extra model in the Copilot Chat model picker. When you select it, the extension picks one model and reasoning effort per user turn from a pool you choose, then sends the request to that model as usual. All requests within one turn (for example, agent-mode tool rounds) reuse the same choice. Selecting any other model works exactly as before.
+
+- **Command Code GOAT: Configure GOAT Auto Pool** (`commandcode-goat.auto.configurePool`): Pick the pool models from the current model list.
+- `commandcode-goat.auto.pool` (string array, default: `[]`): Model ids GOAT Auto may route between. With an empty pool, GOAT Auto replies with setup instructions instead of calling a model.
+- `commandcode-goat.auto.judgeModel` (string, default: `""`): OpenAI-format model that judges which pool model fits the turn. Leave empty to use a pool model whose id contains `flash` (else the first OpenAI-format pool model).
+
+The judge makes one small request (4-second timeout). If it is unavailable, slow, or returns something unusable, a keyword/length heuristic decides instead: short single-line prompts go to a fast model at low effort, long or architecture/migration/debugging prompts go to the pool model with the largest context window at high effort, and everything else goes to the first pool model at medium effort. Conversations with images only route to vision-capable pool models (if the pool has any), and requests that exceed the chosen model's context escalate to the largest pool model. The routed effort follows the same per-model clamping as the picker setting and only applies to OpenAI-format models. Each decision is written to the debug log.
+
 ---
 
 ## Architecture
