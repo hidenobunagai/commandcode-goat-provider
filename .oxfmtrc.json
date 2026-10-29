@@ -1,0 +1,9 @@
+{
+  "ignorePatterns": [],
+  "printWidth": 100,
+  "semi": true,
+  "singleQuote": false,
+  "sortPackageJson": false,
+  "tabWidth": 2,
+  "trailingComma": "all"
+}
