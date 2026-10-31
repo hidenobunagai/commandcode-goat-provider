@@ -191,7 +191,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(94);
+  expect(FALLBACK_MODELS.length).toBe(95);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 
@@ -329,6 +329,21 @@ test("includes the 2026-10-16 new models with curated capabilities", () => {
   expect(beam.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
   expect(beam.contextWindow).toBe(1_048_576);
   expect(beam.maxOutput).toBe(131_072);
+});
+
+test("includes the 2026-11-01 new models with curated capabilities", () => {
+  // Ling 3.1 Flash 1019 (free promo snapshot): openai protocol, text-only, same low/medium/high ladder as Ling 3.1 Flash
+  const ling1019 = inferModelInfo({
+    id: "inclusionai/ling-3.1-flash-1019:free",
+    name: "Ling 3.1 Flash 1019",
+    context_length: 1_000_000,
+  });
+  expect(ling1019.apiFormat).toBe("openai");
+  expect(ling1019.supportsVision).toBe(false);
+  expect(ling1019.supportsThinking).toBe(true);
+  expect(ling1019.supportedReasoningEfforts).toEqual(["low", "medium", "high"]);
+  expect(ling1019.contextWindow).toBe(1_000_000);
+  expect(ling1019.maxOutput).toBe(131_072);
 });
 
 test("includes the 2026-10-20 new models with curated capabilities", () => {

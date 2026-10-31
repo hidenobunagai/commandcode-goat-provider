@@ -628,5 +628,14 @@
     ],
     "source": "OpenAI model docs (developers.openai.com/api/docs/models/gpt-6.1-terra): reasoning.effort none|low|medium|high|xhigh|max, default medium, text+image input, 128K max output; pi-ai has no gpt-6.1-terra entry yet (manifest 2026-10-21, model released 2026-10-27); probe 2026-10-28: thinks by default (reasoning=104), off rejected 400 by the gateway, low..max all 200; commandcode.ai/models/gpt-6-1-terra: Text input + Image input + Reasons badges, Pro and above, $1/$5; protocol openai; sibling gpt-6.1-sol low..max",
     "decided": "2026-10-28"
+  },
+  "inclusionai/ling-3.1-flash-1019:free": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "commandcode.ai/models/ling-3-1-flash-1019-free: 'hybrid-reasoning MoE', Reasons before answering + Text input + Text output badges (text-only), $0 promo (free until 2026-11-03), released 2026-10-29, 1M ctx; a dated snapshot of inclusionai/ling-3.1-flash, whose recorded ladder is low/medium/high. No vendor reasoning_effort reference found (web search; OpenRouter lists 'reasoning' as an optional field with no named efforts), so the sibling's standard low/medium/high is kept and xhigh/max are not added. Probe 2026-11-01: thinks by default (reasoning=228), off rejected 400, low..max all 200 (token counts noisy).",
+    "decided": "2026-11-01"
   }
 }

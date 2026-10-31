@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.1.45] - 2026-11-01
+
+### Added
+
+- **`inclusionai/ling-3.1-flash-1019:free` added to catalog** (95 models) — a free promotional snapshot of Ling 3.1 Flash served by the live API:
+  - `inclusionai/ling-3.1-flash-1019:free` ("Ling 3.1 Flash 1019", 1,000,000 ctx, 131,072 max output, free tier $0/$0 — commandcode.ai lists it as free until 2026-11-03, openai protocol, text-only, `low,medium,high` efforts — same ladder as `inclusionai/ling-3.1-flash`; commandcode.ai Reasons badge on; live probe confirmed default reasoning with 228 tokens, `off` rejected 400).
+
 ## [0.1.44] - 2026-10-29
 
 ### Added

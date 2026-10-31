@@ -106,5 +106,6 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `nvidia/nemotron-3.5-super-vl` | Nemotron 3.5 Super VL | 262,144 | 131,072 | OpenAI | ✓ (`low,medium,high`) | ✓ |
 | `meta/muse-spark-open` | Muse Spark Open | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✓ |
 | `reflection/beam:free` | Beam 1.0 | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✗ |
+| `inclusionai/ling-3.1-flash-1019:free` | Ling 3.1 Flash 1019 | 1,000,000 | 131,072 | OpenAI | ✓ (`low,medium,high`) | ✗ |
 | `minimax/minimax-m3.1-flash` | MiniMax M3.1 Flash | 1,000,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
 | `ornith/ornith-1.5-122b` | Ornith 1.5 122B | 262,144 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✗ |
