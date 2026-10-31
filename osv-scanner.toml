@@ -32,3 +32,11 @@ reason = "Transitive dev dependency from ajv via fast-uri 3.1.8; 3.1.9 within co
 [[IgnoredVulns]]
 id = "GHSA-gcqx-w48m-w2h4"
 reason = "Transitive dev dependency from jest via jest-config -> deepmerge 4.3.1 (test tooling only, not shipped in the extension); no fixed version published (CVE-2026-93753)"
+
+[[IgnoredVulns]]
+id = "GHSA-3g3m-2fjr-6pw4"
+reason = "Transitive dev dependency from @vscode/vsce via glob 13.0.6 (packaging tooling only, not shipped in the extension); fix requires major 14.x bump"
+
+[[IgnoredVulns]]
+id = "GHSA-g3hv-75wg-m249"
+reason = "Transitive dev dependency via minimatch 10.2.6 (@vscode/vsce and its glob 13.0.6) and 3.1.5 (jest via glob 7.2.3); dev/test tooling only, not shipped in the extension; fix requires major 11.x bump"
