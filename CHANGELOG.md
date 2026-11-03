@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.1.46] - 2026-11-04
+
+### Changed
+
+- **`inclusionai/ling-3.1-flash-1019:free` replaced by `inclusionai/ling-3.1-flash-1019`** (95 models) — the free promotional id ended on 2026-11-03 and the live API now serves the same snapshot under a paid id:
+  - `inclusionai/ling-3.1-flash-1019` ("Ling 3.1 Flash 1019", 1,000,000 ctx, 131,072 max output, Go tier $0.30/$0.90, openai protocol, text-only, `low,medium,high` efforts — same ladder as `inclusionai/ling-3.1-flash`; commandcode.ai Reasons badge on; live probe confirmed default reasoning, `off` rejected 400).
+  - `inclusionai/ling-3.1-flash-1019:free` removed — no longer served by the live API.
+
 ## [0.1.45] - 2026-11-01
 
 ### Added

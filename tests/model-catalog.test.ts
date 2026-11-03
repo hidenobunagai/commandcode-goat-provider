@@ -332,9 +332,9 @@ test("includes the 2026-10-16 new models with curated capabilities", () => {
 });
 
 test("includes the 2026-11-01 new models with curated capabilities", () => {
-  // Ling 3.1 Flash 1019 (free promo snapshot): openai protocol, text-only, same low/medium/high ladder as Ling 3.1 Flash
+  // Ling 3.1 Flash 1019 (dated snapshot; :free promo id replaced 2026-11-03): openai protocol, text-only, same low/medium/high ladder as Ling 3.1 Flash
   const ling1019 = inferModelInfo({
-    id: "inclusionai/ling-3.1-flash-1019:free",
+    id: "inclusionai/ling-3.1-flash-1019",
     name: "Ling 3.1 Flash 1019",
     context_length: 1_000_000,
   });

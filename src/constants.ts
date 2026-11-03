@@ -174,7 +174,7 @@ const OFFICIAL_MODELS: Array<[string, string, number]> = [
   ["deepseek/deepseek-v4-flash-vision-exp", "DeepSeek V4 Flash Vision (exp)", 1000000],
   ["poolside/laguna-s-2.1-free", "Laguna S 2.1", 256000],
   ["reflection/beam:free", "Beam 1.0", 1048576],
-  ["inclusionai/ling-3.1-flash-1019:free", "Ling 3.1 Flash 1019", 1000000],
+  ["inclusionai/ling-3.1-flash-1019", "Ling 3.1 Flash 1019", 1000000],
   ["claude-haiku-5-5", "Claude Haiku 5.5", 1000000],
   ["stealth/glyph-cluster:free", "Glyph Cluster", 256000],
   ["mistral/mistral-large-4", "Mistral Large 4", 524288],
@@ -380,7 +380,7 @@ const EFFORTS_MAP = new Map<string, ReasoningEffort[]>([
   ["nvidia/nemotron-3.5-super-vl", ["low", "medium", "high"]],
   ["meta/muse-spark-open", ["low", "medium", "high", "xhigh"]],
   ["reflection/beam:free", ["low", "medium", "high", "xhigh", "max"]],
-  ["inclusionai/ling-3.1-flash-1019:free", ["low", "medium", "high"]],
+  ["inclusionai/ling-3.1-flash-1019", ["low", "medium", "high"]],
   ["ornith/ornith-1.5-122b", ["low", "medium", "high", "xhigh", "max"]],
 ]);
 const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
@@ -470,7 +470,7 @@ const PROTOCOL_MAP = new Map<string, "openai" | "anthropic">([
   ["meituan/LongCat-2.0", "openai"],
   ["inclusionai/ling-3.1-flash", "openai"],
   ["reflection/beam:free", "openai"],
-  ["inclusionai/ling-3.1-flash-1019:free", "openai"],
+  ["inclusionai/ling-3.1-flash-1019", "openai"],
   ["claude-haiku-5-5", "anthropic"],
   ["stealth/glyph-cluster:free", "openai"],
   ["mistral/mistral-large-4", "openai"],
