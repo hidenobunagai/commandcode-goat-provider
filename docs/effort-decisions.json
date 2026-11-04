@@ -637,5 +637,16 @@
     ],
     "source": "commandcode.ai/models/ling-3-1-flash-1019: 'hybrid-reasoning MoE', Reasons before answering + Text input + Text output badges (text-only), Go and above, $0.30/$0.90, released 2026-11-03, 1M ctx; replaces the inclusionai/ling-3.1-flash-1019:free promo id (decided 2026-11-01: low/medium/high, no vendor reasoning_effort reference found, sibling inclusionai/ling-3.1-flash ladder low/medium/high kept, xhigh/max not added). Probe 2026-11-04: thinks by default (reasoning=1659), off rejected 400, low..max all 200 (token counts noisy).",
     "decided": "2026-11-04"
+  },
+  "stealth/crouton-alpha": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "commandcode.ai/docs/resources/pricing-limits#crouton-alpha-free: 'lightweight model for coding, agentic sub-tasks, tool use, and document analysis, with a 1M token context, image input, and low, medium, high, xhigh, and max reasoning effort'; maker anonymous (stealth preview), so no vendor API docs exist (stealthmodels.com has no page for it). commandcode.ai/models/crouton-alpha model data: reasoning=true, vision=true, reasoningEfforts low|medium|high|xhigh|max, free ($0) while the preview lasts, 1.05M ctx. pi-ai has no entry. Probe 2026-11-05: off rejected 400 ('Only models that can turn thinking off accept it'), low..max all 200; reasoning token counts reported mostly 0 (low=32), so default thinking is not visible in usage — ladder taken from Command Code's published effort list.",
+    "decided": "2026-11-05"
   }
 }

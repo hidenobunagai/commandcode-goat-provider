@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.1.47] - 2026-11-05
+
+### Added
+
+- **`stealth/crouton-alpha` added to catalog** (96 models) — a free stealth preview served by the live API:
+  - `stealth/crouton-alpha` ("Crouton Alpha", 1,048,576 ctx, 131,072 max output, free tier $0/$0 while the stealth preview lasts, openai protocol, vision on, `low,medium,high,xhigh,max` efforts — Command Code's pricing docs list image input and low through max reasoning effort; maker anonymous; live probe confirmed `off` is rejected 400 and every rung `low`..`max` is accepted).
+
 ## [0.1.46] - 2026-11-04
 
 ### Changed

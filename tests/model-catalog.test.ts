@@ -191,7 +191,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(95);
+  expect(FALLBACK_MODELS.length).toBe(96);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 
@@ -374,4 +374,19 @@ test("includes the 2026-10-21 new models with curated capabilities", () => {
   expect(ornith.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
   expect(ornith.contextWindow).toBe(262_144);
   expect(ornith.maxOutput).toBe(131_072);
+});
+
+test("includes the 2026-11-05 new models with curated capabilities", () => {
+  // Crouton Alpha (free stealth preview): openai protocol, vision on, low..max ladder
+  const crouton = inferModelInfo({
+    id: "stealth/crouton-alpha",
+    name: "Crouton Alpha",
+    context_length: 1_048_576,
+  });
+  expect(crouton.apiFormat).toBe("openai");
+  expect(crouton.supportsVision).toBe(true);
+  expect(crouton.supportsThinking).toBe(true);
+  expect(crouton.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
+  expect(crouton.contextWindow).toBe(1_048_576);
+  expect(crouton.maxOutput).toBe(131_072);
 });

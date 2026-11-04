@@ -99,6 +99,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `meituan/LongCat-2.0` | LongCat 2.0 | 1,000,000 | 131,072 | OpenAI | - | ✗ |
 | `claude-haiku-5-5` | Claude Haiku 5.5 | 1,000,000 | 65,536 | Anthropic | ✓ (`low,medium,high,xhigh,max`) | ✓ |
 | `stealth/glyph-cluster:free` | Glyph Cluster | 256,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✗ |
+| `stealth/crouton-alpha` | Crouton Alpha | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
 | `mistral/mistral-large-4` | Mistral Large 4 | 524,288 | 131,072 | OpenAI | ✓ (`high`) | ✓ |
 | `meta/muse-wonder-1.0` | Muse Wonder | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
 | `google/gemini-4-argon` | Gemini 4 Argon | 1,000,000 | 65,536 | OpenAI | ✓ (`low,medium,high`) | ✓ |
