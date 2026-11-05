@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.48] - 2026-11-06
+
+### Removed
+
+- **`poolside/laguna-s-2.1-free` removed from catalog** (95 models) — the live Command Code API no longer serves it ("Laguna S 2.1", free tier, text-only, no efforts), so the dead id is dropped from `OFFICIAL_MODELS`, `PROTOCOL_MAP` and `docs/models.md`.
+
 ## [0.1.47] - 2026-11-05
 
 ### Added

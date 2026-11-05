@@ -482,8 +482,8 @@
   },
   "poolside/laguna-s-2.1-free": {
     "efforts": [],
-    "source": "Kept catalog empty (no efforts). commandcode.ai/models/laguna-s-2-1-free: NO Reasons badge (Text only), free tier; probe 2026-10-02: omitted reasoning=0 on retry (429 upstream flake on first run), off rejected — does not reason. pi-ai vercel-ai-gateway:poolside/laguna-s-2.1-free reasoning:true with no map is the generic default, contradicted by badge + probe. Non-reasoning model.",
-    "decided": "2026-10-02"
+    "source": "Catalog row REMOVED 2026-11-06: the live API no longer serves poolside/laguna-s-2.1-free (95 models, laguna absent); dead ids are dropped per playbook section 1 (REMOVED). Prior decision (2026-10-02): kept catalog empty (no efforts). commandcode.ai/models/laguna-s-2-1-free: NO Reasons badge (Text only), free tier; probe 2026-10-02: omitted reasoning=0 on retry (429 upstream flake on first run), off rejected — does not reason. pi-ai vercel-ai-gateway:poolside/laguna-s-2.1-free reasoning:true with no map is the generic default, contradicted by badge + probe. Non-reasoning model.",
+    "decided": "2026-11-06"
   },
   "stealth/pixel-canary": {
     "efforts": [],

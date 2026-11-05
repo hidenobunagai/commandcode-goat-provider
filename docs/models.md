@@ -72,7 +72,6 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `MiniMaxAI/MiniMax-M2.5` | MiniMax M2.5 | 200,000 | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
 | `MiniMaxAI/MiniMax-M2.7` | MiniMax M2.7 | 200,000 | 131,072 | OpenAI | ✓ (`low,medium,high`) | ✗ |
 | `deepseek/deepseek-v4-flash-vision-exp` | DeepSeek V4 Flash Vision (exp) | 1,000,000 | 384,000 | OpenAI | ✓ (`low,high,max`) | ✓ |
-| `poolside/laguna-s-2.1-free` | Laguna S 2.1 | 256,000 | 65,536 | OpenAI | - | No |
 | `claude-fable-5-1` | Claude Fable 5.1 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
 | `claude-fable-5` | Claude Fable 5 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
 | `claude-opus-4-7` | Claude Opus 4.7 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
