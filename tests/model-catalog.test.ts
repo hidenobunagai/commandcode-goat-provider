@@ -101,6 +101,17 @@ test("includes the 2026-10-02 new models with curated capabilities", () => {
   expect(fast.supportsVision).toBe(true);
   expect(fast.supportedReasoningEfforts).toEqual(["low", "high", "max"]);
 
+  // DeepSeek V4.1 Flash Ultrafast: same vendor low/high/max ladder, vision on.
+  const ultrafast = inferModelInfo({
+    id: "deepseek/deepseek-v4.1-flash-ultrafast",
+    name: "DeepSeek V4.1 Flash Ultrafast",
+    context_length: 1_048_576,
+  });
+  expect(ultrafast.apiFormat).toBe("openai");
+  expect(ultrafast.supportsVision).toBe(true);
+  expect(ultrafast.supportedReasoningEfforts).toEqual(["low", "high", "max"]);
+  expect(ultrafast.isUserSelectable).toBe(true);
+
   // Ling 3.1 Flash: text-only, low/medium/high effort ladder — Reasons badge
   // on commandcode.ai, probe confirmed thinking by default, off rejected.
   const ling = inferModelInfo({
@@ -191,7 +202,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(95);
+  expect(FALLBACK_MODELS.length).toBe(96);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 

@@ -74,7 +74,7 @@ The provider dynamically discovers available models from `GET https://api.comman
 | Model Family | Examples | Wire Protocol | Thinking / Reasoning | Vision |
 |---|---|---|---|---|
 | **Anthropic Claude** | `claude-opus-5-5`, `claude-sonnet-5-5`, `claude-sonnet-5`, `claude-haiku-5-5`, `claude-opus-5` | Anthropic `/messages` | Automatic | Supported |
-| **DeepSeek** | `deepseek/deepseek-v4.1-flash`, `deepseek/deepseek-v4-pro`, `deepseek/deepseek-v4-flash`, `deepseek/deepseek-v4-flash-fast`, `deepseek/deepseek-v4-flash-vision-exp` | OpenAI `/chat/completions` | Configurable effort | Supported on V4.1 Flash & Vision |
+| **DeepSeek** | `deepseek/deepseek-v4.1-flash`, `deepseek/deepseek-v4.1-flash-ultrafast`, `deepseek/deepseek-v4-pro`, `deepseek/deepseek-v4-flash`, `deepseek/deepseek-v4-flash-fast`, `deepseek/deepseek-v4-flash-vision-exp` | OpenAI `/chat/completions` | Configurable effort | Supported on V4.1 Flash & Vision |
 | **Moonshot Kimi** | `moonshotai/Kimi-K3.1-Pro`, `moonshotai/Kimi-K3`, `moonshotai/Kimi-K2.7-Code`, `moonshotai/Kimi-K2.6` | OpenAI `/chat/completions` | Configurable effort | Supported |
 | **Zhipu GLM** | `z-ai/glm-5.3-flashx`, `z-ai/glm-5.3-flash`, `zai-org/GLM-5.3`, `zai-org/GLM-5.2` | OpenAI `/chat/completions` | Configurable effort | Text & Tools |
 | **MiniMax** | `minimax/minimax-m3.1-flash`, `MiniMaxAI/MiniMax-M3`, `MiniMaxAI/MiniMax-M2.7`, `MiniMaxAI/MiniMax-M2.5` | OpenAI `/chat/completions` | Configurable effort | Supported (M3, M3.1) |

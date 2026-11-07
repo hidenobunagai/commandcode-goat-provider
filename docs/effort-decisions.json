@@ -648,5 +648,14 @@
     ],
     "source": "commandcode.ai/docs/resources/pricing-limits#crouton-alpha-free: 'lightweight model for coding, agentic sub-tasks, tool use, and document analysis, with a 1M token context, image input, and low, medium, high, xhigh, and max reasoning effort'; maker anonymous (stealth preview), so no vendor API docs exist (stealthmodels.com has no page for it). commandcode.ai/models/crouton-alpha model data: reasoning=true, vision=true, reasoningEfforts low|medium|high|xhigh|max, free ($0) while the preview lasts, 1.05M ctx. pi-ai has no entry. Probe 2026-11-05: off rejected 400 ('Only models that can turn thinking off accept it'), low..max all 200; reasoning token counts reported mostly 0 (low=32), so default thinking is not visible in usage — ladder taken from Command Code's published effort list.",
     "decided": "2026-11-05"
+  },
+  "deepseek/deepseek-v4.1-flash-ultrafast": {
+    "efforts": [
+      "low",
+      "high",
+      "max"
+    ],
+    "source": "DeepSeek API docs (api-docs.deepseek.com/guides/thinking_mode, re-read 2026-11-08): reasoning_effort low/high/max, thinking enabled by default with default effort high, gateway minimal/low->low medium/high/xhigh->high ultra/max->max, so the reachable ladder is low,high,max (same as deepseek-v4.1-flash and -fast); probe 2026-11-08: thinks by default (reasoning=257), off accepted (reasoning=0); commandcode.ai/models: Capabilities Text input, Vision, Reasoning; GOAT tier",
+    "decided": "2026-11-08"
   }
 }

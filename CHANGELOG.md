@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.1.49] - 2026-11-08
+
+### Added
+
+- **`deepseek/deepseek-v4.1-flash-ultrafast` added to catalog** (96 models) — an accelerated V4.1 Flash variant served by the live API:
+  - `deepseek/deepseek-v4.1-flash-ultrafast` ("DeepSeek V4.1 Flash Ultrafast", 1,048,576 ctx, 65,536 max output, GOAT tier $2.40/$9.60, openai protocol, vision on, `low,high,max` efforts — same DeepSeek V4.1 vendor ladder as `deepseek/deepseek-v4.1-flash-fast`; commandcode.ai Capabilities badge lists Vision and Reasoning; live probe confirmed default reasoning and that `off` is accepted).
+
 ## [0.1.48] - 2026-11-06
 
 ### Removed
