@@ -327,19 +327,19 @@ test("includes the 2026-10-15 new models with curated capabilities", () => {
   expect(muse.maxOutput).toBe(131_072);
 });
 
-test("includes the 2026-10-16 new models with curated capabilities", () => {
-  // Beam 1.0: openai protocol, text-only (vision off), low..max ladder (probed live: thinks by default, off rejected)
-  const beam = inferModelInfo({
-    id: "reflection/beam:free",
-    name: "Beam 1.0",
+test("includes the 2026-11-10 new models with curated capabilities", () => {
+  // Muse Ember: openai protocol, vision on, low..max ladder (Meta docs: minimal..max, none rejected; probed live: thinks by default, off rejected)
+  const ember = inferModelInfo({
+    id: "meta/muse-ember",
+    name: "Muse Ember",
     context_length: 1_048_576,
   });
-  expect(beam.apiFormat).toBe("openai");
-  expect(beam.supportsVision).toBe(false);
-  expect(beam.supportsThinking).toBe(true);
-  expect(beam.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
-  expect(beam.contextWindow).toBe(1_048_576);
-  expect(beam.maxOutput).toBe(131_072);
+  expect(ember.apiFormat).toBe("openai");
+  expect(ember.supportsVision).toBe(true);
+  expect(ember.supportsThinking).toBe(true);
+  expect(ember.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
+  expect(ember.contextWindow).toBe(1_048_576);
+  expect(ember.maxOutput).toBe(131_072);
 });
 
 test("includes the 2026-11-01 new models with curated capabilities", () => {

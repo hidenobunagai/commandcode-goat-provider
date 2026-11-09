@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.1.50] - 2026-11-10
+
+### Added
+
+- **`meta/muse-ember` added to catalog** — Meta's efficient execution model in the Muse family, served by the live API:
+  - `meta/muse-ember` ("Muse Ember", 1,048,576 ctx, 131,072 max output, Go tier $0.10/$0.50, openai protocol, vision on, `low,medium,high,xhigh,max` efforts — Meta Model API docs list `reasoning_effort` minimal..max with `none` unsupported; commandcode.ai Capabilities badge lists Vision and Reasoning; live probe confirmed default reasoning and that `off` is rejected).
+
+### Removed
+
+- **`reflection/beam:free` removed from catalog** (96 models) — the live Command Code API no longer serves it ("Beam 1.0", free tier), so the dead id is dropped from `OFFICIAL_MODELS`, `EFFORTS_MAP`, `PROTOCOL_MAP`, `docs/models.md` and the README.
+
 ## [0.1.49] - 2026-11-08
 
 ### Added

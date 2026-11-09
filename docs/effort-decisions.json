@@ -657,5 +657,16 @@
     ],
     "source": "DeepSeek API docs (api-docs.deepseek.com/guides/thinking_mode, re-read 2026-11-08): reasoning_effort low/high/max, thinking enabled by default with default effort high, gateway minimal/low->low medium/high/xhigh->high ultra/max->max, so the reachable ladder is low,high,max (same as deepseek-v4.1-flash and -fast); probe 2026-11-08: thinks by default (reasoning=257), off accepted (reasoning=0); commandcode.ai/models: Capabilities Text input, Vision, Reasoning; GOAT tier",
     "decided": "2026-11-08"
+  },
+  "meta/muse-ember": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "Meta Model API docs https://dev.meta.ai/docs/reasoning and https://dev.meta.ai/docs/muse-ember: muse-ember-1.0 reasoning_effort \"minimal\" to \"max\" (default \"max\"), \"none\" not supported (HTTP 400); minimal has no gateway rung. commandcode.ai/models/muse-ember: Text input, Vision, Reasoning; Go and above; $0.10/M in, $0.50/M out, 1.05M ctx. probe 2026-11-10: thinks by default (reasoning=773), off rejected 400, rungs low..max all 200; protocol openai. Catalog defaultEffort stays medium like the rest of the Muse family.",
+    "decided": "2026-11-10"
   }
 }
