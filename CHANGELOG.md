@@ -1,5 +1,16 @@
 # Change Log
 
+## [0.1.51] - 2026-11-11
+
+### Added
+
+- **`claude-fable-5-2` added to catalog** — Anthropic's newest Fable model, served by the live API:
+  - `claude-fable-5-2` ("Claude Fable 5.2", 1,000,000 ctx, 65,536 max output, Pro tier — Max plan and above — $8/$40, anthropic protocol, vision on, `low,medium,high,xhigh,max` efforts — Anthropic documents adaptive thinking as always on, with depth set by `effort` low through max; commandcode.ai lists the same effort ladder as Claude Fable 5.1).
+
+### Removed
+
+- **`stealth/crouton-alpha` removed from catalog** (96 models) — the live Command Code API no longer serves the stealth preview ("Crouton Alpha"), so the dead id is dropped from `OFFICIAL_MODELS`, `VISION_SET`, `EFFORTS_MAP`, `PROTOCOL_MAP`, `docs/models.md` and the README.
+
 ## [0.1.50] - 2026-11-10
 
 ### Added

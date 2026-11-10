@@ -387,17 +387,17 @@ test("includes the 2026-10-21 new models with curated capabilities", () => {
   expect(ornith.maxOutput).toBe(131_072);
 });
 
-test("includes the 2026-11-05 new models with curated capabilities", () => {
-  // Crouton Alpha (free stealth preview): openai protocol, vision on, low..max ladder
-  const crouton = inferModelInfo({
-    id: "stealth/crouton-alpha",
-    name: "Crouton Alpha",
-    context_length: 1_048_576,
+test("includes the 2026-11-11 new models with curated capabilities", () => {
+  // Claude Fable 5.2: anthropic protocol, vision on, low..max ladder (Anthropic: adaptive thinking always on, effort low..max)
+  const fable = inferModelInfo({
+    id: "claude-fable-5-2",
+    name: "Claude Fable 5.2",
+    context_length: 1_000_000,
   });
-  expect(crouton.apiFormat).toBe("openai");
-  expect(crouton.supportsVision).toBe(true);
-  expect(crouton.supportsThinking).toBe(true);
-  expect(crouton.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
-  expect(crouton.contextWindow).toBe(1_048_576);
-  expect(crouton.maxOutput).toBe(131_072);
+  expect(fable.apiFormat).toBe("anthropic");
+  expect(fable.supportsVision).toBe(true);
+  expect(fable.supportsThinking).toBe(true);
+  expect(fable.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
+  expect(fable.contextWindow).toBe(1_000_000);
+  expect(fable.maxOutput).toBe(65_536);
 });
