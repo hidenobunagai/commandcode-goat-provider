@@ -679,5 +679,14 @@
     ],
     "source": "Anthropic Claude API reference (claude-api skill model table, cached 2026-11-03): Claude Fable 5.2 thinking is always on (omit thinking or send adaptive; disabled and budget_tokens return 400), depth controlled by output_config.effort low|medium|high|xhigh|max; 1M ctx, 128K max output, $8/$40. commandcode.ai/models/claude-fable-5-2: Max plan and above, $8/M in, $40/M out, reasoningEfforts identical to claude-fable-5-1 (low..max). probe-efforts skips anthropic-protocol models, so no live probe; protocol anthropic (claude-* rule). Catalog defaultEffort stays medium like claude-fable-5-1.",
     "decided": "2026-11-11"
+  },
+  "google/gemini-4-carbon": {
+    "efforts": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "source": "Google Cloud developer guide https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/guides/gemini-4-carbon: thinking levels LOW, MEDIUM (default on gemini-4-carbon), HIGH; AI Studio Gemini 4 Carbon developer guide: default thinking medium. commandcode.ai/models/gemini-4-carbon: reasoning true, vision true, reasoningEfforts low/medium/high, Pro and above, $2/M in, $10/M out, 1M ctx. probe 2026-11-12: thinks by default (reasoning=922), off rejected 400, medium (1433) and high (5863) 200, low and xhigh timed out (probe timeout, not a rejection); protocol openai. Same ladder as sibling google/gemini-4-argon.",
+    "decided": "2026-11-12"
   }
 }

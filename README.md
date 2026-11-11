@@ -79,7 +79,7 @@ The provider dynamically discovers available models from `GET https://api.comman
 | **Zhipu GLM** | `z-ai/glm-5.3-flashx`, `z-ai/glm-5.3-flash`, `zai-org/GLM-5.3`, `zai-org/GLM-5.2` | OpenAI `/chat/completions` | Configurable effort | Text & Tools |
 | **MiniMax** | `minimax/minimax-m3.1-flash`, `MiniMaxAI/MiniMax-M3`, `MiniMaxAI/MiniMax-M2.7`, `MiniMaxAI/MiniMax-M2.5` | OpenAI `/chat/completions` | Configurable effort | Supported (M3, M3.1) |
 | **Alibaba Qwen** | `Qwen/Qwen3.8-Max-Prime`, `Qwen/Qwen3.8-Omni-Flash`, `Qwen/Qwen3.8-Max`, `Qwen/Qwen3.8-27B`, `Qwen/Qwen3.7-Max` | OpenAI `/chat/completions` | Configurable effort | Supported |
-| **Google Gemini** | `google/gemini-4-argon`, `google/gemini-3.8-flash`, `google/gemini-3.7-flash` | OpenAI `/chat/completions` | Configurable effort | Supported |
+| **Google Gemini** | `google/gemini-4-carbon`, `google/gemini-4-argon`, `google/gemini-3.8-flash`, `google/gemini-3.7-flash` | OpenAI `/chat/completions` | Configurable effort | Supported |
 | **xAI Grok** | `xai/grok-4.7`, `xai/grok-4.6`, `xai/grok-4.5` | OpenAI `/chat/completions` | Configurable effort | Supported |
 | **Meta Muse** | `meta/muse-wonder-1.0`, `meta/muse-ember`, `meta/muse-spark-open`, `meta/muse-spark-1.3`, `meta/muse-spark-1.3-contributor`, `meta/muse-spark-1.2` | OpenAI `/chat/completions` | Configurable effort | Supported |
 | **Other Partners** | `ornith/ornith-1.5-122b`, `inclusionai/ling-3.1-flash-1019`, `nvidia/nemotron-3.5-super-vl`, `mistral/mistral-large-4`, `stealth/glyph-cluster:free`, `xiaomi/mimo-v2.6-pro`, `stepfun/Step-5-Preview` | OpenAI `/chat/completions` | Varied | Varied |

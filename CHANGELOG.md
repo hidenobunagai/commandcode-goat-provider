@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.1.52] - 2026-11-12
+
+### Added
+
+- **`google/gemini-4-carbon` added to catalog** (97 models) — Google's strongest Gemini 4 reasoning model, served by the live API:
+  - `google/gemini-4-carbon` ("Gemini 4 Carbon", 1,000,000 ctx, 65,536 max output, Pro tier $2/$10, openai protocol, vision on, `low,medium,high` efforts — Google documents `thinking_level` LOW / MEDIUM (default) / HIGH; commandcode.ai lists Vision, Reasoning and the same effort ladder as Gemini 4 Argon; live probe confirmed default reasoning and that `off` is rejected).
+
 ## [0.1.51] - 2026-11-11
 
 ### Added

@@ -202,7 +202,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(96);
+  expect(FALLBACK_MODELS.length).toBe(97);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 
@@ -400,4 +400,19 @@ test("includes the 2026-11-11 new models with curated capabilities", () => {
   expect(fable.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
   expect(fable.contextWindow).toBe(1_000_000);
   expect(fable.maxOutput).toBe(65_536);
+});
+
+test("includes the 2026-11-12 new models with curated capabilities", () => {
+  // Gemini 4 Carbon: openai protocol, vision on, low..high ladder (Google: thinking_level LOW/MEDIUM (default)/HIGH)
+  const carbon = inferModelInfo({
+    id: "google/gemini-4-carbon",
+    name: "Gemini 4 Carbon",
+    context_length: 1_000_000,
+  });
+  expect(carbon.apiFormat).toBe("openai");
+  expect(carbon.supportsVision).toBe(true);
+  expect(carbon.supportsThinking).toBe(true);
+  expect(carbon.supportedReasoningEfforts).toEqual(["low", "medium", "high"]);
+  expect(carbon.contextWindow).toBe(1_000_000);
+  expect(carbon.maxOutput).toBe(65_536);
 });

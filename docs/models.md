@@ -102,6 +102,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `stealth/glyph-cluster:free` | Glyph Cluster | 256,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✗ |
 | `mistral/mistral-large-4` | Mistral Large 4 | 524,288 | 131,072 | OpenAI | ✓ (`high`) | ✓ |
 | `meta/muse-wonder-1.0` | Muse Wonder | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
+| `google/gemini-4-carbon` | Gemini 4 Carbon | 1,000,000 | 65,536 | OpenAI | ✓ (`low,medium,high`) | ✓ |
 | `google/gemini-4-argon` | Gemini 4 Argon | 1,000,000 | 65,536 | OpenAI | ✓ (`low,medium,high`) | ✓ |
 | `Qwen/Qwen3.8-Max-Prime` | Qwen 3.8 Max Prime | 1,000,000 | 65,536 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✓ |
 | `nvidia/nemotron-3.5-super-vl` | Nemotron 3.5 Super VL | 262,144 | 131,072 | OpenAI | ✓ (`low,medium,high`) | ✓ |
