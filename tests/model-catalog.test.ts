@@ -202,7 +202,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(97);
+  expect(FALLBACK_MODELS.length).toBe(98);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 
@@ -415,4 +415,19 @@ test("includes the 2026-11-12 new models with curated capabilities", () => {
   expect(carbon.supportedReasoningEfforts).toEqual(["low", "medium", "high"]);
   expect(carbon.contextWindow).toBe(1_000_000);
   expect(carbon.maxOutput).toBe(65_536);
+});
+
+test("includes the 2026-11-13 new models with curated capabilities", () => {
+  // Inkling 2 Small (free): openai protocol, vision on, low..max ladder without xhigh (commandcode.ai: low/medium/high/max)
+  const inkling2 = inferModelInfo({
+    id: "thinkingmachines/inkling-2-small:free",
+    name: "Inkling 2 Small",
+    context_length: 1_048_576,
+  });
+  expect(inkling2.apiFormat).toBe("openai");
+  expect(inkling2.supportsVision).toBe(true);
+  expect(inkling2.supportsThinking).toBe(true);
+  expect(inkling2.supportedReasoningEfforts).toEqual(["low", "medium", "high", "max"]);
+  expect(inkling2.contextWindow).toBe(1_048_576);
+  expect(inkling2.maxOutput).toBe(131_072);
 });

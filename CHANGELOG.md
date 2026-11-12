@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.1.53] - 2026-11-13
+
+### Added
+
+- **`thinkingmachines/inkling-2-small:free` added to catalog** (98 models) — Thinking Machines Lab's first second-generation Inkling model, served free by the live API:
+  - `thinkingmachines/inkling-2-small:free` ("Inkling 2 Small", 1,048,576 ctx, 131,072 max output, Free tier while the free tier lasts (200 requests/day), openai protocol, vision on, `low,medium,high,max` efforts — commandcode.ai documents image input and low / medium / high / max reasoning effort; OpenRouter marks reasoning as mandatory with the same rungs; live probe confirmed default reasoning and that `off` is rejected).
+
 ## [0.1.52] - 2026-11-12
 
 ### Added

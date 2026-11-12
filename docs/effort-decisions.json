@@ -688,5 +688,15 @@
     ],
     "source": "Google Cloud developer guide https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/guides/gemini-4-carbon: thinking levels LOW, MEDIUM (default on gemini-4-carbon), HIGH; AI Studio Gemini 4 Carbon developer guide: default thinking medium. commandcode.ai/models/gemini-4-carbon: reasoning true, vision true, reasoningEfforts low/medium/high, Pro and above, $2/M in, $10/M out, 1M ctx. probe 2026-11-12: thinks by default (reasoning=922), off rejected 400, medium (1433) and high (5863) 200, low and xhigh timed out (probe timeout, not a rejection); protocol openai. Same ladder as sibling google/gemini-4-argon.",
     "decided": "2026-11-12"
+  },
+  "thinkingmachines/inkling-2-small:free": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "max"
+    ],
+    "source": "Thinking Machines' own API reference for Inkling 2 Small was not located (web search 2026-11-13 returned only third-party hosts). commandcode.ai/docs/resources/pricing-limits#inkling-2-small-free: 'image input, and low, medium, high, and max reasoning effort'; commandcode.ai/models/inkling-2-small-free caps: text, vision, reasoning. OpenRouter live metadata for thinkingmachines/inkling-2-small:free: reasoning mandatory, supported_efforts minimal/low/medium/high/max, default high. pi-ai openrouter:thinkingmachines/inkling-2-small:free explicit map (off:null, minimal, low..high, max). probe 2026-11-13: reasons by default (reasoning=380), off rejected 400, low..max all 200. Same ladder as sibling thinkingmachines/inkling and inkling-small.",
+    "decided": "2026-11-13"
   }
 }
