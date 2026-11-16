@@ -33,6 +33,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `moonshotai/Kimi-K3.1-Pro` | Kimi K3.1 Pro | 1,048,576 | 65,536 | OpenAI | ✓ (`low,high,max`) | ✓ |
 | `moonshotai/Kimi-K3` | Kimi K3 | 1,048,576 | 131,072 | OpenAI | ✓ (`low,high,max`) | ✓ |
 | `moonshotai/Kimi-K2.7-Code` | Kimi K2.7 Code | 262,144 | 262,144 | OpenAI | ✓ (`low,high,xhigh`) | ✓ |
+| `Qwen/Qwen4-Max` | Qwen 4 Max | 1M | 65,536 | OpenAI | ✓ (`low,high,xhigh`) | Yes |
 | `Qwen/Qwen3.8-Max` | Qwen 3.8 Max | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |
 | `Qwen/Qwen3.8-Max-0902` | Qwen 3.8 Max 0902 | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |
 | `Qwen/Qwen3.8-Flash` | Qwen 3.8 Flash | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |
@@ -49,6 +50,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `meta/muse-spark-1.2-contributor` | Muse Spark 1.2 Contributor | 1,048,576 | 131,072 | Responses | ✓ (`low,medium,high,xhigh`) | ✓ |
 | `stepfun/Step-3.7-Flash` | Step 3.7 Flash | 256K | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
 | `stepfun/Step-5-Preview` | Step 5 Preview | 1M | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
+| `tencent/hy4-flash` | Tencent Hy4 Flash | 1,024,000 | 131,072 | OpenAI | ✓ (`low,high`) | Yes |
 | `tencent/hy4-preview` | Tencent Hy4 Preview | 1M | 65,536 | OpenAI | ✓ (`low,high`) | No |
 | `xiaomi/mimo-v2.6-pro` | MiMo V2.6 Pro | 1,048,576 | 128,000 | OpenAI | ✓ (`low,medium,high`) | ✓ |
 | `xiaomi/mimo-v2.6-pro-ultraspeed` | MiMo V2.6 Pro UltraSpeed | 1,048,576 | 128,000 | OpenAI | ✓ (`low,medium,high`) | ✓ |

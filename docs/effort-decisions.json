@@ -698,5 +698,22 @@
     ],
     "source": "Thinking Machines' own API reference for Inkling 2 Small was not located (web search 2026-11-13 returned only third-party hosts). commandcode.ai/docs/resources/pricing-limits#inkling-2-small-free: 'image input, and low, medium, high, and max reasoning effort'; commandcode.ai/models/inkling-2-small-free caps: text, vision, reasoning. OpenRouter live metadata for thinkingmachines/inkling-2-small:free: reasoning mandatory, supported_efforts minimal/low/medium/high/max, default high. pi-ai openrouter:thinkingmachines/inkling-2-small:free explicit map (off:null, minimal, low..high, max). probe 2026-11-13: reasons by default (reasoning=380), off rejected 400, low..max all 200. Same ladder as sibling thinkingmachines/inkling and inkling-small.",
     "decided": "2026-11-13"
+  },
+  "Qwen/Qwen4-Max": {
+    "efforts": [
+      "low",
+      "high",
+      "xhigh"
+    ],
+    "source": "Alibaba Cloud Model Studio qwen4-max docs (https://www.alibabacloud.com/help/en/model-studio/qwen4-max): OpenAI Chat Completions reasoning_effort supported values low, high, xhigh; default high (minimal->low, medium->high, max->xhigh); enable_thinking defaults to true. commandcode.ai/models/qwen4-max modalities: reasons before answering, text + image input. No pi-ai entry yet. probe 2026-11-17: reasons by default (reasoning=256), off accepted (200, reasoning=0); with the extension's max_tokens=65536 low/high/xhigh all 200 (the probe script's 8192 cap is below the high+ thinking_budget, hence its 400s).",
+    "decided": "2026-11-17"
+  },
+  "tencent/hy4-flash": {
+    "efforts": [
+      "low",
+      "high"
+    ],
+    "source": "Tencent publishes no Hy4 flash rung list (searched 2026-11-17: hy.tencent.com/research/hy4-flash, tencent.com launch post, cloud.tencent.com/tokenhub/hy4-flash-en, Tencent-Hunyuan GitHub; none document reasoning_effort values). OpenRouter tencent/hy4-flash metadata: reasoning on by default, not mandatory, supports_reasoning_effort false. No pi-ai entry; sibling pi-ai openrouter:tencent/hy4 and tencent/hy4-preview explicit maps are off:none, low, high. commandcode.ai/models/hy4-flash modalities: reasons before answering, text + image input. probe 2026-11-17: reasons by default (reasoning=467), off accepted (200, reasoning=0), low..max all 200. Family ladder from Hy4 / hy4-preview applied.",
+    "decided": "2026-11-17"
   }
 }

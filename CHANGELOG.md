@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.1.54] - 2026-11-17
+
+### Added
+
+- **`Qwen/Qwen4-Max` and `tencent/hy4-flash` added to catalog** (100 models) — two new models served by the live API:
+  - `Qwen/Qwen4-Max` ("Qwen 4 Max", 1,000,000 ctx, 65,536 max output, Go tier, openai protocol, vision on, `low,high,xhigh` efforts — Alibaba Model Studio documents `reasoning_effort` low / high / xhigh with high as the default; live probe confirmed default reasoning and that `off` is accepted).
+  - `tencent/hy4-flash` ("Tencent Hy4 Flash", 1,024,000 ctx, Go tier, openai protocol, vision on, `low,high` efforts — Tencent publishes no rung list for Hy4 flash, so the ladder follows the Hy4 / Hy4 Preview family maps (low / high); live probe confirmed default reasoning and that `off` is accepted).
+
 ## [0.1.53] - 2026-11-13
 
 ### Added

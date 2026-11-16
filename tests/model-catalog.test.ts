@@ -202,7 +202,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(98);
+  expect(FALLBACK_MODELS.length).toBe(100);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 
@@ -430,4 +430,31 @@ test("includes the 2026-11-13 new models with curated capabilities", () => {
   expect(inkling2.supportedReasoningEfforts).toEqual(["low", "medium", "high", "max"]);
   expect(inkling2.contextWindow).toBe(1_048_576);
   expect(inkling2.maxOutput).toBe(131_072);
+});
+
+test("includes the 2026-11-17 new models with curated capabilities", () => {
+  // Qwen 4 Max: Alibaba documents reasoning_effort low / high / xhigh (default high), image input
+  const qwen4Max = inferModelInfo({
+    id: "Qwen/Qwen4-Max",
+    name: "Qwen 4 Max",
+    context_length: 1_000_000,
+  });
+  expect(qwen4Max.apiFormat).toBe("openai");
+  expect(qwen4Max.supportsVision).toBe(true);
+  expect(qwen4Max.supportsThinking).toBe(true);
+  expect(qwen4Max.supportedReasoningEfforts).toEqual(["low", "high", "xhigh"]);
+  expect(qwen4Max.contextWindow).toBe(1_000_000);
+  expect(qwen4Max.maxOutput).toBe(65_536);
+
+  // Tencent Hy4 Flash: Hy4 family ladder (low / high), image input
+  const hy4Flash = inferModelInfo({
+    id: "tencent/hy4-flash",
+    name: "Tencent Hy4 Flash",
+    context_length: 1_024_000,
+  });
+  expect(hy4Flash.apiFormat).toBe("openai");
+  expect(hy4Flash.supportsVision).toBe(true);
+  expect(hy4Flash.supportsThinking).toBe(true);
+  expect(hy4Flash.supportedReasoningEfforts).toEqual(["low", "high"]);
+  expect(hy4Flash.contextWindow).toBe(1_024_000);
 });
