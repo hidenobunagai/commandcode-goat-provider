@@ -51,6 +51,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `stepfun/Step-3.7-Flash` | Step 3.7 Flash | 256K | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
 | `stepfun/Step-5-Preview` | Step 5 Preview | 1M | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
 | `tencent/hy4-flash` | Tencent Hy4 Flash | 1,024,000 | 131,072 | OpenAI | ✓ (`low,high`) | Yes |
+| `tencent/hy4` | Tencent Hy4 | 1,024,000 | 131,072 | OpenAI | ✓ (`low,high`) | Yes |
 | `tencent/hy4-preview` | Tencent Hy4 Preview | 1M | 65,536 | OpenAI | ✓ (`low,high`) | No |
 | `xiaomi/mimo-v2.6-pro` | MiMo V2.6 Pro | 1,048,576 | 128,000 | OpenAI | ✓ (`low,medium,high`) | ✓ |
 | `xiaomi/mimo-v2.6-pro-ultraspeed` | MiMo V2.6 Pro UltraSpeed | 1,048,576 | 128,000 | OpenAI | ✓ (`low,medium,high`) | ✓ |
@@ -103,6 +104,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `claude-haiku-5-5` | Claude Haiku 5.5 | 1,000,000 | 65,536 | Anthropic | ✓ (`low,medium,high,xhigh,max`) | ✓ |
 | `stealth/glyph-cluster:free` | Glyph Cluster | 256,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✗ |
 | `thinkingmachines/inkling-2-small:free` | Inkling 2 Small | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,max`) | ✓ |
+| `recursive/flint-v1.0:free` | Flint | 262,144 | 131,072 | OpenAI | - | ✗ |
 | `mistral/mistral-large-4` | Mistral Large 4 | 524,288 | 131,072 | OpenAI | ✓ (`high`) | ✓ |
 | `meta/muse-wonder-1.0` | Muse Wonder | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
 | `google/gemini-4-carbon` | Gemini 4 Carbon | 1,000,000 | 65,536 | OpenAI | ✓ (`low,medium,high`) | ✓ |

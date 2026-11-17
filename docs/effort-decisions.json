@@ -715,5 +715,18 @@
     ],
     "source": "Tencent publishes no Hy4 flash rung list (searched 2026-11-17: hy.tencent.com/research/hy4-flash, tencent.com launch post, cloud.tencent.com/tokenhub/hy4-flash-en, Tencent-Hunyuan GitHub; none document reasoning_effort values). OpenRouter tencent/hy4-flash metadata: reasoning on by default, not mandatory, supports_reasoning_effort false. No pi-ai entry; sibling pi-ai openrouter:tencent/hy4 and tencent/hy4-preview explicit maps are off:none, low, high. commandcode.ai/models/hy4-flash modalities: reasons before answering, text + image input. probe 2026-11-17: reasons by default (reasoning=467), off accepted (200, reasoning=0), low..max all 200. Family ladder from Hy4 / hy4-preview applied.",
     "decided": "2026-11-17"
+  },
+  "tencent/hy4": {
+    "efforts": [
+      "low",
+      "high"
+    ],
+    "source": "Tencent hy.tencent.ai/research/hy4 (released 2026-11-04): adds vision perception for the first time; Tencent publishes no reasoning_effort rung list. OpenRouter tencent/hy4 live metadata (single provider Tencent Cloud, fetched 2026-11-18): reasoning default_enabled true, not mandatory, supported_efforts low/high/none, default_effort high; input text+image; max_completion_tokens 65536. pi-ai openrouter:tencent/hy4 explicit map off:none, low, high (opencode-go:hy4 lists high only; vercel-ai-gateway has no map). commandcode.ai/models has no page for this id yet (only listed on commandcode.ai/docs/resources/pricing-limits as 'Tencent Hy4'). Same ladder as siblings hy4-flash and hy4-preview. probe not run 2026-11-18: COMMANDCODE_API_KEY unavailable to this run.",
+    "decided": "2026-11-18"
+  },
+  "recursive/flint-v1.0:free": {
+    "efforts": [],
+    "source": "Reasoning model with no effort control, so no picker. Recursive launch post (recursive.com/updates/introducing-recursive-flint) documents no reasoning_effort; vLLM day-0 serving uses --reasoning-parser glm47 (thinking on every request, no effort parameter). commandcode.ai/docs/resources/pricing-limits#flint-free: 'reasoning on every request'; commandcode.ai/models/flint-v1-0-free modalities: Reasons before answering, Text input, Text output (no vision), Go and above. OpenRouter recursive/flint-v1.0:free live metadata (2026-11-18): reasoning mandatory, no reasoning_effort in supported_parameters, text-only. pi-ai maps conflict and are not vendor files: openrouter off:null only, radius:recursive/flint low only, opencode:flint-40b-free low..max (different id). probe not run 2026-11-18: COMMANDCODE_API_KEY unavailable to this run. Revisit if Recursive or Command Code documents effort levels.",
+    "decided": "2026-11-18"
   }
 }

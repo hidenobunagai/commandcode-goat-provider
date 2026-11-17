@@ -202,7 +202,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(100);
+  expect(FALLBACK_MODELS.length).toBe(102);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 
@@ -457,4 +457,33 @@ test("includes the 2026-11-17 new models with curated capabilities", () => {
   expect(hy4Flash.supportsThinking).toBe(true);
   expect(hy4Flash.supportedReasoningEfforts).toEqual(["low", "high"]);
   expect(hy4Flash.contextWindow).toBe(1_024_000);
+});
+
+test("includes the 2026-11-18 new models with curated capabilities", () => {
+  // Tencent Hy4: vision is new in the full release; OpenRouter documents low / high efforts
+  const hy4 = inferModelInfo({
+    id: "tencent/hy4",
+    name: "Tencent Hy4",
+    context_length: 1_024_000,
+  });
+  expect(hy4.apiFormat).toBe("openai");
+  expect(hy4.supportsVision).toBe(true);
+  expect(hy4.supportsThinking).toBe(true);
+  expect(hy4.supportedReasoningEfforts).toEqual(["low", "high"]);
+  expect(hy4.contextWindow).toBe(1_024_000);
+  expect(hy4.maxOutput).toBe(131_072);
+
+  // Flint: reasons on every request but exposes no effort control, text-only
+  const flint = inferModelInfo({
+    id: "recursive/flint-v1.0:free",
+    name: "Flint",
+    context_length: 262_144,
+  });
+  expect(flint.apiFormat).toBe("openai");
+  expect(flint.isUserSelectable).toBe(true);
+  expect(flint.supportsVision).toBe(false);
+  expect(flint.supportsThinking).toBe(false);
+  expect(flint.supportedReasoningEfforts).toBeUndefined();
+  expect(flint.contextWindow).toBe(262_144);
+  expect(flint.maxOutput).toBe(131_072);
 });

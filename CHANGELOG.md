@@ -1,5 +1,14 @@
 # Change Log
 
+## [0.1.55] - 2026-11-18
+
+### Added
+
+- **`tencent/hy4` and `recursive/flint-v1.0:free` added to catalog** (102 models) — two new models served by the live API:
+  - `tencent/hy4` ("Tencent Hy4", 1,024,000 ctx, openai protocol, vision on, `low,high` efforts — Tencent's Hy4 release adds vision for the first time, and OpenRouter's Tencent Cloud listing documents `reasoning_effort` low / high / none with high as the default; same ladder as Hy4 Flash and Hy4 Preview). commandcode.ai has no model page for this id yet.
+  - `recursive/flint-v1.0:free` ("Flint", 262,144 ctx, free, Go tier, openai protocol, text-only, no effort picker — Flint reasons on every request but neither Recursive nor Command Code documents a reasoning effort parameter, so the thinking-effort selector is not shown; reasoning output still streams normally).
+- The gateway effort probe was not run for either model in this release; the decisions in `docs/effort-decisions.json` rest on vendor and aggregator documentation.
+
 ## [0.1.54] - 2026-11-17
 
 ### Added
