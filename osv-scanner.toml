@@ -40,3 +40,7 @@ reason = "Transitive dev dependency from @vscode/vsce via glob 13.0.6 (packaging
 [[IgnoredVulns]]
 id = "GHSA-g3hv-75wg-m249"
 reason = "Transitive dev dependency via minimatch 10.2.6 (@vscode/vsce and its glob 13.0.6) and 3.1.5 (jest via glob 7.2.3); dev/test tooling only, not shipped in the extension; fix requires major 11.x bump"
+
+[[IgnoredVulns]]
+id = "GHSA-fc5q-39xc-vjpf"
+reason = "Transitive dev dependency via micromatch 4.0.8 and jest-util (picomatch 2.3.2; also 4.0.5 via tinyglobby); dev/test tooling only, not shipped in the extension; no fixed version published (ReDoS)"
