@@ -92,6 +92,17 @@ test("includes the 2026-10-02 new models with curated capabilities", () => {
   expect(terra.supportsVision).toBe(true);
   expect(terra.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
 
+  // GPT-6.2 Astra / Sol: OpenAI rejects effort none; low..max per vendor-derived sources.
+  for (const [id, name] of [
+    ["gpt-6.2-astra", "GPT-6.2 Astra"],
+    ["gpt-6.2-sol", "GPT-6.2 Sol"],
+  ]) {
+    const gpt62 = inferModelInfo({ id, name, context_length: 1_050_000 });
+    expect(gpt62.apiFormat).toBe("openai");
+    expect(gpt62.supportsVision).toBe(true);
+    expect(gpt62.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh", "max"]);
+  }
+
   // DeepSeek V4.1 Flash Fast: vendor low/high/max ladder, vision on.
   const fast = inferModelInfo({
     id: "deepseek/deepseek-v4.1-flash-fast",
@@ -202,7 +213,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(102);
+  expect(FALLBACK_MODELS.length).toBe(104);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 

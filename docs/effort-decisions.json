@@ -728,5 +728,27 @@
     "efforts": [],
     "source": "Reasoning model with no effort control, so no picker. Recursive launch post (recursive.com/updates/introducing-recursive-flint) documents no reasoning_effort; vLLM day-0 serving uses --reasoning-parser glm47 (thinking on every request, no effort parameter). commandcode.ai/docs/resources/pricing-limits#flint-free: 'reasoning on every request'; commandcode.ai/models/flint-v1-0-free modalities: Reasons before answering, Text input, Text output (no vision), Go and above. OpenRouter recursive/flint-v1.0:free live metadata (2026-11-18): reasoning mandatory, no reasoning_effort in supported_parameters, text-only. pi-ai maps conflict and are not vendor files: openrouter off:null only, radius:recursive/flint low only, opencode:flint-40b-free low..max (different id). probe not run 2026-11-18: COMMANDCODE_API_KEY unavailable to this run. Revisit if Recursive or Command Code documents effort levels.",
     "decided": "2026-11-18"
+  },
+  "gpt-6.2-astra": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "OpenAI model docs (developers.openai.com/api/docs/models/gpt-6.2-astra): reasoning Highest, text+image input, 128K max output, 'The API rejects requests that set reasoning effort to none'. Traictory model page: supports low, medium, high, xhigh, and max reasoning effort (but not none); ARC Prize publishes Astra XHigh and Max variants. commandcode.ai/models/gpt-6-2-astra: Text input + Image input + Reasons before answering, Max and above. OpenAI guide 'Using GPT-6.2' (developers.openai.com/api/docs/guides/latest-model): start with reasoning_effort medium; if you use none or minimal, use low instead (so minimal is gone, low is the floor). OpenAI reasoning guide: values are model-dependent among none|minimal|low|medium|high|xhigh|max. pi-ai has no gpt-6.2 entry yet (released 2026-11-17). protocol openai; sibling GPT-6/6.1 Sol/Terra/Astra all low..max. probe not run 2026-11-19: COMMANDCODE_API_KEY unavailable to this run.",
+    "decided": "2026-11-19"
+  },
+  "gpt-6.2-sol": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "source": "OpenAI model docs (developers.openai.com/api/docs/models/gpt-6.2-sol): reasoning Highest, text+image input, 128K max output, 'The API rejects requests that set reasoning effort to none'. Traictory model page: supports low, medium, high, xhigh, and max reasoning effort (but not none); Artificial Analysis lists GPT-6.2 Sol (Max) and xhigh variants. commandcode.ai/models/gpt-6-2-sol: Text input + Image input + Reasons before answering, Pro and above. OpenAI guide 'Using GPT-6.2' (developers.openai.com/api/docs/guides/latest-model): start with reasoning_effort medium; if you use none or minimal, use low instead (so minimal is gone, low is the floor). OpenAI reasoning guide: values are model-dependent among none|minimal|low|medium|high|xhigh|max. pi-ai has no gpt-6.2 entry yet (released 2026-11-17). protocol openai; sibling GPT-6/6.1 Sol/Terra/Astra all low..max. probe not run 2026-11-19: COMMANDCODE_API_KEY unavailable to this run.",
+    "decided": "2026-11-19"
   }
 }

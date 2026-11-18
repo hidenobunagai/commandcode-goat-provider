@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.1.56] - 2026-11-19
+
+### Added
+
+- **`gpt-6.2-astra` and `gpt-6.2-sol` added to catalog** (104 models) — OpenAI's GPT-6.2 generation, released 2026-11-17 and now served by the live API:
+  - `gpt-6.2-astra` ("GPT-6.2 Astra", 1,050,000 ctx, Max tier, openai protocol, vision on, `low,medium,high,xhigh,max` efforts) — OpenAI's most capable model for the hardest end-to-end work.
+  - `gpt-6.2-sol` ("GPT-6.2 Sol", 1,050,000 ctx, Pro tier, openai protocol, vision on, `low,medium,high,xhigh,max` efforts) — OpenAI's go-to model for everyday coding and agents.
+  - Both: OpenAI's model pages list text+image input and state that the API rejects reasoning effort `none`; the GPT-6.2 guide recommends `low` in place of `none`/`minimal` and `medium` as the starting point; third-party listings and benchmark variants confirm `low` through `max`. commandcode.ai shows Text input, Image input and Reasons badges for both.
+- The gateway effort probe was not run for either model in this release; the decisions in `docs/effort-decisions.json` rest on vendor and aggregator documentation.
+
 ## [0.1.55] - 2026-11-18
 
 ### Added
