@@ -750,5 +750,15 @@
     ],
     "source": "OpenAI model docs (developers.openai.com/api/docs/models/gpt-6.2-sol): reasoning Highest, text+image input, 128K max output, 'The API rejects requests that set reasoning effort to none'. Traictory model page: supports low, medium, high, xhigh, and max reasoning effort (but not none); Artificial Analysis lists GPT-6.2 Sol (Max) and xhigh variants. commandcode.ai/models/gpt-6-2-sol: Text input + Image input + Reasons before answering, Pro and above. OpenAI guide 'Using GPT-6.2' (developers.openai.com/api/docs/guides/latest-model): start with reasoning_effort medium; if you use none or minimal, use low instead (so minimal is gone, low is the floor). OpenAI reasoning guide: values are model-dependent among none|minimal|low|medium|high|xhigh|max. pi-ai has no gpt-6.2 entry yet (released 2026-11-17). protocol openai; sibling GPT-6/6.1 Sol/Terra/Astra all low..max. probe not run 2026-11-19: COMMANDCODE_API_KEY unavailable to this run.",
     "decided": "2026-11-19"
+  },
+  "google/gemini-4-neon": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh"
+    ],
+    "source": "Google AI Studio thinking guide (aistudio.google.com/docs/thinking, formerly ai.google.dev/gemini-api/docs/thinking): table row 'gemini-4-neon | On (high) | low, medium, high, xhigh'; 'high (default on gemini-4-neon and gemini-4-hydrogen)'; xhigh 'supported on gemini-4-neon and gemini-4-hydrogen'; minimal 'Not supported on Gemini 4 models' (thinking cannot be disabled). Google Cloud thinking guide (docs.cloud.google.com/gemini-enterprise-agent-platform/models/thinking): 'Gemini 4 Neon LOW, MEDIUM, HIGH, XHIGH | default HIGH'. commandcode.ai/models/gemini-4-neon: Reasons before answering + Text input + Image input badges, Pro and above, 1M ctx, released 2026-11-18. protocol openai (non-claude id). Gateway rungs mapped 1:1 (low, medium, high, xhigh); max dropped (not offered by Google). probe not run 2026-11-20: COMMANDCODE_API_KEY unavailable to this run.",
+    "decided": "2026-11-20"
   }
 }

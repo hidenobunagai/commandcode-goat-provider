@@ -213,7 +213,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(104);
+  expect(FALLBACK_MODELS.length).toBe(105);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 
@@ -497,4 +497,19 @@ test("includes the 2026-11-18 new models with curated capabilities", () => {
   expect(flint.supportedReasoningEfforts).toBeUndefined();
   expect(flint.contextWindow).toBe(262_144);
   expect(flint.maxOutput).toBe(131_072);
+});
+
+test("includes the 2026-11-20 new models with curated capabilities", () => {
+  // Gemini 4 Neon: openai protocol, vision on, low..xhigh ladder (Google: thinking_level LOW/MEDIUM/HIGH (default)/XHIGH)
+  const neon = inferModelInfo({
+    id: "google/gemini-4-neon",
+    name: "Gemini 4 Neon",
+    context_length: 1_000_000,
+  });
+  expect(neon.apiFormat).toBe("openai");
+  expect(neon.supportsVision).toBe(true);
+  expect(neon.supportsThinking).toBe(true);
+  expect(neon.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh"]);
+  expect(neon.contextWindow).toBe(1_000_000);
+  expect(neon.maxOutput).toBe(65_536);
 });

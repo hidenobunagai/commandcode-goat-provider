@@ -1,5 +1,14 @@
 # Change Log
 
+## [0.1.57] - 2026-11-20
+
+### Added
+
+- **`google/gemini-4-neon` added to catalog** (105 models) — Google's Gemini 4 Neon, released 2026-11-18 and now served by the live API:
+  - `google/gemini-4-neon` ("Gemini 4 Neon", 1,000,000 ctx, 65,536 max output, Pro tier, openai protocol, vision on, `low,medium,high,xhigh` efforts) — fast multimodal reasoning for coding and agents.
+  - Google's thinking guides (Gemini API and Google Cloud) list `thinking_level` LOW / MEDIUM / HIGH / XHIGH for Gemini 4 Neon with HIGH as the default, and state that MINIMAL is not supported on Gemini 4 models, so thinking cannot be turned off. This is one rung above Gemini 4 Carbon / Argon (`low,medium,high`); `max` is not offered. commandcode.ai shows Text input, Image input and Reasons badges.
+- The gateway effort probe was not run for this model in this release; the decision in `docs/effort-decisions.json` rests on Google's documentation.
+
 ## [0.1.56] - 2026-11-19
 
 ### Added
