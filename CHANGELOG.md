@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.58] - 2026-11-22
+
+### Removed
+
+- **`thinkingmachines/inkling-2-small:free` removed from catalog** (104 models) — the live Command Code API no longer serves Inkling 2 Small (free), so the dead id is dropped from `OFFICIAL_MODELS`, `VISION_SET`, `EFFORTS_MAP`, `PROTOCOL_MAP`, `docs/models.md`, the README and the catalog test. `thinkingmachines/inkling` and `thinkingmachines/inkling-small` are unchanged.
+
 ## [0.1.57] - 2026-11-20
 
 ### Added

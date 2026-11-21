@@ -12,110 +12,109 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 
 ## Model Lineup Overview
 
-| Model ID | Display Name | Context Window | Max Output | Wire Protocol | Thinking | Vision |
-|---|---|---|---|---|---|---|
-| `gpt-6-astra` | GPT-6 Astra | 1,050,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
-| `gpt-6-sol` | GPT-6 Sol | 1,050,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
-| `gpt-6-luna` | GPT-6 Luna | 1,050,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
-| `gpt-5.6-luna` | GPT-5.6 Luna | 1,050,000 | 128,000 | Responses | ✓ (`low,medium,high,xhigh,max`) | ✓ |
-| `gpt-5.6-sol` | GPT-5.6 Sol | 1.05M | 65,536 | OpenAI | low, medium, high, xhigh, max | Yes |
-| `google/gemini-3.8-flash` | Gemini 3.8 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
-| `google/gemini-3.7-flash` | Gemini 3.7 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
-| `xai/grok-4.6` | Grok 4.6 | 500,000 | 500,000 | Responses | ✓ (`low,medium,high,xhigh`) | ✓ |
-| `xai/grok-4.7` | Grok 4.7 | 500,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✓ |
-| `deepseek/deepseek-v4-pro` | DeepSeek V4 Pro (latest) | 1,000,000 | 384,000 | OpenAI | ✓ (`high,max`) | ✗ |
-| `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash (latest) | 1,000,000 | 384,000 | OpenAI | ✓ (`low,high,max`) | ✗ |
-| `deepseek/deepseek-v4-flash-fast` | DeepSeek V4 Flash Fast | 1M | 65,536 | OpenAI | high, max | No |
-| `deepseek/deepseek-v4.1-flash` | DeepSeek V4.1 Flash (latest) | 1,000,000 | 65,536 | OpenAI | ✓ (`low,high,max`) | ✓ |
-| `deepseek/deepseek-v4.1-flash-fast` | DeepSeek V4.1 Flash Fast (latest) | 1,000,000 | 65,536 | OpenAI | ✓ (`low,high,max`) | ✓ |
-| `deepseek/deepseek-v4.1-flash-ultrafast` | DeepSeek V4.1 Flash Ultrafast | 1,048,576 | 65,536 | OpenAI | ✓ (`low,high,max`) | ✓ |
-| `inclusionai/ling-3.1-flash` | Ling 3.1 Flash | 262,144 | 131,072 | OpenAI | ✓ (`low,medium,high`) | ✗ |
-| `moonshotai/Kimi-K3.1-Pro` | Kimi K3.1 Pro | 1,048,576 | 65,536 | OpenAI | ✓ (`low,high,max`) | ✓ |
-| `moonshotai/Kimi-K3` | Kimi K3 | 1,048,576 | 131,072 | OpenAI | ✓ (`low,high,max`) | ✓ |
-| `moonshotai/Kimi-K2.7-Code` | Kimi K2.7 Code | 262,144 | 262,144 | OpenAI | ✓ (`low,high,xhigh`) | ✓ |
-| `Qwen/Qwen4-Max` | Qwen 4 Max | 1M | 65,536 | OpenAI | ✓ (`low,high,xhigh`) | Yes |
-| `Qwen/Qwen3.8-Max` | Qwen 3.8 Max | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |
-| `Qwen/Qwen3.8-Max-0902` | Qwen 3.8 Max 0902 | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |
-| `Qwen/Qwen3.8-Flash` | Qwen 3.8 Flash | 1M | 65,536 | OpenAI | low, medium, xhigh | Yes |
-| `Qwen/Qwen3.8-27B` | Qwen 3.8 27B | 262K | 65,536 | OpenAI | low, medium, xhigh | Yes |
-| `Qwen/Qwen3.8-Omni-Flash` | Qwen 3.8 Omni Flash | 1M | 65,536 | OpenAI | low, medium, high, xhigh | Yes |
-| `z-ai/glm-5.3-flash` | GLM-5.3 Flash | 1M | 65,536 | OpenAI | low, high, max | Yes |
-| `z-ai/glm-5.3-flashx` | GLM-5.3 FlashX | 1M | 65,536 | OpenAI | low, high, max | Yes |
-| `zai-org/GLM-5.3` | GLM-5.3 | 1,000,000 | 131,072 | OpenAI | ✓ (`low,high,max`) | ✗ |
-| `MiniMaxAI/MiniMax-M3` | MiniMax M3 | 1,000,000 | 131,072 | OpenAI | ✓ (`low,medium,high`) | ✓ |
-| `xai/grok-4.5` | Grok 4.5 | 500K | 65,536 | OpenAI | low, medium, high, xhigh | Yes |
-| `meta/muse-spark-1.3` | Muse Spark 1.3 | 1M | 65,536 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | Yes |
-| `meta/muse-spark-1.3-contributor` | Muse Spark 1.3 Contributor | 1,048,576 | 131,072 | Responses | ✓ (`low,medium,high,xhigh`) | ✓ |
-| `meta/muse-spark-1.2` | Muse Spark 1.2 | 1M | 65,536 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | Yes |
-| `meta/muse-spark-1.2-contributor` | Muse Spark 1.2 Contributor | 1,048,576 | 131,072 | Responses | ✓ (`low,medium,high,xhigh`) | ✓ |
-| `stepfun/Step-3.7-Flash` | Step 3.7 Flash | 256K | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
-| `stepfun/Step-5-Preview` | Step 5 Preview | 1M | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
-| `tencent/hy4-flash` | Tencent Hy4 Flash | 1,024,000 | 131,072 | OpenAI | ✓ (`low,high`) | Yes |
-| `tencent/hy4` | Tencent Hy4 | 1,024,000 | 131,072 | OpenAI | ✓ (`low,high`) | Yes |
-| `tencent/hy4-preview` | Tencent Hy4 Preview | 1M | 65,536 | OpenAI | ✓ (`low,high`) | No |
-| `xiaomi/mimo-v2.6-pro` | MiMo V2.6 Pro | 1,048,576 | 128,000 | OpenAI | ✓ (`low,medium,high`) | ✓ |
-| `xiaomi/mimo-v2.6-pro-ultraspeed` | MiMo V2.6 Pro UltraSpeed | 1,048,576 | 128,000 | OpenAI | ✓ (`low,medium,high`) | ✓ |
-| `xiaomi/mimo-v2.6-flash` | MiMo V2.6 Flash | 1,048,576 | 128,000 | OpenAI | ✓ (`low,medium,high`) | ✓ |
-| `Qwen/Qwen3.7-Flash` | Qwen 3.7 Flash | 1M | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
-| `stepfun/Step-3.5-Flash` | Step 3.5 Flash | 262,144 | 65,536 | OpenAI | ✓ (`low,medium,high`) | No |
-| `tencent/hy3-paid` | Tencent Hy3 | 262,144 | 65,536 | OpenAI | ✓ (`low,high`) | No |
-| `Qwen/Qwen3.7-Plus` | Qwen 3.7 Plus | 1M | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
-| `Qwen/Qwen3.6-Plus` | Qwen 3.6 Plus | 200,000 | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
-| `moonshotai/Kimi-K2.5` | Kimi K2.5 | 256,000 | 65,536 | OpenAI | - | Yes |
-| `nvidia/nemotron-3-ultra-550b-a55b` | Nemotron 3 Ultra | 1M | 65,536 | OpenAI | ✓ (`medium,high`) | No |
-| `zai-org/GLM-5` | GLM-5 | 200,000 | 65,536 | OpenAI | - | No |
-| `thinkingmachines/inkling` | Inkling | 256,000 | 65,536 | OpenAI | ✓ (`low,medium,high,max`) | Yes |
-| `Qwen/Qwen3.6-Max-Preview` | Qwen 3.6 Max Preview | 200,000 | 65,536 | OpenAI | ✓ (`low,medium,high`) | No |
-| `zai-org/GLM-5.1` | GLM-5.1 | 200,000 | 32,768 | OpenAI | - | ✗ |
-| `zai-org/GLM-5.2` | GLM-5.2 | 1,000,000 | 131,072 | OpenAI | ✓ (`high,max`) | ✗ |
-| `moonshotai/Kimi-K2.6` | Kimi K2.6 | 256,000 | 65,536 | OpenAI | ✓ (`low,high,xhigh`) | ✓ |
-| `moonshotai/Kimi-K2.7-Code-Highspeed` | Kimi K2.7 Code HighSpeed | 262,000 | 65,536 | OpenAI | ✓ (`low,high,xhigh`) | ✓ |
-| `Qwen/Qwen3.7-Max` | Qwen 3.7 Max | 1M | 65,536 | OpenAI | ✓ (`low,medium,high`) | ✓ |
-| `zai-org/GLM-5.2-Fast` | GLM-5.2 Fast | 1M | 65,536 | OpenAI | ✓ (`high,max`) | No |
-| `thinkingmachines/inkling-small` | Inkling Small | 1M | 65,536 | OpenAI | ✓ (`low,medium,high,max`) | Yes |
-| `MiniMaxAI/MiniMax-M2.5` | MiniMax M2.5 | 200,000 | 65,536 | OpenAI | ✓ (`low,medium,high`) | Yes |
-| `MiniMaxAI/MiniMax-M2.7` | MiniMax M2.7 | 200,000 | 131,072 | OpenAI | ✓ (`low,medium,high`) | ✗ |
-| `deepseek/deepseek-v4-flash-vision-exp` | DeepSeek V4 Flash Vision (exp) | 1,000,000 | 384,000 | OpenAI | ✓ (`low,high,max`) | ✓ |
-| `claude-fable-5-2` | Claude Fable 5.2 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
-| `claude-fable-5-1` | Claude Fable 5.1 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
-| `claude-fable-5` | Claude Fable 5 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
-| `claude-opus-4-7` | Claude Opus 4.7 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
-| `google/gemini-3.1-flash-lite` | Gemini 3.1 Flash Lite | 1M | 65,536 | OpenAI | low, medium, high | Yes |
-| `google/gemini-3.5-flash` | Gemini 3.5 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
-| `google/gemini-3.5-flash-lite` | Gemini 3.5 Flash Lite | 1M | 65,536 | OpenAI | low, medium, high | Yes |
-| `gpt-5.3-codex` | GPT-5.3 Codex | 400K | 65,536 | OpenAI | low, medium, high, xhigh | Yes |
-| `gpt-5.4` | GPT-5.4 | 400K | 65,536 | OpenAI | low, medium, high, xhigh | Yes |
-| `gpt-5.4-mini` | GPT-5.4 Mini | 400K | 65,536 | OpenAI | low, medium, high, xhigh | Yes |
-| `meta/muse-spark-1.1` | Muse Spark 1.1 | 1M | 65,536 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | Yes |
-| `claude-sonnet-5` | Claude Sonnet 5 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
-| `claude-sonnet-5-5` | Claude Sonnet 5.5 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
-| `claude-sonnet-4-6` | Claude Sonnet 4.6 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
-| `claude-opus-5` | Claude Opus 5 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
-| `claude-opus-5-5` | Claude Opus 5.5 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
-| `claude-opus-4-8` | Claude Opus 4.8 | 1M | 65,536 | Anthropic | low, medium, high, xhigh, max | Yes |
-| `claude-haiku-4-5-20251001` | Claude Haiku 4.5 | 200K | 65,536 | Anthropic | - | Yes |
-| `gpt-5.6-terra` | GPT-5.6 Terra | 1.05M | 65,536 | OpenAI | low, medium, high, xhigh, max | Yes |
-| `gpt-6.1-sol` | GPT-6.1 Sol | 1.05M | 131,072 | OpenAI | low, medium, high, xhigh, max | Yes |
-| `gpt-6.1-terra` | GPT-6.1 Terra | 1.05M | 131,072 | OpenAI | low, medium, high, xhigh, max | Yes |
-| `gpt-6.2-astra` | GPT-6.2 Astra | 1.05M | 131,072 | OpenAI | low, medium, high, xhigh, max | Yes |
-| `gpt-6.2-sol` | GPT-6.2 Sol | 1.05M | 131,072 | OpenAI | low, medium, high, xhigh, max | Yes |
-| `gpt-5.5` | GPT-5.5 | 400K | 65,536 | OpenAI | low, medium, high, xhigh | Yes |
-| `google/gemini-3.6-flash` | Gemini 3.6 Flash | 1M | 65,536 | OpenAI | low, medium, high | Yes |
-| `sakana/fugu-ultra` | Fugu Ultra | 1M | 65,536 | OpenAI | high, xhigh, max | Yes |
-| `meituan/LongCat-2.0` | LongCat 2.0 | 1,000,000 | 131,072 | OpenAI | - | ✗ |
-| `claude-haiku-5-5` | Claude Haiku 5.5 | 1,000,000 | 65,536 | Anthropic | ✓ (`low,medium,high,xhigh,max`) | ✓ |
-| `stealth/glyph-cluster:free` | Glyph Cluster | 256,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✗ |
-| `thinkingmachines/inkling-2-small:free` | Inkling 2 Small | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,max`) | ✓ |
-| `recursive/flint-v1.0:free` | Flint | 262,144 | 131,072 | OpenAI | - | ✗ |
-| `mistral/mistral-large-4` | Mistral Large 4 | 524,288 | 131,072 | OpenAI | ✓ (`high`) | ✓ |
-| `meta/muse-wonder-1.0` | Muse Wonder | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
-| `google/gemini-4-neon` | Gemini 4 Neon | 1,000,000 | 65,536 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✓ |
-| `google/gemini-4-carbon` | Gemini 4 Carbon | 1,000,000 | 65,536 | OpenAI | ✓ (`low,medium,high`) | ✓ |
-| `google/gemini-4-argon` | Gemini 4 Argon | 1,000,000 | 65,536 | OpenAI | ✓ (`low,medium,high`) | ✓ |
-| `Qwen/Qwen3.8-Max-Prime` | Qwen 3.8 Max Prime | 1,000,000 | 65,536 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✓ |
-| `nvidia/nemotron-3.5-super-vl` | Nemotron 3.5 Super VL | 262,144 | 131,072 | OpenAI | ✓ (`low,medium,high`) | ✓ |
-| `meta/muse-spark-open` | Muse Spark Open | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh`) | ✓ |
-| `meta/muse-ember` | Muse Ember | 1,048,576 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
-| `inclusionai/ling-3.1-flash-1019` | Ling 3.1 Flash 1019 | 1,000,000 | 131,072 | OpenAI | ✓ (`low,medium,high`) | ✗ |
-| `minimax/minimax-m3.1-flash` | MiniMax M3.1 Flash | 1,000,000 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✓ |
-| `ornith/ornith-1.5-122b` | Ornith 1.5 122B | 262,144 | 131,072 | OpenAI | ✓ (`low,medium,high,xhigh,max`) | ✗ |
+| Model ID                                 | Display Name                      | Context Window | Max Output | Wire Protocol | Thinking                        | Vision |
+| ---------------------------------------- | --------------------------------- | -------------- | ---------- | ------------- | ------------------------------- | ------ |
+| `gpt-6-astra`                            | GPT-6 Astra                       | 1,050,000      | 131,072    | OpenAI        | ✓ (`low,medium,high,xhigh,max`) | ✓      |
+| `gpt-6-sol`                              | GPT-6 Sol                         | 1,050,000      | 131,072    | OpenAI        | ✓ (`low,medium,high,xhigh,max`) | ✓      |
+| `gpt-6-luna`                             | GPT-6 Luna                        | 1,050,000      | 131,072    | OpenAI        | ✓ (`low,medium,high,xhigh,max`) | ✓      |
+| `gpt-5.6-luna`                           | GPT-5.6 Luna                      | 1,050,000      | 128,000    | Responses     | ✓ (`low,medium,high,xhigh,max`) | ✓      |
+| `gpt-5.6-sol`                            | GPT-5.6 Sol                       | 1.05M          | 65,536     | OpenAI        | low, medium, high, xhigh, max   | Yes    |
+| `google/gemini-3.8-flash`                | Gemini 3.8 Flash                  | 1M             | 65,536     | OpenAI        | low, medium, high               | Yes    |
+| `google/gemini-3.7-flash`                | Gemini 3.7 Flash                  | 1M             | 65,536     | OpenAI        | low, medium, high               | Yes    |
+| `xai/grok-4.6`                           | Grok 4.6                          | 500,000        | 500,000    | Responses     | ✓ (`low,medium,high,xhigh`)     | ✓      |
+| `xai/grok-4.7`                           | Grok 4.7                          | 500,000        | 131,072    | OpenAI        | ✓ (`low,medium,high,xhigh`)     | ✓      |
+| `deepseek/deepseek-v4-pro`               | DeepSeek V4 Pro (latest)          | 1,000,000      | 384,000    | OpenAI        | ✓ (`high,max`)                  | ✗      |
+| `deepseek/deepseek-v4-flash`             | DeepSeek V4 Flash (latest)        | 1,000,000      | 384,000    | OpenAI        | ✓ (`low,high,max`)              | ✗      |
+| `deepseek/deepseek-v4-flash-fast`        | DeepSeek V4 Flash Fast            | 1M             | 65,536     | OpenAI        | high, max                       | No     |
+| `deepseek/deepseek-v4.1-flash`           | DeepSeek V4.1 Flash (latest)      | 1,000,000      | 65,536     | OpenAI        | ✓ (`low,high,max`)              | ✓      |
+| `deepseek/deepseek-v4.1-flash-fast`      | DeepSeek V4.1 Flash Fast (latest) | 1,000,000      | 65,536     | OpenAI        | ✓ (`low,high,max`)              | ✓      |
+| `deepseek/deepseek-v4.1-flash-ultrafast` | DeepSeek V4.1 Flash Ultrafast     | 1,048,576      | 65,536     | OpenAI        | ✓ (`low,high,max`)              | ✓      |
+| `inclusionai/ling-3.1-flash`             | Ling 3.1 Flash                    | 262,144        | 131,072    | OpenAI        | ✓ (`low,medium,high`)           | ✗      |
+| `moonshotai/Kimi-K3.1-Pro`               | Kimi K3.1 Pro                     | 1,048,576      | 65,536     | OpenAI        | ✓ (`low,high,max`)              | ✓      |
+| `moonshotai/Kimi-K3`                     | Kimi K3                           | 1,048,576      | 131,072    | OpenAI        | ✓ (`low,high,max`)              | ✓      |
+| `moonshotai/Kimi-K2.7-Code`              | Kimi K2.7 Code                    | 262,144        | 262,144    | OpenAI        | ✓ (`low,high,xhigh`)            | ✓      |
+| `Qwen/Qwen4-Max`                         | Qwen 4 Max                        | 1M             | 65,536     | OpenAI        | ✓ (`low,high,xhigh`)            | Yes    |
+| `Qwen/Qwen3.8-Max`                       | Qwen 3.8 Max                      | 1M             | 65,536     | OpenAI        | low, medium, xhigh              | Yes    |
+| `Qwen/Qwen3.8-Max-0902`                  | Qwen 3.8 Max 0902                 | 1M             | 65,536     | OpenAI        | low, medium, xhigh              | Yes    |
+| `Qwen/Qwen3.8-Flash`                     | Qwen 3.8 Flash                    | 1M             | 65,536     | OpenAI        | low, medium, xhigh              | Yes    |
+| `Qwen/Qwen3.8-27B`                       | Qwen 3.8 27B                      | 262K           | 65,536     | OpenAI        | low, medium, xhigh              | Yes    |
+| `Qwen/Qwen3.8-Omni-Flash`                | Qwen 3.8 Omni Flash               | 1M             | 65,536     | OpenAI        | low, medium, high, xhigh        | Yes    |
+| `z-ai/glm-5.3-flash`                     | GLM-5.3 Flash                     | 1M             | 65,536     | OpenAI        | low, high, max                  | Yes    |
+| `z-ai/glm-5.3-flashx`                    | GLM-5.3 FlashX                    | 1M             | 65,536     | OpenAI        | low, high, max                  | Yes    |
+| `zai-org/GLM-5.3`                        | GLM-5.3                           | 1,000,000      | 131,072    | OpenAI        | ✓ (`low,high,max`)              | ✗      |
+| `MiniMaxAI/MiniMax-M3`                   | MiniMax M3                        | 1,000,000      | 131,072    | OpenAI        | ✓ (`low,medium,high`)           | ✓      |
+| `xai/grok-4.5`                           | Grok 4.5                          | 500K           | 65,536     | OpenAI        | low, medium, high, xhigh        | Yes    |
+| `meta/muse-spark-1.3`                    | Muse Spark 1.3                    | 1M             | 65,536     | OpenAI        | ✓ (`low,medium,high,xhigh,max`) | Yes    |
+| `meta/muse-spark-1.3-contributor`        | Muse Spark 1.3 Contributor        | 1,048,576      | 131,072    | Responses     | ✓ (`low,medium,high,xhigh`)     | ✓      |
+| `meta/muse-spark-1.2`                    | Muse Spark 1.2                    | 1M             | 65,536     | OpenAI        | ✓ (`low,medium,high,xhigh,max`) | Yes    |
+| `meta/muse-spark-1.2-contributor`        | Muse Spark 1.2 Contributor        | 1,048,576      | 131,072    | Responses     | ✓ (`low,medium,high,xhigh`)     | ✓      |
+| `stepfun/Step-3.7-Flash`                 | Step 3.7 Flash                    | 256K           | 65,536     | OpenAI        | ✓ (`low,medium,high`)           | Yes    |
+| `stepfun/Step-5-Preview`                 | Step 5 Preview                    | 1M             | 65,536     | OpenAI        | ✓ (`low,medium,high`)           | Yes    |
+| `tencent/hy4-flash`                      | Tencent Hy4 Flash                 | 1,024,000      | 131,072    | OpenAI        | ✓ (`low,high`)                  | Yes    |
+| `tencent/hy4`                            | Tencent Hy4                       | 1,024,000      | 131,072    | OpenAI        | ✓ (`low,high`)                  | Yes    |
+| `tencent/hy4-preview`                    | Tencent Hy4 Preview               | 1M             | 65,536     | OpenAI        | ✓ (`low,high`)                  | No     |
+| `xiaomi/mimo-v2.6-pro`                   | MiMo V2.6 Pro                     | 1,048,576      | 128,000    | OpenAI        | ✓ (`low,medium,high`)           | ✓      |
+| `xiaomi/mimo-v2.6-pro-ultraspeed`        | MiMo V2.6 Pro UltraSpeed          | 1,048,576      | 128,000    | OpenAI        | ✓ (`low,medium,high`)           | ✓      |
+| `xiaomi/mimo-v2.6-flash`                 | MiMo V2.6 Flash                   | 1,048,576      | 128,000    | OpenAI        | ✓ (`low,medium,high`)           | ✓      |
+| `Qwen/Qwen3.7-Flash`                     | Qwen 3.7 Flash                    | 1M             | 65,536     | OpenAI        | ✓ (`low,medium,high`)           | Yes    |
+| `stepfun/Step-3.5-Flash`                 | Step 3.5 Flash                    | 262,144        | 65,536     | OpenAI        | ✓ (`low,medium,high`)           | No     |
+| `tencent/hy3-paid`                       | Tencent Hy3                       | 262,144        | 65,536     | OpenAI        | ✓ (`low,high`)                  | No     |
+| `Qwen/Qwen3.7-Plus`                      | Qwen 3.7 Plus                     | 1M             | 65,536     | OpenAI        | ✓ (`low,medium,high`)           | Yes    |
+| `Qwen/Qwen3.6-Plus`                      | Qwen 3.6 Plus                     | 200,000        | 65,536     | OpenAI        | ✓ (`low,medium,high`)           | Yes    |
+| `moonshotai/Kimi-K2.5`                   | Kimi K2.5                         | 256,000        | 65,536     | OpenAI        | -                               | Yes    |
+| `nvidia/nemotron-3-ultra-550b-a55b`      | Nemotron 3 Ultra                  | 1M             | 65,536     | OpenAI        | ✓ (`medium,high`)               | No     |
+| `zai-org/GLM-5`                          | GLM-5                             | 200,000        | 65,536     | OpenAI        | -                               | No     |
+| `thinkingmachines/inkling`               | Inkling                           | 256,000        | 65,536     | OpenAI        | ✓ (`low,medium,high,max`)       | Yes    |
+| `Qwen/Qwen3.6-Max-Preview`               | Qwen 3.6 Max Preview              | 200,000        | 65,536     | OpenAI        | ✓ (`low,medium,high`)           | No     |
+| `zai-org/GLM-5.1`                        | GLM-5.1                           | 200,000        | 32,768     | OpenAI        | -                               | ✗      |
+| `zai-org/GLM-5.2`                        | GLM-5.2                           | 1,000,000      | 131,072    | OpenAI        | ✓ (`high,max`)                  | ✗      |
+| `moonshotai/Kimi-K2.6`                   | Kimi K2.6                         | 256,000        | 65,536     | OpenAI        | ✓ (`low,high,xhigh`)            | ✓      |
+| `moonshotai/Kimi-K2.7-Code-Highspeed`    | Kimi K2.7 Code HighSpeed          | 262,000        | 65,536     | OpenAI        | ✓ (`low,high,xhigh`)            | ✓      |
+| `Qwen/Qwen3.7-Max`                       | Qwen 3.7 Max                      | 1M             | 65,536     | OpenAI        | ✓ (`low,medium,high`)           | ✓      |
+| `zai-org/GLM-5.2-Fast`                   | GLM-5.2 Fast                      | 1M             | 65,536     | OpenAI        | ✓ (`high,max`)                  | No     |
+| `thinkingmachines/inkling-small`         | Inkling Small                     | 1M             | 65,536     | OpenAI        | ✓ (`low,medium,high,max`)       | Yes    |
+| `MiniMaxAI/MiniMax-M2.5`                 | MiniMax M2.5                      | 200,000        | 65,536     | OpenAI        | ✓ (`low,medium,high`)           | Yes    |
+| `MiniMaxAI/MiniMax-M2.7`                 | MiniMax M2.7                      | 200,000        | 131,072    | OpenAI        | ✓ (`low,medium,high`)           | ✗      |
+| `deepseek/deepseek-v4-flash-vision-exp`  | DeepSeek V4 Flash Vision (exp)    | 1,000,000      | 384,000    | OpenAI        | ✓ (`low,high,max`)              | ✓      |
+| `claude-fable-5-2`                       | Claude Fable 5.2                  | 1M             | 65,536     | Anthropic     | low, medium, high, xhigh, max   | Yes    |
+| `claude-fable-5-1`                       | Claude Fable 5.1                  | 1M             | 65,536     | Anthropic     | low, medium, high, xhigh, max   | Yes    |
+| `claude-fable-5`                         | Claude Fable 5                    | 1M             | 65,536     | Anthropic     | low, medium, high, xhigh, max   | Yes    |
+| `claude-opus-4-7`                        | Claude Opus 4.7                   | 1M             | 65,536     | Anthropic     | low, medium, high, xhigh, max   | Yes    |
+| `google/gemini-3.1-flash-lite`           | Gemini 3.1 Flash Lite             | 1M             | 65,536     | OpenAI        | low, medium, high               | Yes    |
+| `google/gemini-3.5-flash`                | Gemini 3.5 Flash                  | 1M             | 65,536     | OpenAI        | low, medium, high               | Yes    |
+| `google/gemini-3.5-flash-lite`           | Gemini 3.5 Flash Lite             | 1M             | 65,536     | OpenAI        | low, medium, high               | Yes    |
+| `gpt-5.3-codex`                          | GPT-5.3 Codex                     | 400K           | 65,536     | OpenAI        | low, medium, high, xhigh        | Yes    |
+| `gpt-5.4`                                | GPT-5.4                           | 400K           | 65,536     | OpenAI        | low, medium, high, xhigh        | Yes    |
+| `gpt-5.4-mini`                           | GPT-5.4 Mini                      | 400K           | 65,536     | OpenAI        | low, medium, high, xhigh        | Yes    |
+| `meta/muse-spark-1.1`                    | Muse Spark 1.1                    | 1M             | 65,536     | OpenAI        | ✓ (`low,medium,high,xhigh,max`) | Yes    |
+| `claude-sonnet-5`                        | Claude Sonnet 5                   | 1M             | 65,536     | Anthropic     | low, medium, high, xhigh, max   | Yes    |
+| `claude-sonnet-5-5`                      | Claude Sonnet 5.5                 | 1M             | 65,536     | Anthropic     | low, medium, high, xhigh, max   | Yes    |
+| `claude-sonnet-4-6`                      | Claude Sonnet 4.6                 | 1M             | 65,536     | Anthropic     | low, medium, high, xhigh, max   | Yes    |
+| `claude-opus-5`                          | Claude Opus 5                     | 1M             | 65,536     | Anthropic     | low, medium, high, xhigh, max   | Yes    |
+| `claude-opus-5-5`                        | Claude Opus 5.5                   | 1M             | 65,536     | Anthropic     | low, medium, high, xhigh, max   | Yes    |
+| `claude-opus-4-8`                        | Claude Opus 4.8                   | 1M             | 65,536     | Anthropic     | low, medium, high, xhigh, max   | Yes    |
+| `claude-haiku-4-5-20251001`              | Claude Haiku 4.5                  | 200K           | 65,536     | Anthropic     | -                               | Yes    |
+| `gpt-5.6-terra`                          | GPT-5.6 Terra                     | 1.05M          | 65,536     | OpenAI        | low, medium, high, xhigh, max   | Yes    |
+| `gpt-6.1-sol`                            | GPT-6.1 Sol                       | 1.05M          | 131,072    | OpenAI        | low, medium, high, xhigh, max   | Yes    |
+| `gpt-6.1-terra`                          | GPT-6.1 Terra                     | 1.05M          | 131,072    | OpenAI        | low, medium, high, xhigh, max   | Yes    |
+| `gpt-6.2-astra`                          | GPT-6.2 Astra                     | 1.05M          | 131,072    | OpenAI        | low, medium, high, xhigh, max   | Yes    |
+| `gpt-6.2-sol`                            | GPT-6.2 Sol                       | 1.05M          | 131,072    | OpenAI        | low, medium, high, xhigh, max   | Yes    |
+| `gpt-5.5`                                | GPT-5.5                           | 400K           | 65,536     | OpenAI        | low, medium, high, xhigh        | Yes    |
+| `google/gemini-3.6-flash`                | Gemini 3.6 Flash                  | 1M             | 65,536     | OpenAI        | low, medium, high               | Yes    |
+| `sakana/fugu-ultra`                      | Fugu Ultra                        | 1M             | 65,536     | OpenAI        | high, xhigh, max                | Yes    |
+| `meituan/LongCat-2.0`                    | LongCat 2.0                       | 1,000,000      | 131,072    | OpenAI        | -                               | ✗      |
+| `claude-haiku-5-5`                       | Claude Haiku 5.5                  | 1,000,000      | 65,536     | Anthropic     | ✓ (`low,medium,high,xhigh,max`) | ✓      |
+| `stealth/glyph-cluster:free`             | Glyph Cluster                     | 256,000        | 131,072    | OpenAI        | ✓ (`low,medium,high,xhigh`)     | ✗      |
+| `recursive/flint-v1.0:free`              | Flint                             | 262,144        | 131,072    | OpenAI        | -                               | ✗      |
+| `mistral/mistral-large-4`                | Mistral Large 4                   | 524,288        | 131,072    | OpenAI        | ✓ (`high`)                      | ✓      |
+| `meta/muse-wonder-1.0`                   | Muse Wonder                       | 1,048,576      | 131,072    | OpenAI        | ✓ (`low,medium,high,xhigh,max`) | ✓      |
+| `google/gemini-4-neon`                   | Gemini 4 Neon                     | 1,000,000      | 65,536     | OpenAI        | ✓ (`low,medium,high,xhigh`)     | ✓      |
+| `google/gemini-4-carbon`                 | Gemini 4 Carbon                   | 1,000,000      | 65,536     | OpenAI        | ✓ (`low,medium,high`)           | ✓      |
+| `google/gemini-4-argon`                  | Gemini 4 Argon                    | 1,000,000      | 65,536     | OpenAI        | ✓ (`low,medium,high`)           | ✓      |
+| `Qwen/Qwen3.8-Max-Prime`                 | Qwen 3.8 Max Prime                | 1,000,000      | 65,536     | OpenAI        | ✓ (`low,medium,high,xhigh`)     | ✓      |
+| `nvidia/nemotron-3.5-super-vl`           | Nemotron 3.5 Super VL             | 262,144        | 131,072    | OpenAI        | ✓ (`low,medium,high`)           | ✓      |
+| `meta/muse-spark-open`                   | Muse Spark Open                   | 1,048,576      | 131,072    | OpenAI        | ✓ (`low,medium,high,xhigh`)     | ✓      |
+| `meta/muse-ember`                        | Muse Ember                        | 1,048,576      | 131,072    | OpenAI        | ✓ (`low,medium,high,xhigh,max`) | ✓      |
+| `inclusionai/ling-3.1-flash-1019`        | Ling 3.1 Flash 1019               | 1,000,000      | 131,072    | OpenAI        | ✓ (`low,medium,high`)           | ✗      |
+| `minimax/minimax-m3.1-flash`             | MiniMax M3.1 Flash                | 1,000,000      | 131,072    | OpenAI        | ✓ (`low,medium,high,xhigh,max`) | ✓      |
+| `ornith/ornith-1.5-122b`                 | Ornith 1.5 122B                   | 262,144        | 131,072    | OpenAI        | ✓ (`low,medium,high,xhigh,max`) | ✗      |
