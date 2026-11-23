@@ -213,7 +213,7 @@ test("orders reasoning efforts from least to most intensive", () => {
 });
 
 test("provides every official catalog model as a selectable fallback", () => {
-  expect(FALLBACK_MODELS.length).toBe(104);
+  expect(FALLBACK_MODELS.length).toBe(105);
   expect(FALLBACK_MODELS.every((model) => model.isUserSelectable)).toBe(true);
 });
 
@@ -497,4 +497,19 @@ test("includes the 2026-11-20 new models with curated capabilities", () => {
   expect(neon.supportedReasoningEfforts).toEqual(["low", "medium", "high", "xhigh"]);
   expect(neon.contextWindow).toBe(1_000_000);
   expect(neon.maxOutput).toBe(65_536);
+});
+
+test("includes the 2026-11-24 new model with curated capabilities", () => {
+  // Inkling 2 Mini: openai protocol, vision on, low/medium/high/max ladder (same as the Inkling family)
+  const mini = inferModelInfo({
+    id: "thinkingmachines/inkling-2-mini",
+    name: "Inkling 2 Mini",
+    context_length: 1_048_576,
+  });
+  expect(mini.apiFormat).toBe("openai");
+  expect(mini.supportsVision).toBe(true);
+  expect(mini.supportsThinking).toBe(true);
+  expect(mini.supportedReasoningEfforts).toEqual(["low", "medium", "high", "max"]);
+  expect(mini.contextWindow).toBe(1_048_576);
+  expect(mini.maxOutput).toBe(131_072);
 });

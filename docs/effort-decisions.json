@@ -760,5 +760,15 @@
     ],
     "source": "Google AI Studio thinking guide (aistudio.google.com/docs/thinking, formerly ai.google.dev/gemini-api/docs/thinking): table row 'gemini-4-neon | On (high) | low, medium, high, xhigh'; 'high (default on gemini-4-neon and gemini-4-hydrogen)'; xhigh 'supported on gemini-4-neon and gemini-4-hydrogen'; minimal 'Not supported on Gemini 4 models' (thinking cannot be disabled). Google Cloud thinking guide (docs.cloud.google.com/gemini-enterprise-agent-platform/models/thinking): 'Gemini 4 Neon LOW, MEDIUM, HIGH, XHIGH | default HIGH'. commandcode.ai/models/gemini-4-neon: Reasons before answering + Text input + Image input badges, Pro and above, 1M ctx, released 2026-11-18. protocol openai (non-claude id). Gateway rungs mapped 1:1 (low, medium, high, xhigh); max dropped (not offered by Google). probe not run 2026-11-20: COMMANDCODE_API_KEY unavailable to this run.",
     "decided": "2026-11-20"
+  },
+  "thinkingmachines/inkling-2-mini": {
+    "efforts": [
+      "low",
+      "medium",
+      "high",
+      "max"
+    ],
+    "source": "Thinking Machines' own API reference for Inkling 2 Mini was not located; the Hugging Face model card (thinkingmachines/Inkling-2-Mini) only notes that 'setting reasoning effort to its minimum does not fully disable reasoning'. OpenRouter live metadata for thinkingmachines/inkling-2-mini (2026-11-24): reasoning not mandatory, default enabled, supported_efforts max/high/medium/low/minimal/none, default high; input text+image. commandcode.ai/models/inkling-2-mini badges: Reasons before answering, Text input, Image input; Go and above; $0.075/$0.30. Gateway rungs low, medium, high, max kept (no xhigh offered by the vendor), same ladder as sibling thinkingmachines/inkling, inkling-small and inkling-2-small:free. No pi-ai entry yet. probe not run 2026-11-24: COMMANDCODE_API_KEY unavailable to this run.",
+    "decided": "2026-11-24"
   }
 }

@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.1.59] - 2026-11-24
+
+### Added
+
+- **`thinkingmachines/inkling-2-mini` added to catalog** (105 models) — Thinking Machines Lab's open-weight Inkling 2 Mini, now served by the live API:
+  - `thinkingmachines/inkling-2-mini` ("Inkling 2 Mini", 1,048,576 ctx, 131,072 max output, Go tier, openai protocol, vision on, `low,medium,high,max` efforts) — commandcode.ai shows Text input, Image input and Reasons badges; OpenRouter lists text+image input and `max/high/medium/low/minimal/none` reasoning efforts (reasoning on by default, default `high`); the vendor's model card notes that the minimum effort does not fully disable reasoning. The ladder matches the sibling Inkling models.
+- The gateway effort probe was not run for this model in this release (no API key on the run host); the decision in `docs/effort-decisions.json` rests on vendor and aggregator documentation.
+
 ## [0.1.58] - 2026-11-22
 
 ### Removed

@@ -73,6 +73,7 @@ At runtime, the extension fetches the dynamic model list from `GET https://api.c
 | `Qwen/Qwen3.7-Max`                       | Qwen 3.7 Max                      | 1M             | 65,536     | OpenAI        | ✓ (`low,medium,high`)           | ✓      |
 | `zai-org/GLM-5.2-Fast`                   | GLM-5.2 Fast                      | 1M             | 65,536     | OpenAI        | ✓ (`high,max`)                  | No     |
 | `thinkingmachines/inkling-small`         | Inkling Small                     | 1M             | 65,536     | OpenAI        | ✓ (`low,medium,high,max`)       | Yes    |
+| `thinkingmachines/inkling-2-mini`        | Inkling 2 Mini                    | 1,048,576      | 131,072    | OpenAI        | ✓ (`low,medium,high,max`)       | Yes    |
 | `MiniMaxAI/MiniMax-M2.5`                 | MiniMax M2.5                      | 200,000        | 65,536     | OpenAI        | ✓ (`low,medium,high`)           | Yes    |
 | `MiniMaxAI/MiniMax-M2.7`                 | MiniMax M2.7                      | 200,000        | 131,072    | OpenAI        | ✓ (`low,medium,high`)           | ✗      |
 | `deepseek/deepseek-v4-flash-vision-exp`  | DeepSeek V4 Flash Vision (exp)    | 1,000,000      | 384,000    | OpenAI        | ✓ (`low,high,max`)              | ✓      |
